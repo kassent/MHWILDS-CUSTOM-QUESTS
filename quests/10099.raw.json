@@ -1,0 +1,969 @@
+{
+    "_ArenaDataList": null,
+    "_BossZakoDataList": {
+        "_AnimalLayoutID": {
+            "_ID": "00000000-0000-0000-0000-000000000000",
+            "_Resource": null
+        },
+        "_FieldID": {
+            "_Name": "st403_ラスボス戦闘",
+            "_Value": 905584064
+        },
+        "_MainTargetDataList": [
+            {
+                "_AdvancedSettings": {
+                    "_IsDeepSleepCreate": false
+                },
+                "_AreaNo": 255,
+                "_DifficultyAdjustRange": 0,
+                "_DifficultyRankId": {
+                    "Name": "★10-5（ゾシア）",
+                    "Value": "64938e94-d384-4567-8ed5-af922379600d"
+                },
+                "_EmID": -2003468672,
+                "_EventTargetID": "INVALID",
+                "_FixedSize": 100,
+                "_GroupID": 0,
+                "_InitPos": "(0,0,0)",
+                "_IsUseRandomSize": false,
+                "_LayoutKeepID": -1,
+                "_LegendaryID": "NONE",
+                "_OptionTag": {
+                    "Value": 0
+                },
+                "_RandomSizeTblId": {
+                    "Name": "",
+                    "Value": "00000000-0000-0000-0000-000000000000"
+                },
+                "_RoleID": "NORMAL",
+                "_RouteID": {
+                    "Name": "",
+                    "_Value": "fc4f203d-cbd8-46fe-bed0-bf8da0c1e6fa"
+                },
+                "_SetAreaNo": 1,
+                "_StoryTargetID": 101
+            },
+            {
+                "_AdvancedSettings": {
+                    "_IsDeepSleepCreate": false
+                },
+                "_AreaNo": 255,
+                "_DifficultyAdjustRange": 0,
+                "_DifficultyRankId": {
+                    "Name": "★8-5",
+                    "Value": "64938e94-d384-4567-8ed5-af922379600d"
+                },
+                "_EmID": -758250816,
+                "_EventTargetID": "INVALID",
+                "_FixedSize": 100,
+                "_GroupID": 0,
+                "_InitPos": "(-2.297,0.426,73.488)",
+                "_IsUseRandomSize": false,
+                "_LayoutKeepID": -1,
+                "_LegendaryID": "NORMAL",
+                "_OptionTag": {
+                    "Value": 0
+                },
+                "_RandomSizeTblId": {
+                    "Name": "",
+                    "Value": "00000000-0000-0000-0000-000000000000"
+                },
+                "_RoleID": "NORMAL",
+                "_RouteID": {
+                    "Name": "",
+                    "_Value": "00000000-0000-0000-0000-000000000000"
+                },
+                "_SetAreaNo": 255,
+                "_StoryTargetID": 102
+            },
+            {
+                "_AdvancedSettings": {
+                    "_IsDeepSleepCreate": false
+                },
+                "_AreaNo": 255,
+                "_DifficultyAdjustRange": 2,
+                "_DifficultyRankId": {
+                    "Name": "★10-5（アルシュベルド）",
+                    "Value": "6d893ac4-5f81-4850-b1ac-a2c23845cb15"
+                },
+                "_EmID": 746996864,
+                "_EventTargetID": "INVALID",
+                "_FixedSize": 100,
+                "_GroupID": 0,
+                "_InitPos": "(-2.297,0.426,73.488)",
+                "_IsUseRandomSize": false,
+                "_LayoutKeepID": -1,
+                "_LegendaryID": "KING",
+                "_OptionTag": {
+                    "Value": 0
+                },
+                "_RandomSizeTblId": {
+                    "Name": "",
+                    "Value": "00000000-0000-0000-0000-000000000000"
+                },
+                "_RoleID": "NORMAL",
+                "_RouteID": {
+                    "Name": "",
+                    "_Value": "00000000-0000-0000-0000-000000000000"
+                },
+                "_SetAreaNo": 255,
+                "_StoryTargetID": 103
+            },
+            {
+                "_AdvancedSettings": {
+                    "_IsDeepSleepCreate": false
+                },
+                "_AreaNo": 255,
+                "_DifficultyAdjustRange": 0,
+                "_DifficultyRankId": {
+                    "Name": "★8-5（零式オメガ）",
+                    "Value": "ccaab685-ce7a-4c66-9027-21700b9185a5"
+                },
+                "_EmID": 21849,
+                "_EventTargetID": "INVALID",
+                "_FixedSize": 100,
+                "_GroupID": 0,
+                "_InitPos": "(-2.297,0.426,73.488)",
+                "_IsUseRandomSize": false,
+                "_LayoutKeepID": -1,
+                "_LegendaryID": "NORMAL",
+                "_OptionTag": {
+                    "Value": 1
+                },
+                "_RandomSizeTblId": {
+                    "Name": "",
+                    "Value": "00000000-0000-0000-0000-000000000000"
+                },
+                "_RoleID": "NORMAL",
+                "_RouteID": {
+                    "Name": "",
+                    "_Value": "00000000-0000-0000-0000-000000000000"
+                },
+                "_SetAreaNo": 255,
+                "_StoryTargetID": 104
+            }
+        ],
+        "_SubBossLayoutID": {
+            "_ID": "00000000-0000-0000-0000-000000000000",
+            "_Resource": "assets:/GameDesign/Stage/st403/Layout/Loaded/Enemy/SubBoss/st403_SubBoss_Ms990025.pog.json"
+        },
+        "_ZakoLayoutID": {
+            "_ID": "00000000-0000-0000-0000-000000000000",
+            "_Resource": null
+        },
+        "_ZakoLayoutTag": {
+            "_FieldID": {
+                "_Name": "st403_ラスボス戦闘",
+                "_Value": 905584064
+            },
+            "_IsIntentionallyBlank": false,
+            "_Value": 0
+        }
+    },
+    "_DataList": {
+        "_AddPoint": 1350,
+        "_ArenaFenceCloseTime": 60,
+        "_ArenaFenceInitWaitTime": 60,
+        "_ArenaFenceReuseableTime": 120,
+        "_ArenaFenceStatus": "OPEN",
+        "_ArenaPillarStatus": "USE",
+        "_BattleBGM": 0,
+        "_BossRushParams": [
+            {
+                "_PopType": 0,
+                "_ConditionValue_1": -1,
+                "_ConditionValue_2": -1
+            },
+            {
+                "_PopType": 1,
+                "_ConditionValue_1": 1,
+                "_ConditionValue_2": -1
+            },
+            {
+                "_PopType": 1,
+                "_ConditionValue_1": 2,
+                "_ConditionValue_2": -1
+            },
+            {
+                "_PopType": 1,
+                "_ConditionValue_1": 3,
+                "_ConditionValue_2": -1
+            }
+        ],
+        "_BossRushParams=": null,
+        "_ClearBGM": 0,
+        "_ClearCondition": {
+            "_TargetInfoArray": [
+                {
+                    "_ConditionalMoveData": {
+                        "_DestArray": [],
+                        "_IsUse": false,
+                        "_RevertOnCompleted": false,
+                        "_StartAfterFirstCondition": false
+                    },
+                    "_EmTargetID": 101,
+                    "_LegendaryID": "KING",
+                    "_RoleID": "NORMAL",
+                    "_ShowTargetGuide": true,
+                    "_TargetIDValue": -2003468672,
+                    "_TargetValue": 1
+                },
+                {
+                    "_ConditionalMoveData": {
+                        "_DestArray": [],
+                        "_IsUse": false,
+                        "_RevertOnCompleted": false,
+                        "_StartAfterFirstCondition": false
+                    },
+                    "_EmTargetID": 102,
+                    "_LegendaryID": "KING",
+                    "_RoleID": "NORMAL",
+                    "_ShowTargetGuide": true,
+                    "_TargetIDValue": -758250816,
+                    "_TargetValue": 1
+                },
+                {
+                    "_ConditionalMoveData": {
+                        "_DestArray": [],
+                        "_IsUse": false,
+                        "_RevertOnCompleted": false,
+                        "_StartAfterFirstCondition": false
+                    },
+                    "_EmTargetID": 103,
+                    "_LegendaryID": "KING",
+                    "_RoleID": "NORMAL",
+                    "_ShowTargetGuide": true,
+                    "_TargetIDValue": 746996864,
+                    "_TargetValue": 1
+                },
+                {
+                    "_ConditionalMoveData": {
+                        "_DestArray": [],
+                        "_IsUse": false,
+                        "_RevertOnCompleted": false,
+                        "_StartAfterFirstCondition": false
+                    },
+                    "_EmTargetID": 104,
+                    "_LegendaryID": "KING",
+                    "_RoleID": "NORMAL",
+                    "_ShowTargetGuide": true,
+                    "_TargetIDValue": 21849,
+                    "_TargetValue": 1
+                }
+            ],
+            "_TargetType": 2
+        },
+        "_EnableGuestNpc": false,
+        "_ExOverrideID": 0,
+        "_HRPoint": 3650,
+        "_IconType": {
+            "_Name": "通常アイコン:ターゲットに基づいてアイコンを出す",
+            "_Value": 1927315328
+        },
+        "_Index": 0,
+        "_IsOverrideArenaFenceParam": false,
+        "_IsOverrideArenaPillarParam": false,
+        "_IsSettingSupply": false,
+        "_MissionId": {
+            "_Name": "白炽焚天，锁刃裂地",
+            "_Value": 10099
+        },
+        "_OrderCondition": {
+            "_MaxPlayerNum": 4,
+            "_OrderHR": 100,
+            "_OrderMR": 0,
+            "_PremiseMission": {
+                "_Name": "無効値",
+                "_Value": 0
+            }
+        },
+        "_PartnerNpc": {
+            "_Name": "無効値",
+            "_Value": 4
+        },
+        "_QuestAttribute": 0,
+        "_QuestLife": 10,
+        "_QuestLv": 10,
+        "_QuestMsg": {
+            "_ClearConditionMsg": {
+                "_IsAuto": true,
+                "_MsgID": "00000000-0000-0000-0000-000000000000"
+            },
+            "_ClientNameMsg": "10099000-0000-4000-8000-000000000101",
+            "_DetailMsg": "10099000-0000-4000-8000-000000000102",
+            "_FailConditionMsg": {
+                "_IsAuto": true,
+                "_MsgIDs": [
+                    "00000000-0000-0000-0000-000000000000",
+                    "00000000-0000-0000-0000-000000000000"
+                ]
+            },
+            "_FailConditionMsg_Other": "10099000-0000-4000-8000-000000000103",
+            "_OrderConditionMsg": {
+                "_IsAuto": true,
+                "_MsgIDs": [
+                    "00000000-0000-0000-0000-000000000000",
+                    "00000000-0000-0000-0000-000000000000"
+                ]
+            },
+            "_OrderConditionMsg_Other": "10099000-0000-4000-8000-000000000104",
+            "_OrderConditionMsg_StProgress": "10099000-0000-4000-8000-000000000105",
+            "_TitleMsg": "10099000-0000-4000-8000-000000000100"
+        },
+        "_QuestType": 6,
+        "_RemMoney": 47160,
+        "_Stage": {
+            "_Name": "st403_ラスボス戦闘",
+            "_Value": 905584064
+        },
+        "_SubBossInfoArray": [
+            {
+                "_ConditionalMoveData": {
+                    "_DestArray": [],
+                    "_IsUse": false,
+                    "_RevertOnCompleted": false,
+                    "_StartAfterFirstCondition": false
+                },
+                "_EmID": -1363370496,
+                "_EmTargetID": 11,
+                "_LegendaryID": "NONE",
+                "_RoleID": "ROLE_COLLAB_01"
+            }
+        ],
+        "_SubBossInfoArray=": null,
+        "_SupplyID": {
+            "_Name": "無効値",
+            "_Value": 1966686080
+        },
+        "_TimeLimit": 60,
+        "_Version": 7
+    },
+    "_IsRecommended": false,
+    "_MessageAssetList": [
+        {
+            "Language": 4,
+            "MessageData": [
+                {
+                    "Name": "Mission10099_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_100",
+                    "Text": "<COLOR preset=\"TXT_Danger\">Quartett des Untergangs</COLOR>"
+                },
+                {
+                    "Name": "Mission10099_101",
+                    "Text": "Hikari (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10099_102",
+                    "Text": "Das Heiligtum ist zur Todesstätte geworden – vier Katastrophen steigen in ununterbrochener Folge herab.\nDie Glut des letzten Kampfes glimmt noch, da naht schon der nächste. Keine Atempause, kein Rückzug.\nNur hundertfach geschmiedeter Stahl wird dieses Quartett bis zum letzten Ton hören."
+                },
+                {
+                    "Name": "Mission10099_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 5,
+            "MessageData": [
+                {
+                    "Name": "Mission10099_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_100",
+                    "Text": "<COLOR preset=\"TXT_Danger\">Cuarteto del Fin</COLOR>"
+                },
+                {
+                    "Name": "Mission10099_101",
+                    "Text": "Hikari (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10099_102",
+                    "Text": "El santuario se ha convertido en un matadero: cuatro calamidades descienden una tras otra.\nLas brasas del combate anterior aún arden cuando llega el siguiente. Sin respiro, sin retirada.\nSolo un acero forjado cien veces escuchará este cuarteto hasta su última nota."
+                },
+                {
+                    "Name": "Mission10099_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 13,
+            "MessageData": [
+                {
+                    "Name": "Mission10099_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_100",
+                    "Text": "<COLOR preset=\"TXT_Danger\">终末四重奏</COLOR>"
+                },
+                {
+                    "Name": "Mission10099_101",
+                    "Text": "星之队　光"
+                },
+                {
+                    "Name": "Mission10099_102",
+                    "Text": "龙灯圣域已成绝境，四重灾厄接踵降临。\n前一战的余烬未熄，下一战已然逼近——没有喘息，没有退路。\n能听完这曲终末四重奏的，唯有百炼成钢者。"
+                },
+                {
+                    "Name": "Mission10099_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 6,
+            "MessageData": [
+                {
+                    "Name": "Mission10099_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_100",
+                    "Text": "<COLOR preset=\"TXT_Danger\">Квартет конца</COLOR>"
+                },
+                {
+                    "Name": "Mission10099_101",
+                    "Text": "Hikari (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10099_102",
+                    "Text": "Святилище обратилось в бойню: четыре бедствия сходят одно за другим.\nУгли прошлого боя ещё не остыли, а следующий уже надвигается. Ни передышки, ни пути назад.\nДослушать этот квартет до последней ноты сможет лишь сталь, закалённая сотню раз."
+                },
+                {
+                    "Name": "Mission10099_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 7,
+            "MessageData": [
+                {
+                    "Name": "Mission10099_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_100",
+                    "Text": "<COLOR preset=\"TXT_Danger\">Kwartet Końca</COLOR>"
+                },
+                {
+                    "Name": "Mission10099_101",
+                    "Text": "Hikari (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10099_102",
+                    "Text": "Sanktuarium stało się rzeźnią: cztery kataklizmy zstępują jeden po drugim.\nŻar poprzedniej walki jeszcze nie zgasł, a już nadciąga następna. Bez wytchnienia, bez odwrotu.\nTego kwartetu do ostatniej nuty wysłucha tylko stal hartowana sto razy."
+                },
+                {
+                    "Name": "Mission10099_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 11,
+            "MessageData": [
+                {
+                    "Name": "Mission10099_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_100",
+                    "Text": "<COLOR preset=\"TXT_Danger\">종말의 사중주</COLOR>"
+                },
+                {
+                    "Name": "Mission10099_101",
+                    "Text": "별 부대　히카리"
+                },
+                {
+                    "Name": "Mission10099_102",
+                    "Text": "성역은 이미 사지가 되었다. 네 겹의 재앙이 잇따라 강림한다.\n앞선 전투의 잔불이 꺼지기도 전에 다음이 닥쳐온다. 숨 돌릴 틈도, 물러설 길도 없다.\n이 종말의 사중주를 끝까지 들을 수 있는 자는 백련의 강철뿐이다."
+                },
+                {
+                    "Name": "Mission10099_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 3,
+            "MessageData": [
+                {
+                    "Name": "Mission10099_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_100",
+                    "Text": "<COLOR preset=\"TXT_Danger\">Quartetto della Fine</COLOR>"
+                },
+                {
+                    "Name": "Mission10099_101",
+                    "Text": "Hikari (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10099_102",
+                    "Text": "Il sacrario è diventato un mattatoio: quattro calamità scendono una dopo l'altra.\nLe braci dello scontro precedente ardono ancora quando arriva il successivo. Nessuna tregua, nessuna via di fuga.\nSolo un acciaio forgiato cento volte ascolterà questo quartetto fino all'ultima nota."
+                },
+                {
+                    "Name": "Mission10099_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 10,
+            "MessageData": [
+                {
+                    "Name": "Mission10099_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_100",
+                    "Text": "<COLOR preset=\"TXT_Danger\">Quarteto do Fim</COLOR>"
+                },
+                {
+                    "Name": "Mission10099_101",
+                    "Text": "Hikari (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10099_102",
+                    "Text": "O santuário tornou-se um matadouro: quatro calamidades descem uma após a outra.\nAs brasas do combate anterior ainda queimam quando o próximo se aproxima. Sem trégua, sem recuo.\nSó um aço forjado cem vezes ouvirá este quarteto até a última nota."
+                },
+                {
+                    "Name": "Mission10099_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 12,
+            "MessageData": [
+                {
+                    "Name": "Mission10099_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_100",
+                    "Text": "<COLOR preset=\"TXT_Danger\">終末四重奏</COLOR>"
+                },
+                {
+                    "Name": "Mission10099_101",
+                    "Text": "星辰隊　光"
+                },
+                {
+                    "Name": "Mission10099_102",
+                    "Text": "龍燈聖域已成絕境，四重災厄接踵降臨。\n前一戰的餘燼未熄，下一戰已然逼近——沒有喘息，沒有退路。\n能聽完這曲終末四重奏的，唯有百鍊成鋼者。"
+                },
+                {
+                    "Name": "Mission10099_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 21,
+            "MessageData": [
+                {
+                    "Name": "Mission10099_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_100",
+                    "Text": "<COLOR preset=\"TXT_Danger\">رباعية النهاية</COLOR>"
+                },
+                {
+                    "Name": "Mission10099_101",
+                    "Text": "Hikari (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10099_102",
+                    "Text": "صار الحرم ساحةَ موت؛ أربع كوارث تنزل واحدةً تلو الأخرى.\nجمر المعركة السابقة لم يخمد بعد وقد حلّت التالية. لا مهلة ولا انسحاب.\nلن يسمع هذه الرباعية إلى نهايتها إلا فولاذٌ طُرِق مئة مرة."
+                },
+                {
+                    "Name": "Mission10099_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 32,
+            "MessageData": [
+                {
+                    "Name": "Mission10099_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_100",
+                    "Text": "<COLOR preset=\"TXT_Danger\">Cuarteto del Fin</COLOR>"
+                },
+                {
+                    "Name": "Mission10099_101",
+                    "Text": "Hikari (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10099_102",
+                    "Text": "El santuario se ha convertido en un matadero: cuatro calamidades descienden una tras otra.\nLas brasas del combate anterior aún arden cuando llega el siguiente. Sin respiro, sin retirada.\nSolo un acero forjado cien veces escuchará este cuarteto hasta su última nota."
+                },
+                {
+                    "Name": "Mission10099_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 0,
+            "MessageData": [
+                {
+                    "Name": "Mission10099_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_100",
+                    "Text": "<COLOR preset=\"TXT_Danger\">終末の四重奏</COLOR>"
+                },
+                {
+                    "Name": "Mission10099_101",
+                    "Text": "星の隊　光"
+                },
+                {
+                    "Name": "Mission10099_102",
+                    "Text": "龍灯聖域はもはや死地。四重の災厄が次々に降臨する。\n前の戦いの余燼が消えぬうちに、次が迫る――息継ぎも、退路もない。\nこの終末の四重奏を聴き終えられるのは、百錬の鋼のみだ。"
+                },
+                {
+                    "Name": "Mission10099_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 2,
+            "MessageData": [
+                {
+                    "Name": "Mission10099_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_100",
+                    "Text": "<COLOR preset=\"TXT_Danger\">Quatuor de la Fin</COLOR>"
+                },
+                {
+                    "Name": "Mission10099_101",
+                    "Text": "Hikari (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10099_102",
+                    "Text": "Le sanctuaire n'est plus qu'un charnier : quatre calamités descendent l'une après l'autre.\nLes braises du combat précédent fument encore que le suivant est déjà là. Aucun répit, aucune retraite.\nSeul un acier cent fois forgé entendra ce quatuor jusqu'à sa dernière note."
+                },
+                {
+                    "Name": "Mission10099_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 26,
+            "MessageData": [
+                {
+                    "Name": "Mission10099_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_100",
+                    "Text": "<COLOR preset=\"TXT_Danger\">Quartet of the End</COLOR>"
+                },
+                {
+                    "Name": "Mission10099_101",
+                    "Text": "Hikari (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10099_102",
+                    "Text": "The holy precinct has become a killing ground—four calamities descend one after another.\nThe embers of one battle still burn as the next closes in. No respite, no retreat.\nOnly steel forged a hundred times will hear this quartet to its final note."
+                },
+                {
+                    "Name": "Mission10099_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 1,
+            "MessageData": [
+                {
+                    "Name": "Mission10099_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_100",
+                    "Text": "<COLOR preset=\"TXT_Danger\">Quartet of the End</COLOR>"
+                },
+                {
+                    "Name": "Mission10099_101",
+                    "Text": "Hikari (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10099_102",
+                    "Text": "The holy precinct has become a killing ground—four calamities descend one after another.\nThe embers of one battle still burn as the next closes in. No respite, no retreat.\nOnly steel forged a hundred times will hear this quartet to its final note."
+                },
+                {
+                    "Name": "Mission10099_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10099_132",
+                    "Text": ""
+                }
+            ]
+        }
+    ],
+    "_StreamQuestData": {
+        "_EmSetData": {
+            "_EmSet_AnimalTag": {
+                "_FieldID": {
+                    "_Name": "st403_ラスボス戦闘",
+                    "_Value": 905584064
+                },
+                "_Value": 1
+            },
+            "_EmSet_BossZako": null,
+            "_Stage": {
+                "_Name": "st403_ラスボス戦闘",
+                "_Value": 905584064
+            }
+        },
+        "_IsFixWorldTime": false,
+        "_IsFixWorldTimeQuest": false,
+        "_IsSetWorldTime": false,
+        "_IsSetWorldTimeQuest": true,
+        "_IsStopTimeTiming": false,
+        "_IsStopTimeTimingQuest": false,
+        "_MissionTypeSerial": {
+            "_Name": "配信イベントクエスト",
+            "_Value": 1025928384
+        },
+        "_SetEnvironmentDataList": [
+            {
+                "_EnvTimeRate": 0,
+                "_EnvType": {
+                    "_Name": "異常気象",
+                    "_Value": -1111779072
+                },
+                "_ForcastDatas": [],
+                "_IsFixEnv": false,
+                "_IsTransitionEnv": false,
+                "_StageType": {
+                    "_Name": "st403_ラスボス戦闘",
+                    "_Value": 905584064
+                },
+                "_StopTiming_EnvType": {
+                    "_Name": "無効値",
+                    "_Value": 2110947200
+                }
+            }
+        ],
+        "_SetLGuideMsgData": {
+            "IsSubOrder": false,
+            "SetMsgID": "00000000-0000-0000-0000-000000000000",
+            "gaugeSpritNum": 0,
+            "isCanSkip": false,
+            "isGauge": false
+        },
+        "_SetMoonData": {
+            "_IsSetMoon": false,
+            "_MoonOptionsVariationIndex": 0,
+            "_MoonSetting": {
+                "_Name": "無効値",
+                "_Value": -770399616
+            },
+            "_MoonTextureVariationIndex": 0
+        },
+        "_StopTimeTimingHour": 0,
+        "_StopTimeTimingHourQuest": 0,
+        "_StopTimeTimingMinute": 0,
+        "_StopTimeTimingMinuteQuest": 0,
+        "_WorldTimeHour": 0,
+        "_WorldTimeHourQuest": 12,
+        "_WorldTimeMinute": 0,
+        "_WorldTimeMinuteQuest": 0
+    }
+}
