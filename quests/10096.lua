@@ -39,6 +39,15 @@ local function get_mission_id_from_fixed(fixedId)
     return nil
 end
 
+-- EmID -> 当前语言显示名(EnemyName 返回消息 GUID, via.gui.message.get 单参版跟当前语言)
+local function get_enemy_display_name(emId)
+    local guid = sdk.find_type_definition("app.EnemyDef"):get_method("EnemyName(app.EnemyDef.ID)"):call(nil, emId)
+    if guid == nil then
+        return nil
+    end
+    return sdk.find_type_definition("via.gui.message"):get_method("get(System.Guid)"):call(nil, guid)
+end
+
 -- ==================== 1. 对话目录 ====================
 -- 对话数据按任务 ID 加载: registerCatalog 把 cCatalogData._TargetMissionIDFixedList 索引进
 --   DialogueResourceManager._DialogueCatalogDataList_MissionID, 任务开始时只加载目标列表含
@@ -89,14 +98,14 @@ local function restore_motion_speed_patch(id)
     b.obj.MotionSpeedRate = b.rate
     b.obj.MotionSpeedRate_Hard = b.rateHard
     motion_speed_patched[id] = nil
-    log.info(string.format("%s restored motion speed for EmID=%d: MotionSpeedRate %.2f -> %.2f, MotionSpeedRate_Hard %.2f -> %.2f",
-        QUEST_TAG, id, cur, b.rate, curHard, b.rateHard))
+    log.info(string.format("%s restored motion speed for EmID=%d(%s): MotionSpeedRate %.2f -> %.2f, MotionSpeedRate_Hard %.2f -> %.2f",
+        QUEST_TAG, id, get_enemy_display_name(id), cur, b.rate, curHard, b.rateHard))
 end
 
 -- args[1]=vmctx args[2]=this args[3]=EmID(32位枚举: to_int64 后 & 0xFFFFFFFF 截出来)
 sdk.hook(sdk.find_type_definition("app.EnemyManager"):get_method("onLoadPackage(app.EnemyDef.ID)"), function(args)
     local id = sdk.to_int64(args[3]) & 0xFFFFFFFF
-    log.info(string.format("%s onLoadPackage EmID=%d", QUEST_TAG, id))
+    log.info(string.format("%s onLoadPackage EmID=%d(%s)", QUEST_TAG, id, get_enemy_display_name(id)))
 
     local em = sdk.to_managed_object(args[2])
     local holder = em._PackageHolders[id]
@@ -113,14 +122,14 @@ sdk.hook(sdk.find_type_definition("app.EnemyManager"):get_method("onLoadPackage(
         motion_speed_patched[id] = { obj = legendary, rate = rate, rateHard = rateHard }
         legendary.MotionSpeedRate = targetSpeed
         legendary.MotionSpeedRate_Hard = targetSpeed
-        log.info(string.format("%s patched motion speed for EmID=%d: MotionSpeedRate %.2f -> %.2f, MotionSpeedRate_Hard %.2f -> %.2f",
-            QUEST_TAG, id, rate, legendary.MotionSpeedRate, rateHard, legendary.MotionSpeedRate_Hard))
+        log.info(string.format("%s patched motion speed for EmID=%d(%s): MotionSpeedRate %.2f -> %.2f, MotionSpeedRate_Hard %.2f -> %.2f",
+            QUEST_TAG, id, get_enemy_display_name(id), rate, legendary.MotionSpeedRate, rateHard, legendary.MotionSpeedRate_Hard))
     end
 end)
 
 sdk.hook(sdk.find_type_definition("app.EnemyManager"):get_method("onUnloadRequestPackage(app.EnemyDef.ID)"), function(args)
     local id = sdk.to_int64(args[3]) & 0xFFFFFFFF
-    log.info(string.format("%s onUnloadRequestPackage EmID=%d", QUEST_TAG, id))
+    log.info(string.format("%s onUnloadRequestPackage EmID=%d(%s)", QUEST_TAG, id, get_enemy_display_name(id)))
     restore_motion_speed_patch(id)
 end)
 
@@ -303,7 +312,7 @@ end
 -- 路线 GUID → __AreaMoveRouteID(int)。与原生 FUN_148b89510 一致:
 -- GUID 的 16 字节按小端组成 4 个 dword 做 XOR 折叠(运行时 createMainTargetContext/createBossRushEnemy
 -- 都用这个哈希填 __AreaMoveRouteID, 路线系统按它检索)。
-local function guid_route_hash(s)
+local function calc_route_guid_hash(s)
     local a, b, c, d, e = s:match("^(%x%x%x%x%x%x%x%x)%-(%x%x%x%x)%-(%x%x%x%x)%-(%x%x%x%x)%-(%x%x%x%x%x%x%x%x%x%x%x%x)$")
     local tail = d .. e
     local bytes = {}
@@ -341,7 +350,7 @@ local function spawn_quest_enemy(em, stage, entry, emId, slot)
     arg:set_field("<StoryTargetID>k__BackingField", entry.storyTargetId or 0)
     arg:set_field("<LayoutKeepID>k__BackingField", entry.layoutKeepId or -1)
     arg:set_field("<GroupID>k__BackingField", entry.groupId or 0)
-    arg:set_field("<AreaMoveRouteID>k__BackingField", entry.routeGuid ~= nil and guid_route_hash(entry.routeGuid) or 0)
+    arg:set_field("<AreaMoveRouteID>k__BackingField", entry.routeGuid ~= nil and calc_route_guid_hash(entry.routeGuid) or 0)
     arg:set_field("<EventTargetID>k__BackingField", -1)
     arg:set_field("<IsMainTarget>k__BackingField", false)
 
@@ -381,8 +390,8 @@ local function spawn_quest_enemy(em, stage, entry, emId, slot)
     local info = em:call(
         "create(app.EnemyDef.CONTEXT_SUB_CATEGORY, System.Int32, app.cContextCreateArg_Enemy, app.EnemyDef.SYNC_TYPE, via.GameObject)",
         0, contextId, arg, 2, nil) -- CONTEXT_SUB_CATEGORY.STATIC / SYNC_TYPE.ONLY_LOCAL
-    log.info(string.format("%s spawn emId=%d(%d): stage=%d area=%d contextId=%d -> %s",
-        QUEST_TAG, emId, entry.emFixedId, stage, areaNo, contextId, info ~= nil and "OK" or "null"))
+    log.info(string.format("%s spawn %s(emId=%d, fixed=%d): stage=%d area=%d contextId=%d -> %s",
+        QUEST_TAG, get_enemy_display_name(emId), emId, entry.emFixedId, stage, areaNo, contextId, info ~= nil and "OK" or "null"))
 end
 
 -- 触发器: ContextLayouter.requestCreateContextEnemy —— 布局链收敛点, quest pog 图(含蜘蛛节点)
