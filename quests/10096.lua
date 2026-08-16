@@ -4,11 +4,9 @@
 --
 -- 功能块:
 --   1. 对话目录     手动加载原 Omega 任务的对话目录(自定义任务不在其目标列表, 不加台词沉默)
---   2. 动作速度     白炽龙/黑蚀龙/欧米茄动作提速(package 加载时改 Legendary 参数)
---   3. 火海寿命     芥末炸弹火海出生即无限寿命
---   4. 暴走锁定     欧米茄暴走不可被脚伤击破解除
---   5. 预放置敌人   QUEST_ENEMY_SPAWNS 表驱动注入(影蜘蛛联动召唤等)
---   6. 台词 NPC     补 spawn 欧米茄台词的两个说话 NPC
+--   2. 预放置敌人   QUEST_ENEMY_SPAWNS 表驱动注入(影蜘蛛联动召唤)
+--   3. 台词 NPC     补 spawn 欧米茄台词的两个说话 NPC
+-- (高难增强版 —— 动作速度/火海寿命/暴走锁定/双蜘蛛 —— 见 10099.lua)
 
 local QUEST_TAG = "[quest 10096]"
 
@@ -16,18 +14,6 @@ local QUEST_TAG = "[quest 10096]"
 
 local function parse_guid(s)
     return sdk.find_type_definition("System.Guid"):get_method("Parse(System.String)"):call(nil, s)
-end
-
-local function make_vec3(x, y, z)
-    local v = ValueType.new(sdk.find_type_definition("via.vec3"))
-    v.x, v.y, v.z = x, y, z
-    return v
-end
-
-local function make_identity_quat()
-    local q = ValueType.new(sdk.find_type_definition("via.Quaternion"))
-    q.x, q.y, q.z, q.w = 0, 0, 0, 1
-    return q
 end
 
 -- fixed id(如 26820) → 运行时 MissionIDList.ID, 解析失败返回 nil
@@ -75,146 +61,7 @@ local function unload_omega_mission_dialogues()
     log.info(string.format("%s unloaded dialogue catalog for mission fixed=%d id=%d", QUEST_TAG, OMEGA_MISSION_FIXED, missionId))
 end
 
--- ==================== 2. 动作速度 ====================
--- hook EnemyManager 的 package 加载/卸载。加载完成后沿
---   _PackageHolders[EmID]._PackageData._ParamPack._Legendary 逐级访问, 对表内 EmID 写
---   MotionSpeedRate / MotionSpeedRate_Hard, 卸载时还原。
--- 备份表持有 obj 引用: 既防对象被提前释放, 还原时也不用重新走 EnemyManager 逐级查。
-
-local MOTION_SPEED_PATCHES = {
-    [32] = 1.2, -- 白炽龙
-    [10] = 1.2, -- 黑蚀龙
-    [34] = 1.3, -- 游星欧米茄
-}
-
-local motion_speed_patched = {} -- EmID -> { obj = legendary 对象, rate/rateHard = 原值 }
-
-local function restore_motion_speed_patch(id)
-    local b = motion_speed_patched[id]
-    if b == nil then
-        return
-    end
-    local cur, curHard = b.obj.MotionSpeedRate, b.obj.MotionSpeedRate_Hard
-    b.obj.MotionSpeedRate = b.rate
-    b.obj.MotionSpeedRate_Hard = b.rateHard
-    motion_speed_patched[id] = nil
-    log.info(string.format("%s restored motion speed for EmID=%d(%s): MotionSpeedRate %.2f -> %.2f, MotionSpeedRate_Hard %.2f -> %.2f",
-        QUEST_TAG, id, get_enemy_display_name(id), cur, b.rate, curHard, b.rateHard))
-end
-
--- args[1]=vmctx args[2]=this args[3]=EmID(32位枚举: to_int64 后 & 0xFFFFFFFF 截出来)
-sdk.hook(sdk.find_type_definition("app.EnemyManager"):get_method("onLoadPackage(app.EnemyDef.ID)"), function(args)
-    local id = sdk.to_int64(args[3]) & 0xFFFFFFFF
-    log.info(string.format("%s onLoadPackage EmID=%d(%s)", QUEST_TAG, id, get_enemy_display_name(id)))
-
-    local em = sdk.to_managed_object(args[2])
-    local holder = em._PackageHolders[id]
-    if holder == nil then
-        return
-    end
-    local legendary = holder._PackageData._ParamPack._Legendary
-    if legendary == nil then
-        return
-    end
-    local targetSpeed = MOTION_SPEED_PATCHES[id]
-    if targetSpeed ~= nil then
-        local rate, rateHard = legendary.MotionSpeedRate, legendary.MotionSpeedRate_Hard
-        motion_speed_patched[id] = { obj = legendary, rate = rate, rateHard = rateHard }
-        legendary.MotionSpeedRate = targetSpeed
-        legendary.MotionSpeedRate_Hard = targetSpeed
-        log.info(string.format("%s patched motion speed for EmID=%d(%s): MotionSpeedRate %.2f -> %.2f, MotionSpeedRate_Hard %.2f -> %.2f",
-            QUEST_TAG, id, get_enemy_display_name(id), rate, legendary.MotionSpeedRate, rateHard, legendary.MotionSpeedRate_Hard))
-    end
-end)
-
-sdk.hook(sdk.find_type_definition("app.EnemyManager"):get_method("onUnloadRequestPackage(app.EnemyDef.ID)"), function(args)
-    local id = sdk.to_int64(args[3]) & 0xFFFFFFFF
-    log.info(string.format("%s onUnloadRequestPackage EmID=%d(%s)", QUEST_TAG, id, get_enemy_display_name(id)))
-    restore_motion_speed_patch(id)
-end)
-
--- ==================== 3. 火海寿命 ====================
--- 芥末炸弹火海(MasteredBombSlipArea)出生即无限寿命:
---   ShellBase.update 的寿命守卫是 `0 < _LifeSec && LifeTimer 超时`, 写 0 即引擎"无寿命"语义。
---   _CommonParam 是该 Omega 本次加载的 ShellList 里共享的源头数据: 第一颗火海写入后,
---   同场后续火海(读同一份数据)出生即无限; 每只新 Omega 加载新副本, hook 幂等覆盖。
---   注意: 只去掉 120s 自然寿命, SlipArea::update 的"新一轮施法清场"仍在,
---   火海最长活到 Omega 下一次放芥末炸弹(或死亡/任务结束)。
-
-local slip_lifetime_patched = {} -- [{ obj = CommonParam, orig = 原 LifeSec }]
-
-sdk.hook(sdk.find_type_definition("app.mcShellMiniParamEm0166_00MasteredBombSlipArea"):get_method("onSetup()"), function(args)
-    local this = sdk.to_managed_object(args[2])
-    if this == nil then
-        return
-    end
-    local shell = this:call("get_Shell()")
-    local setting = shell ~= nil and shell:call("get_Setting()") or nil
-    if setting == nil then
-        return
-    end
-    local mainParam = setting:get_field("_MainParam")
-    local cp = mainParam ~= nil and mainParam:get_field("_CommonParam") or nil
-    if cp == nil then
-        return
-    end
-    local life = cp:get_field("_LifeSec")
-    if life > 0 then
-        cp:set_field("_LifeSec", 0.0)
-        slip_lifetime_patched[#slip_lifetime_patched + 1] = { obj = cp, orig = life }
-        log.info(string.format("%s slip area lifetime %.1f -> infinite", QUEST_TAG, life))
-    end
-end)
-
-local function restore_slip_lifetime()
-    for _, b in ipairs(slip_lifetime_patched) do
-        b.obj:set_field("_LifeSec", b.orig)
-    end
-    if #slip_lifetime_patched > 0 then
-        log.info(string.format("%s restored slip area lifetime for %d CommonParam(s)", QUEST_TAG, #slip_lifetime_patched))
-    end
-    slip_lifetime_patched = {}
-end
-
--- ==================== 4. 暴走锁定 ====================
--- 全能之主(Rampage)不可被脚伤击破解除:
---   subRampageDownVital @0x14746bbb0 每次击破脚伤扣暴走血条的 _ScarRampageDownRate(_HL)%(原生 35),
---   扣到见底才 endRampageMode + 长倒地。写 0 → 每次扣 0, 血条永不见底,
---   只剩 _RampageTime 计时(零式 600s)和第 2 次暴走的血量线(零式 10%)能退出。
---   ParamUnique 是 per-Omega 实例数据(extend.get_ParamUnique()), 每只新 Omega 各一份;
---   hook 每次进暴走前幂等写入(rate==0 跳过)。
-
-local rampage_rate_patched = {} -- [{ obj = ParamUnique, orig = 原rate, origHl = 原rate_HL }]
-
-sdk.hook(sdk.find_type_definition("app.cEm0166_00Extend"):get_method("startRampageMode()"), function(args)
-    local ext = sdk.to_managed_object(args[2])
-    local pu = ext ~= nil and ext:call("get_ParamUnique()") or nil
-    if pu == nil then
-        return
-    end
-    local rate = pu:get_field("_ScarRampageDownRate")
-    if rate == 0 then
-        return
-    end
-    local rateHl = pu:get_field("_ScarRampageDownRate_HL")
-    pu:set_field("_ScarRampageDownRate", 0)
-    pu:set_field("_ScarRampageDownRate_HL", 0)
-    rampage_rate_patched[#rampage_rate_patched + 1] = { obj = pu, orig = rate, origHl = rateHl }
-    log.info(string.format("%s rampage scar down rate %d/%d -> 0/0 (leg scar break no longer exits rampage)", QUEST_TAG, rate, rateHl))
-end)
-
-local function restore_rampage_rate()
-    for _, b in ipairs(rampage_rate_patched) do
-        b.obj:set_field("_ScarRampageDownRate", b.orig)
-        b.obj:set_field("_ScarRampageDownRate_HL", b.origHl)
-    end
-    if #rampage_rate_patched > 0 then
-        log.info(string.format("%s restored rampage scar down rate for %d ParamUnique(s)", QUEST_TAG, #rampage_rate_patched))
-    end
-    rampage_rate_patched = {}
-end
-
--- ==================== 5. 预放置敌人 ====================
+-- ==================== 2. 预放置敌人 ====================
 -- 复刻 a8561ce CustomSubBoss C++ 注入逻辑(a3194d3 修 Bitset 签名)为脚本版。
 -- 原生机制: 联动召唤怪(如欧米茄的影蜘蛛)只能"预放置 + requestCollaboEmAppear 唤醒", 预放置来自
 --   任务 sub-boss 布局(.pog); 布局资源缺席时原生链空转 -> 召唤空操作。这里 hook
@@ -285,17 +132,8 @@ local QUEST_ENEMY_SPAWNS = {
         roleId = ROLE_ID.ROLE_COLLAB_01,
         optionTag = 1,
         storyTargetId = 10,
-        pos = { -2.297, 0.426, 73.488 },                         -- 竞技场中心(pog 实测位置)
+        pos = { 12.509, -0.254, 89.623 },                         -- 竞技场中心(pog 实测位置)
         difficultyGuid = "f326f227-c0ff-47bb-92e7-aa187d61ad3c", -- Ms630007 蜘蛛节点难度
-        deepSleep = true,
-    },
-    { -- 影蜘蛛 B(同上, 站位不同)
-        emFixedId = -1363370496, -- EM0070_00_0
-        roleId = ROLE_ID.ROLE_COLLAB_01,
-        optionTag = 1,
-        storyTargetId = 11,
-        pos = { 24.183, -0.323, 92.306 },                        -- 实测坐标
-        difficultyGuid = "f326f227-c0ff-47bb-92e7-aa187d61ad3c",
         deepSleep = true,
     },
 }
@@ -326,7 +164,7 @@ local function calc_route_guid_hash(s)
     return v
 end
 
-local function spawn_quest_enemy(em, stage, entry, emId, slot)
+local function spawn_quest_enemy(layouter, em, stage, entry, emId, slot)
     --- @type app.cContextCreateArg_Enemy
     local arg = sdk.find_type_definition("app.cContextCreateArg_Enemy"):create_instance()
     --- @type app.cContextTransform
@@ -336,9 +174,9 @@ local function spawn_quest_enemy(em, stage, entry, emId, slot)
         return
     end
 
-    local pos = make_vec3(entry.pos[1], entry.pos[2], entry.pos[3])
+    local pos = Vector3f.new(entry.pos[1], entry.pos[2], entry.pos[3])
     transform:set_field("<Position>k__BackingField", pos)
-    transform:set_field("<Rotation>k__BackingField", make_identity_quat())
+    transform:set_field("<Rotation>k__BackingField", Quaternion.identity())
     arg:set_field("<Transform>k__BackingField", transform)
 
     arg:set_field("<EmID>k__BackingField", emId)
@@ -392,6 +230,11 @@ local function spawn_quest_enemy(em, stage, entry, emId, slot)
         0, contextId, arg, 2, nil) -- CONTEXT_SUB_CATEGORY.STATIC / SYNC_TYPE.ONLY_LOCAL
     log.info(string.format("%s spawn %s(emId=%d, fixed=%d): stage=%d area=%d contextId=%d -> %s",
         QUEST_TAG, get_enemy_display_name(emId), emId, entry.emFixedId, stage, areaNo, contextId, info ~= nil and "OK" or "null"))
+    -- 登记进 layouter 的创建账本: onDestroy 会按它逐个 requestRemove(原生布局怪同款销毁链)
+    if info ~= nil then
+        local handle = info:call("get_Context()"):get_field("_Handle")
+        layouter:get_field("_CreatedContextHandleList"):call("Add(app.CONTEXT_HANDLE)", handle)
+    end
 end
 
 -- 触发器: ContextLayouter.requestCreateContextEnemy —— 布局链收敛点, quest pog 图(含蜘蛛节点)
@@ -420,12 +263,12 @@ sdk.hook(sdk.find_type_definition("app.ContextLayouter"):get_method("requestCrea
             if emId == nil then
                 log.error(string.format("%s spawn: getIDFromFixed failed for %d", QUEST_TAG, entry.emFixedId))
             else
-                spawn_quest_enemy(em, stage, entry, emId, slot)
+                spawn_quest_enemy(layouter, em, stage, entry, emId, slot)
             end
         end
     end)
 
--- ==================== 6. 台词 NPC ====================
+-- ==================== 3. 台词 NPC ====================
 -- 欧米茄台词的两个说话 NPC 由原故事任务布置, 自定义任务里没有:
 --   begin NPC 不存在 → isPlayableCheck_GuiModule 静默丢弃; 第二个 actor 不存在 → talk player 建不出来。
 --   两个都得 spawn。参数用 26820 实测捕获: GroupAIType=INDEPENDENCE(15), LayoutType=NONE(798760128)。
@@ -449,8 +292,8 @@ local function spawn_omega_speaker_npcs()
             npcManager:call(
                 "createNpc(System.Int32, via.vec3, via.Quaternion, app.NpcDef.GROUP_AI_TYPE, app.NpcDef.NPC_CONTEXT_LAYOUT_TYPE_Fixed)",
                 npcIdWrapper.value__,
-                make_vec3(speaker.pos[1], speaker.pos[2], speaker.pos[3]),
-                make_identity_quat(),
+                Vector3f.new(speaker.pos[1], speaker.pos[2], speaker.pos[3]),
+                Quaternion.identity(),
                 15, 798760128)
             log.info(string.format("%s spawned omega speaker npc fixed=%d runtime=%d", QUEST_TAG, speaker.fixed, npcIdWrapper.value__))
         end
@@ -480,7 +323,6 @@ sdk.hook(sdk.find_type_definition("app.ContextManager"):get_method("createContex
 end)
 
 -- ==================== 生命周期 ====================
--- 兜底: package 卸载若发生在脚本摘钩之后, 这里把还没还原的一次性还原
 quest.on_load(function()
     load_omega_mission_dialogues()
     log.info(string.format("%s quest script loaded", QUEST_TAG))
@@ -492,11 +334,6 @@ quest.on_flow_changed(function(flow)
 end)
 
 quest.on_unload(function()
-    for id in pairs(motion_speed_patched) do
-        restore_motion_speed_patch(id)
-    end
-    restore_slip_lifetime()
-    restore_rampage_rate()
     unload_omega_mission_dialogues()
     log.info(string.format("%s unloading quest script, hooks will be removed", QUEST_TAG))
 end)

@@ -18,18 +18,6 @@ local function parse_guid(s)
     return sdk.find_type_definition("System.Guid"):get_method("Parse(System.String)"):call(nil, s)
 end
 
-local function make_vec3(x, y, z)
-    local v = ValueType.new(sdk.find_type_definition("via.vec3"))
-    v.x, v.y, v.z = x, y, z
-    return v
-end
-
-local function make_identity_quat()
-    local q = ValueType.new(sdk.find_type_definition("via.Quaternion"))
-    q.x, q.y, q.z, q.w = 0, 0, 0, 1
-    return q
-end
-
 -- fixed id(如 26820) → 运行时 MissionIDList.ID, 解析失败返回 nil
 local function get_mission_id_from_fixed(fixedId)
     local idWrapper = ValueType.new(sdk.find_type_definition("app.MissionIDList.ID"))
@@ -112,6 +100,7 @@ sdk.hook(sdk.find_type_definition("app.EnemyManager"):get_method("onLoadPackage(
     if holder == nil then
         return
     end
+    ---@field getPackage fun(self, arg0: app.EnemyDef.ID): app.user_data.EnemyPackage public 0x1455f90c0 / id: 611130
     local legendary = holder._PackageData._ParamPack._Legendary
     if legendary == nil then
         return
@@ -326,7 +315,7 @@ local function calc_route_guid_hash(s)
     return v
 end
 
-local function spawn_quest_enemy(em, stage, entry, emId, slot)
+local function spawn_quest_enemy(layouter, em, stage, entry, emId, slot)
     --- @type app.cContextCreateArg_Enemy
     local arg = sdk.find_type_definition("app.cContextCreateArg_Enemy"):create_instance()
     --- @type app.cContextTransform
@@ -336,9 +325,9 @@ local function spawn_quest_enemy(em, stage, entry, emId, slot)
         return
     end
 
-    local pos = make_vec3(entry.pos[1], entry.pos[2], entry.pos[3])
+    local pos = Vector3f.new(entry.pos[1], entry.pos[2], entry.pos[3])
     transform:set_field("<Position>k__BackingField", pos)
-    transform:set_field("<Rotation>k__BackingField", make_identity_quat())
+    transform:set_field("<Rotation>k__BackingField", Quaternion.identity())
     arg:set_field("<Transform>k__BackingField", transform)
 
     arg:set_field("<EmID>k__BackingField", emId)
@@ -392,6 +381,11 @@ local function spawn_quest_enemy(em, stage, entry, emId, slot)
         0, contextId, arg, 2, nil) -- CONTEXT_SUB_CATEGORY.STATIC / SYNC_TYPE.ONLY_LOCAL
     log.info(string.format("%s spawn %s(emId=%d, fixed=%d): stage=%d area=%d contextId=%d -> %s",
         QUEST_TAG, get_enemy_display_name(emId), emId, entry.emFixedId, stage, areaNo, contextId, info ~= nil and "OK" or "null"))
+    -- 登记进 layouter 的创建账本: onDestroy 会按它逐个 requestRemove(原生布局怪同款销毁链)
+    if info ~= nil then
+        local handle = info:call("get_Context()"):get_field("_Handle")
+        layouter:get_field("_CreatedContextHandleList"):call("Add(app.CONTEXT_HANDLE)", handle)
+    end
 end
 
 -- 触发器: ContextLayouter.requestCreateContextEnemy —— 布局链收敛点, quest pog 图(含蜘蛛节点)
@@ -420,7 +414,7 @@ sdk.hook(sdk.find_type_definition("app.ContextLayouter"):get_method("requestCrea
             if emId == nil then
                 log.error(string.format("%s spawn: getIDFromFixed failed for %d", QUEST_TAG, entry.emFixedId))
             else
-                spawn_quest_enemy(em, stage, entry, emId, slot)
+                spawn_quest_enemy(layouter, em, stage, entry, emId, slot)
             end
         end
     end)
@@ -449,8 +443,8 @@ local function spawn_omega_speaker_npcs()
             npcManager:call(
                 "createNpc(System.Int32, via.vec3, via.Quaternion, app.NpcDef.GROUP_AI_TYPE, app.NpcDef.NPC_CONTEXT_LAYOUT_TYPE_Fixed)",
                 npcIdWrapper.value__,
-                make_vec3(speaker.pos[1], speaker.pos[2], speaker.pos[3]),
-                make_identity_quat(),
+                Vector3f.new(speaker.pos[1], speaker.pos[2], speaker.pos[3]),
+                Quaternion.identity(),
                 15, 798760128)
             log.info(string.format("%s spawned omega speaker npc fixed=%d runtime=%d", QUEST_TAG, speaker.fixed, npcIdWrapper.value__))
         end
