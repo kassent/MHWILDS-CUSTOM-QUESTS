@@ -311,12 +311,24 @@
             "_TitleMsg": "10099000-0000-4000-8000-000000000100"
         },
         "_QuestType": 6,
-        "_RemMoney": 47160,
+        "_RemMoney": 216000,
         "_Stage": {
             "_Name": "st403_ラスボス戦闘",
             "_Value": 905584064
         },
         "_SubBossInfoArray": [
+            {
+                "_ConditionalMoveData": {
+                    "_DestArray": [],
+                    "_IsUse": false,
+                    "_RevertOnCompleted": false,
+                    "_StartAfterFirstCondition": false
+                },
+                "_EmID": -1363370496,
+                "_EmTargetID": 10,
+                "_LegendaryID": "NONE",
+                "_RoleID": "ROLE_COLLAB_01"
+            },
             {
                 "_ConditionalMoveData": {
                     "_DestArray": [],
@@ -338,7 +350,7 @@
         "_TimeLimit": 60,
         "_Version": 7
     },
-    "_IsRecommended": false,
+    "_IsRecommended": true,
     "_MessageAssetList": [
         {
             "Language": 4,
@@ -353,7 +365,7 @@
                 },
                 {
                     "Name": "Mission10099_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">Quartett des Untergangs</COLOR>"
+                    "Text": "<COLOR preset=\"TXT_Danger\">Quartett des Verderbens</COLOR>"
                 },
                 {
                     "Name": "Mission10099_101",
@@ -390,7 +402,7 @@
                 },
                 {
                     "Name": "Mission10099_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">Cuarteto del Fin</COLOR>"
+                    "Text": "<COLOR preset=\"TXT_Danger\">Cuarteto del Fin Postrero</COLOR>"
                 },
                 {
                     "Name": "Mission10099_101",
@@ -427,7 +439,7 @@
                 },
                 {
                     "Name": "Mission10099_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">终末四重奏</COLOR>"
+                    "Text": "<COLOR preset=\"TXT_Danger\">终焉四重奏</COLOR>"
                 },
                 {
                     "Name": "Mission10099_101",
@@ -435,7 +447,7 @@
                 },
                 {
                     "Name": "Mission10099_102",
-                    "Text": "龙灯圣域已成绝境，四重灾厄接踵降临。\n前一战的余烬未熄，下一战已然逼近——没有喘息，没有退路。\n能听完这曲终末四重奏的，唯有百炼成钢者。"
+                    "Text": "龙灯圣域已成绝境，四重灾厄接踵降临。\n前一战的余烬未熄，下一战已然逼近——没有喘息，没有退路。\n能听完这曲终焉四重奏的，唯有百炼成钢者。"
                 },
                 {
                     "Name": "Mission10099_122",
@@ -464,7 +476,7 @@
                 },
                 {
                     "Name": "Mission10099_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">Квартет конца</COLOR>"
+                    "Text": "<COLOR preset=\"TXT_Danger\">Квартет Конца Времён</COLOR>"
                 },
                 {
                     "Name": "Mission10099_101",
@@ -501,7 +513,7 @@
                 },
                 {
                     "Name": "Mission10099_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">Kwartet Końca</COLOR>"
+                    "Text": "<COLOR preset=\"TXT_Danger\">Kwartet Kresu</COLOR>"
                 },
                 {
                     "Name": "Mission10099_101",
@@ -538,7 +550,7 @@
                 },
                 {
                     "Name": "Mission10099_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">종말의 사중주</COLOR>"
+                    "Text": "<COLOR preset=\"TXT_Danger\">종언의 사중주</COLOR>"
                 },
                 {
                     "Name": "Mission10099_101",
@@ -546,7 +558,7 @@
                 },
                 {
                     "Name": "Mission10099_102",
-                    "Text": "성역은 이미 사지가 되었다. 네 겹의 재앙이 잇따라 강림한다.\n앞선 전투의 잔불이 꺼지기도 전에 다음이 닥쳐온다. 숨 돌릴 틈도, 물러설 길도 없다.\n이 종말의 사중주를 끝까지 들을 수 있는 자는 백련의 강철뿐이다."
+                    "Text": "성역은 이미 사지가 되었다. 네 겹의 재앙이 잇따라 강림한다.\n앞선 전투의 잔불이 꺼지기도 전에 다음이 닥쳐온다. 숨 돌릴 틈도, 물러설 길도 없다.\n이 종언의 사중주를 끝까지 들을 수 있는 자는 백련의 강철뿐이다."
                 },
                 {
                     "Name": "Mission10099_122",
@@ -575,7 +587,7 @@
                 },
                 {
                     "Name": "Mission10099_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">Quartetto della Fine</COLOR>"
+                    "Text": "<COLOR preset=\"TXT_Danger\">Quartetto dell'Ultima Fine</COLOR>"
                 },
                 {
                     "Name": "Mission10099_101",
@@ -612,7 +624,7 @@
                 },
                 {
                     "Name": "Mission10099_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">Quarteto do Fim</COLOR>"
+                    "Text": "<COLOR preset=\"TXT_Danger\">Quarteto do Último Fim</COLOR>"
                 },
                 {
                     "Name": "Mission10099_101",
@@ -649,7 +661,7 @@
                 },
                 {
                     "Name": "Mission10099_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">終末四重奏</COLOR>"
+                    "Text": "<COLOR preset=\"TXT_Danger\">終焉四重奏</COLOR>"
                 },
                 {
                     "Name": "Mission10099_101",
@@ -657,7 +669,7 @@
                 },
                 {
                     "Name": "Mission10099_102",
-                    "Text": "龍燈聖域已成絕境，四重災厄接踵降臨。\n前一戰的餘燼未熄，下一戰已然逼近——沒有喘息，沒有退路。\n能聽完這曲終末四重奏的，唯有百鍊成鋼者。"
+                    "Text": "龍燈聖域已成絕境，四重災厄接踵降臨。\n前一戰的餘燼未熄，下一戰已然逼近——沒有喘息，沒有退路。\n能聽完這曲終焉四重奏的，唯有百鍊成鋼者。"
                 },
                 {
                     "Name": "Mission10099_122",
@@ -686,7 +698,7 @@
                 },
                 {
                     "Name": "Mission10099_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">رباعية النهاية</COLOR>"
+                    "Text": "<COLOR preset=\"TXT_Danger\">رباعية النهاية الأخيرة</COLOR>"
                 },
                 {
                     "Name": "Mission10099_101",
@@ -723,7 +735,7 @@
                 },
                 {
                     "Name": "Mission10099_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">Cuarteto del Fin</COLOR>"
+                    "Text": "<COLOR preset=\"TXT_Danger\">Cuarteto del Fin Postrero</COLOR>"
                 },
                 {
                     "Name": "Mission10099_101",
@@ -760,7 +772,7 @@
                 },
                 {
                     "Name": "Mission10099_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">終末の四重奏</COLOR>"
+                    "Text": "<COLOR preset=\"TXT_Danger\">終焉の四重奏</COLOR>"
                 },
                 {
                     "Name": "Mission10099_101",
@@ -768,7 +780,7 @@
                 },
                 {
                     "Name": "Mission10099_102",
-                    "Text": "龍灯聖域はもはや死地。四重の災厄が次々に降臨する。\n前の戦いの余燼が消えぬうちに、次が迫る――息継ぎも、退路もない。\nこの終末の四重奏を聴き終えられるのは、百錬の鋼のみだ。"
+                    "Text": "龍灯聖域はもはや死地。四重の災厄が次々に降臨する。\n前の戦いの余燼が消えぬうちに、次が迫る――息継ぎも、退路もない。\nこの終焉の四重奏を聴き終えられるのは、百錬の鋼のみだ。"
                 },
                 {
                     "Name": "Mission10099_122",
@@ -797,7 +809,7 @@
                 },
                 {
                     "Name": "Mission10099_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">Quatuor de la Fin</COLOR>"
+                    "Text": "<COLOR preset=\"TXT_Danger\">Quatuor du Trépas</COLOR>"
                 },
                 {
                     "Name": "Mission10099_101",
@@ -834,7 +846,7 @@
                 },
                 {
                     "Name": "Mission10099_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">Quartet of the End</COLOR>"
+                    "Text": "<COLOR preset=\"TXT_Danger\">Quartet of Finality</COLOR>"
                 },
                 {
                     "Name": "Mission10099_101",
@@ -871,7 +883,7 @@
                 },
                 {
                     "Name": "Mission10099_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">Quartet of the End</COLOR>"
+                    "Text": "<COLOR preset=\"TXT_Danger\">Quartet of Finality</COLOR>"
                 },
                 {
                     "Name": "Mission10099_101",
