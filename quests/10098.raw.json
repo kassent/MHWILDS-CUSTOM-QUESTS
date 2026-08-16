@@ -1,0 +1,807 @@
+{
+    "_ArenaDataList": null,
+    "_BossZakoDataList": {
+        "_AnimalLayoutID": {
+            "_ID": "00000000-0000-0000-0000-000000000000",
+            "_Resource": null
+        },
+        "_FieldID": {
+            "_Name": "st403_ラスボス戦闘",
+            "_Value": 905584064
+        },
+        "_MainTargetDataList": [
+            {
+                "_AdvancedSettings": {
+                    "_IsDeepSleepCreate": false
+                },
+                "_AreaNo": 255,
+                "_DifficultyAdjustRange": 0,
+                "_DifficultyRankId": {
+                    "Name": "★8-5（零式オメガ）",
+                    "Value": "ccaab685-ce7a-4c66-9027-21700b9185a5"
+                },
+                "_EmID": 21849,
+                "_EventTargetID": "INVALID",
+                "_FixedSize": 100,
+                "_GroupID": 0,
+                "_InitPos": "(-2.297,0.426,73.488)",
+                "_IsUseRandomSize": false,
+                "_LayoutKeepID": -1,
+                "_LegendaryID": "NORMAL",
+                "_OptionTag": {
+                    "Value": 1
+                },
+                "_RandomSizeTblId": {
+                    "Name": "",
+                    "Value": "00000000-0000-0000-0000-000000000000"
+                },
+                "_RoleID": "NORMAL",
+                "_RouteID": {
+                    "Name": "",
+                    "_Value": "00000000-0000-0000-0000-000000000000"
+                },
+                "_SetAreaNo": 255,
+                "_StoryTargetID": 101
+            }
+        ],
+        "_SubBossLayoutID": {
+            "_ID": "f0a398b1-1277-4caa-a8b5-bbffbc9e9ea3",
+            "_Resource": "assets:/GameDesign/Stage/st403/Layout/Loaded/Enemy/SubBoss/st403_SubBoss_Ms990025.pog.json"
+        },
+        "_ZakoLayoutID": {
+            "_ID": "00000000-0000-0000-0000-000000000000",
+            "_Resource": null
+        },
+        "_ZakoLayoutTag": {
+            "_FieldID": {
+                "_Name": "st403_ラスボス戦闘",
+                "_Value": 905584064
+            },
+            "_IsIntentionallyBlank": false,
+            "_Value": 0
+        }
+    },
+    "_DataList": {
+        "_AddPoint": 1350,
+        "_ArenaFenceCloseTime": 60,
+        "_ArenaFenceInitWaitTime": 60,
+        "_ArenaFenceReuseableTime": 120,
+        "_ArenaFenceStatus": "OPEN",
+        "_ArenaPillarStatus": "USE",
+        "_BattleBGM": 4,
+        "_BossRushParams": [],
+        "_BossRushParams=": null,
+        "_ClearBGM": 5,
+        "_ClearCondition": {
+            "_TargetInfoArray": [
+                {
+                    "_ConditionalMoveData": {
+                        "_DestArray": [],
+                        "_IsUse": false,
+                        "_RevertOnCompleted": false,
+                        "_StartAfterFirstCondition": false
+                    },
+                    "_EmTargetID": 101,
+                    "_LegendaryID": "NORMAL",
+                    "_RoleID": "NORMAL",
+                    "_ShowTargetGuide": true,
+                    "_TargetIDValue": 21849,
+                    "_TargetValue": 1
+                }
+            ],
+            "_TargetType": 2
+        },
+        "_EnableGuestNpc": false,
+        "_ExOverrideID": 17,
+        "_HRPoint": 3650,
+        "_IconType": {
+            "_Name": "通常アイコン:ターゲットに基づいてアイコンを出す",
+            "_Value": 1927315328
+        },
+        "_Index": 0,
+        "_IsOverrideArenaFenceParam": false,
+        "_IsOverrideArenaPillarParam": false,
+        "_IsSettingSupply": false,
+        "_MissionId": {
+            "_Name": "游星浩劫",
+            "_Value": 10098
+        },
+        "_OrderCondition": {
+            "_MaxPlayerNum": 4,
+            "_OrderHR": 100,
+            "_OrderMR": 0,
+            "_PremiseMission": {
+                "_Name": "無効値",
+                "_Value": 0
+            }
+        },
+        "_PartnerNpc": {
+            "_Name": "無効値",
+            "_Value": 4
+        },
+        "_QuestAttribute": 0,
+        "_QuestLife": 3,
+        "_QuestLv": 9,
+        "_QuestMsg": {
+            "_ClearConditionMsg": {
+                "_IsAuto": true,
+                "_MsgID": "00000000-0000-0000-0000-000000000000"
+            },
+            "_ClientNameMsg": "10098000-0000-4000-8000-000000000101",
+            "_DetailMsg": "10098000-0000-4000-8000-000000000102",
+            "_FailConditionMsg": {
+                "_IsAuto": true,
+                "_MsgIDs": [
+                    "00000000-0000-0000-0000-000000000000",
+                    "00000000-0000-0000-0000-000000000000"
+                ]
+            },
+            "_FailConditionMsg_Other": "10098000-0000-4000-8000-000000000103",
+            "_OrderConditionMsg": {
+                "_IsAuto": true,
+                "_MsgIDs": [
+                    "00000000-0000-0000-0000-000000000000",
+                    "00000000-0000-0000-0000-000000000000"
+                ]
+            },
+            "_OrderConditionMsg_Other": "10098000-0000-4000-8000-000000000104",
+            "_OrderConditionMsg_StProgress": "10098000-0000-4000-8000-000000000105",
+            "_TitleMsg": "10098000-0000-4000-8000-000000000100"
+        },
+        "_QuestType": 1,
+        "_RemMoney": 47160,
+        "_Stage": {
+            "_Name": "st403_ラスボス戦闘",
+            "_Value": 905584064
+        },
+        "_SubBossInfoArray": [
+            {
+                "_ConditionalMoveData": {
+                    "_DestArray": [],
+                    "_IsUse": false,
+                    "_RevertOnCompleted": false,
+                    "_StartAfterFirstCondition": false
+                },
+                "_EmID": -1363370496,
+                "_EmTargetID": 11,
+                "_LegendaryID": "NONE",
+                "_RoleID": "ROLE_COLLAB_01"
+            }
+        ],
+        "_SubBossInfoArray=": null,
+        "_SupplyID": {
+            "_Name": "無効値",
+            "_Value": 1966686080
+        },
+        "_TimeLimit": 50,
+        "_Version": 7
+    },
+    "_IsRecommended": false,
+    "_MessageAssetList": [
+        {
+            "Language": 4,
+            "MessageData": [
+                {
+                    "Name": "Mission10098_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_100",
+                    "Text": "Planetary Cataclysm"
+                },
+                {
+                    "Name": "Mission10098_101",
+                    "Text": "Erik (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10098_102",
+                    "Text": "A mechanical weapon from a distant star—Zero-type Planetary Omega descends upon the holy precinct. Only the strongest hunters can stop this cataclysm."
+                },
+                {
+                    "Name": "Mission10098_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 5,
+            "MessageData": [
+                {
+                    "Name": "Mission10098_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_100",
+                    "Text": "Planetary Cataclysm"
+                },
+                {
+                    "Name": "Mission10098_101",
+                    "Text": "Erik (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10098_102",
+                    "Text": "A mechanical weapon from a distant star—Zero-type Planetary Omega descends upon the holy precinct. Only the strongest hunters can stop this cataclysm."
+                },
+                {
+                    "Name": "Mission10098_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 13,
+            "MessageData": [
+                {
+                    "Name": "Mission10098_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_100",
+                    "Text": "游星浩劫"
+                },
+                {
+                    "Name": "Mission10098_101",
+                    "Text": "星之队　艾瑞克"
+                },
+                {
+                    "Name": "Mission10098_102",
+                    "Text": "来自遥远星海的机械兵器——零式游星欧米茄降临龙灯圣域。集结最强猎人，阻止这场浩劫。"
+                },
+                {
+                    "Name": "Mission10098_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 6,
+            "MessageData": [
+                {
+                    "Name": "Mission10098_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_100",
+                    "Text": "Planetary Cataclysm"
+                },
+                {
+                    "Name": "Mission10098_101",
+                    "Text": "Erik (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10098_102",
+                    "Text": "A mechanical weapon from a distant star—Zero-type Planetary Omega descends upon the holy precinct. Only the strongest hunters can stop this cataclysm."
+                },
+                {
+                    "Name": "Mission10098_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 7,
+            "MessageData": [
+                {
+                    "Name": "Mission10098_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_100",
+                    "Text": "Planetary Cataclysm"
+                },
+                {
+                    "Name": "Mission10098_101",
+                    "Text": "Erik (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10098_102",
+                    "Text": "A mechanical weapon from a distant star—Zero-type Planetary Omega descends upon the holy precinct. Only the strongest hunters can stop this cataclysm."
+                },
+                {
+                    "Name": "Mission10098_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 11,
+            "MessageData": [
+                {
+                    "Name": "Mission10098_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_100",
+                    "Text": "유성의 대재앙"
+                },
+                {
+                    "Name": "Mission10098_101",
+                    "Text": "별 부대　에릭"
+                },
+                {
+                    "Name": "Mission10098_102",
+                    "Text": "머나먼 성해에서 온 기계병기, 제로식 유성 오메가가 성역에 강림. 최강의 헌터를 모아 이 재앙을 막아라."
+                },
+                {
+                    "Name": "Mission10098_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 3,
+            "MessageData": [
+                {
+                    "Name": "Mission10098_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_100",
+                    "Text": "Planetary Cataclysm"
+                },
+                {
+                    "Name": "Mission10098_101",
+                    "Text": "Erik (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10098_102",
+                    "Text": "A mechanical weapon from a distant star—Zero-type Planetary Omega descends upon the holy precinct. Only the strongest hunters can stop this cataclysm."
+                },
+                {
+                    "Name": "Mission10098_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 10,
+            "MessageData": [
+                {
+                    "Name": "Mission10098_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_100",
+                    "Text": "Planetary Cataclysm"
+                },
+                {
+                    "Name": "Mission10098_101",
+                    "Text": "Erik (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10098_102",
+                    "Text": "A mechanical weapon from a distant star—Zero-type Planetary Omega descends upon the holy precinct. Only the strongest hunters can stop this cataclysm."
+                },
+                {
+                    "Name": "Mission10098_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 12,
+            "MessageData": [
+                {
+                    "Name": "Mission10098_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_100",
+                    "Text": "遊星浩劫"
+                },
+                {
+                    "Name": "Mission10098_101",
+                    "Text": "星辰隊　艾瑞克"
+                },
+                {
+                    "Name": "Mission10098_102",
+                    "Text": "來自遙遠星海的機械兵器——零式遊星歐米茄降臨龍燈聖域。集結最強獵人，阻止這場浩劫。"
+                },
+                {
+                    "Name": "Mission10098_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 21,
+            "MessageData": [
+                {
+                    "Name": "Mission10098_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_100",
+                    "Text": "Planetary Cataclysm"
+                },
+                {
+                    "Name": "Mission10098_101",
+                    "Text": "Erik (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10098_102",
+                    "Text": "A mechanical weapon from a distant star—Zero-type Planetary Omega descends upon the holy precinct. Only the strongest hunters can stop this cataclysm."
+                },
+                {
+                    "Name": "Mission10098_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 32,
+            "MessageData": [
+                {
+                    "Name": "Mission10098_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_100",
+                    "Text": "Planetary Cataclysm"
+                },
+                {
+                    "Name": "Mission10098_101",
+                    "Text": "Erik (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10098_102",
+                    "Text": "A mechanical weapon from a distant star—Zero-type Planetary Omega descends upon the holy precinct. Only the strongest hunters can stop this cataclysm."
+                },
+                {
+                    "Name": "Mission10098_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 0,
+            "MessageData": [
+                {
+                    "Name": "Mission10098_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_100",
+                    "Text": "遊星の浩劫"
+                },
+                {
+                    "Name": "Mission10098_101",
+                    "Text": "星の隊　エリック"
+                },
+                {
+                    "Name": "Mission10098_102",
+                    "Text": "遥かなる星海より来たりし機械兵器、零式遊星オメガが龍灯聖域に降臨。最強のハンターを集め、この浩劫を食い止めよ。"
+                },
+                {
+                    "Name": "Mission10098_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 2,
+            "MessageData": [
+                {
+                    "Name": "Mission10098_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_100",
+                    "Text": "Planetary Cataclysm"
+                },
+                {
+                    "Name": "Mission10098_101",
+                    "Text": "Erik (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10098_102",
+                    "Text": "A mechanical weapon from a distant star—Zero-type Planetary Omega descends upon the holy precinct. Only the strongest hunters can stop this cataclysm."
+                },
+                {
+                    "Name": "Mission10098_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 26,
+            "MessageData": [
+                {
+                    "Name": "Mission10098_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_100",
+                    "Text": "Planetary Cataclysm"
+                },
+                {
+                    "Name": "Mission10098_101",
+                    "Text": "Erik (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10098_102",
+                    "Text": "A mechanical weapon from a distant star—Zero-type Planetary Omega descends upon the holy precinct. Only the strongest hunters can stop this cataclysm."
+                },
+                {
+                    "Name": "Mission10098_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 1,
+            "MessageData": [
+                {
+                    "Name": "Mission10098_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_100",
+                    "Text": "Planetary Cataclysm"
+                },
+                {
+                    "Name": "Mission10098_101",
+                    "Text": "Erik (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10098_102",
+                    "Text": "A mechanical weapon from a distant star—Zero-type Planetary Omega descends upon the holy precinct. Only the strongest hunters can stop this cataclysm."
+                },
+                {
+                    "Name": "Mission10098_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10098_132",
+                    "Text": ""
+                }
+            ]
+        }
+    ],
+    "_StreamQuestData": {
+        "_EmSetData": {
+            "_EmSet_AnimalTag": {
+                "_FieldID": {
+                    "_Name": "st403_ラスボス戦闘",
+                    "_Value": 905584064
+                },
+                "_Value": 1
+            },
+            "_EmSet_BossZako": null,
+            "_Stage": {
+                "_Name": "st403_ラスボス戦闘",
+                "_Value": 905584064
+            }
+        },
+        "_IsFixWorldTime": false,
+        "_IsFixWorldTimeQuest": false,
+        "_IsSetWorldTime": false,
+        "_IsSetWorldTimeQuest": true,
+        "_IsStopTimeTiming": false,
+        "_IsStopTimeTimingQuest": false,
+        "_MissionTypeSerial": {
+            "_Name": "配信イベントクエスト",
+            "_Value": 1025928384
+        },
+        "_SetEnvironmentDataList": [
+            {
+                "_EnvTimeRate": 0,
+                "_EnvType": {
+                    "_Name": "異常気象",
+                    "_Value": -1111779072
+                },
+                "_ForcastDatas": [],
+                "_IsFixEnv": false,
+                "_IsTransitionEnv": false,
+                "_StageType": {
+                    "_Name": "st403_ラスボス戦闘",
+                    "_Value": 905584064
+                },
+                "_StopTiming_EnvType": {
+                    "_Name": "無効値",
+                    "_Value": 2110947200
+                }
+            }
+        ],
+        "_SetLGuideMsgData": {
+            "IsSubOrder": false,
+            "SetMsgID": "00000000-0000-0000-0000-000000000000",
+            "gaugeSpritNum": 0,
+            "isCanSkip": false,
+            "isGauge": false
+        },
+        "_SetMoonData": {
+            "_IsSetMoon": false,
+            "_MoonOptionsVariationIndex": 0,
+            "_MoonSetting": {
+                "_Name": "無効値",
+                "_Value": -770399616
+            },
+            "_MoonTextureVariationIndex": 0
+        },
+        "_StopTimeTimingHour": 0,
+        "_StopTimeTimingHourQuest": 0,
+        "_StopTimeTimingMinute": 0,
+        "_StopTimeTimingMinuteQuest": 0,
+        "_WorldTimeHour": 0,
+        "_WorldTimeHourQuest": 12,
+        "_WorldTimeMinute": 0,
+        "_WorldTimeMinuteQuest": 0
+    }
+}

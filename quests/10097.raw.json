@@ -1,0 +1,794 @@
+{
+    "_ArenaDataList": null,
+    "_BossZakoDataList": {
+        "_AnimalLayoutID": {
+            "_ID": "00000000-0000-0000-0000-000000000000",
+            "_Resource": null
+        },
+        "_FieldID": {
+            "_Name": "st403_ラスボス戦闘",
+            "_Value": 905584064
+        },
+        "_MainTargetDataList": [
+            {
+                "_AdvancedSettings": {
+                    "_IsDeepSleepCreate": false
+                },
+                "_AreaNo": 1,
+                "_DifficultyAdjustRange": 2,
+                "_DifficultyRankId": {
+                    "Name": "★10-5（アルシュベルド）",
+                    "Value": "6d893ac4-5f81-4850-b1ac-a2c23845cb15"
+                },
+                "_EmID": 746996864,
+                "_EventTargetID": "INVALID",
+                "_FixedSize": 100,
+                "_GroupID": 0,
+                "_InitPos": "(-2.297,0.426,73.488)",
+                "_IsUseRandomSize": false,
+                "_LayoutKeepID": -1,
+                "_LegendaryID": "KING",
+                "_OptionTag": {
+                    "Value": 0
+                },
+                "_RandomSizeTblId": {
+                    "Name": "",
+                    "Value": "00000000-0000-0000-0000-000000000000"
+                },
+                "_RoleID": "NORMAL",
+                "_RouteID": {
+                    "Name": "",
+                    "_Value": "00000000-0000-0000-0000-000000000000"
+                },
+                "_SetAreaNo": 255,
+                "_StoryTargetID": 101
+            }
+        ],
+        "_SubBossLayoutID": {
+            "_ID": "3cb83b22-edd5-4c04-925e-ec3d8a087e66",
+            "_Resource": "assets:/GameDesign/Stage/st403/Layout/Loaded/Enemy/SubBoss/st403_SubBoss_Ms650006.pog.json"
+        },
+        "_ZakoLayoutID": {
+            "_ID": "00000000-0000-0000-0000-000000000000",
+            "_Resource": null
+        },
+        "_ZakoLayoutTag": {
+            "_FieldID": {
+                "_Name": "st403_ラスボス戦闘",
+                "_Value": 905584064
+            },
+            "_IsIntentionallyBlank": false,
+            "_Value": 0
+        }
+    },
+    "_DataList": {
+        "_AddPoint": 1350,
+        "_ArenaFenceCloseTime": 60,
+        "_ArenaFenceInitWaitTime": 60,
+        "_ArenaFenceReuseableTime": 120,
+        "_ArenaFenceStatus": "OPEN",
+        "_ArenaPillarStatus": "USE",
+        "_BattleBGM": 0,
+        "_BossRushParams": [],
+        "_BossRushParams=": null,
+        "_ClearBGM": 0,
+        "_ClearCondition": {
+            "_TargetInfoArray": [
+                {
+                    "_ConditionalMoveData": {
+                        "_DestArray": [],
+                        "_IsUse": false,
+                        "_RevertOnCompleted": false,
+                        "_StartAfterFirstCondition": false
+                    },
+                    "_EmTargetID": 101,
+                    "_LegendaryID": "KING",
+                    "_RoleID": "NORMAL",
+                    "_ShowTargetGuide": true,
+                    "_TargetIDValue": 746996864,
+                    "_TargetValue": 1
+                }
+            ],
+            "_TargetType": 1
+        },
+        "_EnableGuestNpc": false,
+        "_ExOverrideID": 0,
+        "_HRPoint": 3650,
+        "_IconType": {
+            "_Name": "通常アイコン:ターゲットに基づいてアイコンを出す",
+            "_Value": 1927315328
+        },
+        "_Index": 0,
+        "_IsOverrideArenaFenceParam": false,
+        "_IsOverrideArenaPillarParam": false,
+        "_IsSettingSupply": false,
+        "_MissionId": {
+            "_Name": "一刃当关",
+            "_Value": 10097
+        },
+        "_OrderCondition": {
+            "_MaxPlayerNum": 4,
+            "_OrderHR": 100,
+            "_OrderMR": 0,
+            "_PremiseMission": {
+                "_Name": "無効値",
+                "_Value": 0
+            }
+        },
+        "_PartnerNpc": {
+            "_Name": "無効値",
+            "_Value": 4
+        },
+        "_QuestAttribute": 0,
+        "_QuestLife": 3,
+        "_QuestLv": 10,
+        "_QuestMsg": {
+            "_ClearConditionMsg": {
+                "_IsAuto": true,
+                "_MsgID": "00000000-0000-0000-0000-000000000000"
+            },
+            "_ClientNameMsg": "10097000-0000-4000-8000-000000000101",
+            "_DetailMsg": "10097000-0000-4000-8000-000000000102",
+            "_FailConditionMsg": {
+                "_IsAuto": true,
+                "_MsgIDs": [
+                    "00000000-0000-0000-0000-000000000000",
+                    "00000000-0000-0000-0000-000000000000"
+                ]
+            },
+            "_FailConditionMsg_Other": "10097000-0000-4000-8000-000000000103",
+            "_OrderConditionMsg": {
+                "_IsAuto": true,
+                "_MsgIDs": [
+                    "00000000-0000-0000-0000-000000000000",
+                    "00000000-0000-0000-0000-000000000000"
+                ]
+            },
+            "_OrderConditionMsg_Other": "10097000-0000-4000-8000-000000000104",
+            "_OrderConditionMsg_StProgress": "10097000-0000-4000-8000-000000000105",
+            "_TitleMsg": "10097000-0000-4000-8000-000000000100"
+        },
+        "_QuestType": 0,
+        "_RemMoney": 47160,
+        "_Stage": {
+            "_Name": "st403_ラスボス戦闘",
+            "_Value": 905584064
+        },
+        "_SubBossInfoArray": [],
+        "_SubBossInfoArray=": null,
+        "_SupplyID": {
+            "_Name": "無効値",
+            "_Value": 1966686080
+        },
+        "_TimeLimit": 50,
+        "_Version": 7
+    },
+    "_IsRecommended": false,
+    "_MessageAssetList": [
+        {
+            "Language": 4,
+            "MessageData": [
+                {
+                    "Name": "Mission10097_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_100",
+                    "Text": "One Blade Holds the Pass"
+                },
+                {
+                    "Name": "Mission10097_101",
+                    "Text": "Erik (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10097_102",
+                    "Text": "One blade holds the pass; ten thousand cannot break through. The Tempered King Jin Dahaad holds the holy precinct alone—who dares challenge it?"
+                },
+                {
+                    "Name": "Mission10097_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 5,
+            "MessageData": [
+                {
+                    "Name": "Mission10097_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_100",
+                    "Text": "One Blade Holds the Pass"
+                },
+                {
+                    "Name": "Mission10097_101",
+                    "Text": "Erik (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10097_102",
+                    "Text": "One blade holds the pass; ten thousand cannot break through. The Tempered King Jin Dahaad holds the holy precinct alone—who dares challenge it?"
+                },
+                {
+                    "Name": "Mission10097_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 13,
+            "MessageData": [
+                {
+                    "Name": "Mission10097_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_100",
+                    "Text": "一刃当关"
+                },
+                {
+                    "Name": "Mission10097_101",
+                    "Text": "星之队　艾瑞克"
+                },
+                {
+                    "Name": "Mission10097_102",
+                    "Text": "一刃当关，万夫莫开。历战王锁刃龙独踞龙灯圣域，谁敢越此关？"
+                },
+                {
+                    "Name": "Mission10097_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 6,
+            "MessageData": [
+                {
+                    "Name": "Mission10097_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_100",
+                    "Text": "One Blade Holds the Pass"
+                },
+                {
+                    "Name": "Mission10097_101",
+                    "Text": "Erik (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10097_102",
+                    "Text": "One blade holds the pass; ten thousand cannot break through. The Tempered King Jin Dahaad holds the holy precinct alone—who dares challenge it?"
+                },
+                {
+                    "Name": "Mission10097_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 7,
+            "MessageData": [
+                {
+                    "Name": "Mission10097_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_100",
+                    "Text": "One Blade Holds the Pass"
+                },
+                {
+                    "Name": "Mission10097_101",
+                    "Text": "Erik (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10097_102",
+                    "Text": "One blade holds the pass; ten thousand cannot break through. The Tempered King Jin Dahaad holds the holy precinct alone—who dares challenge it?"
+                },
+                {
+                    "Name": "Mission10097_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 11,
+            "MessageData": [
+                {
+                    "Name": "Mission10097_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_100",
+                    "Text": "일인당관"
+                },
+                {
+                    "Name": "Mission10097_101",
+                    "Text": "별 부대　에릭"
+                },
+                {
+                    "Name": "Mission10097_102",
+                    "Text": "일인당관, 만부막개. 역전왕 진 다하드가 성역에 홀로 버티고 있다. 누가 이 관문을 넘을 것인가."
+                },
+                {
+                    "Name": "Mission10097_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 3,
+            "MessageData": [
+                {
+                    "Name": "Mission10097_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_100",
+                    "Text": "One Blade Holds the Pass"
+                },
+                {
+                    "Name": "Mission10097_101",
+                    "Text": "Erik (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10097_102",
+                    "Text": "One blade holds the pass; ten thousand cannot break through. The Tempered King Jin Dahaad holds the holy precinct alone—who dares challenge it?"
+                },
+                {
+                    "Name": "Mission10097_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 10,
+            "MessageData": [
+                {
+                    "Name": "Mission10097_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_100",
+                    "Text": "One Blade Holds the Pass"
+                },
+                {
+                    "Name": "Mission10097_101",
+                    "Text": "Erik (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10097_102",
+                    "Text": "One blade holds the pass; ten thousand cannot break through. The Tempered King Jin Dahaad holds the holy precinct alone—who dares challenge it?"
+                },
+                {
+                    "Name": "Mission10097_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 12,
+            "MessageData": [
+                {
+                    "Name": "Mission10097_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_100",
+                    "Text": "一刃當關"
+                },
+                {
+                    "Name": "Mission10097_101",
+                    "Text": "星辰隊　艾瑞克"
+                },
+                {
+                    "Name": "Mission10097_102",
+                    "Text": "一刃當關，萬夫莫開。歷戰王鎖刃龍獨踞龍燈聖域，誰敢越此關？"
+                },
+                {
+                    "Name": "Mission10097_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 21,
+            "MessageData": [
+                {
+                    "Name": "Mission10097_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_100",
+                    "Text": "One Blade Holds the Pass"
+                },
+                {
+                    "Name": "Mission10097_101",
+                    "Text": "Erik (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10097_102",
+                    "Text": "One blade holds the pass; ten thousand cannot break through. The Tempered King Jin Dahaad holds the holy precinct alone—who dares challenge it?"
+                },
+                {
+                    "Name": "Mission10097_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 32,
+            "MessageData": [
+                {
+                    "Name": "Mission10097_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_100",
+                    "Text": "One Blade Holds the Pass"
+                },
+                {
+                    "Name": "Mission10097_101",
+                    "Text": "Erik (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10097_102",
+                    "Text": "One blade holds the pass; ten thousand cannot break through. The Tempered King Jin Dahaad holds the holy precinct alone—who dares challenge it?"
+                },
+                {
+                    "Name": "Mission10097_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 0,
+            "MessageData": [
+                {
+                    "Name": "Mission10097_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_100",
+                    "Text": "一刃当関"
+                },
+                {
+                    "Name": "Mission10097_101",
+                    "Text": "星の隊　エリック"
+                },
+                {
+                    "Name": "Mission10097_102",
+                    "Text": "一刃当関、万夫も開けず。歴戦王ジン・ダハドが龍灯聖域に独り座す。誰がこの関を越えられるか。"
+                },
+                {
+                    "Name": "Mission10097_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 2,
+            "MessageData": [
+                {
+                    "Name": "Mission10097_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_100",
+                    "Text": "One Blade Holds the Pass"
+                },
+                {
+                    "Name": "Mission10097_101",
+                    "Text": "Erik (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10097_102",
+                    "Text": "One blade holds the pass; ten thousand cannot break through. The Tempered King Jin Dahaad holds the holy precinct alone—who dares challenge it?"
+                },
+                {
+                    "Name": "Mission10097_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 26,
+            "MessageData": [
+                {
+                    "Name": "Mission10097_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_100",
+                    "Text": "One Blade Holds the Pass"
+                },
+                {
+                    "Name": "Mission10097_101",
+                    "Text": "Erik (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10097_102",
+                    "Text": "One blade holds the pass; ten thousand cannot break through. The Tempered King Jin Dahaad holds the holy precinct alone—who dares challenge it?"
+                },
+                {
+                    "Name": "Mission10097_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 1,
+            "MessageData": [
+                {
+                    "Name": "Mission10097_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_100",
+                    "Text": "One Blade Holds the Pass"
+                },
+                {
+                    "Name": "Mission10097_101",
+                    "Text": "Erik (Astrum Unit)"
+                },
+                {
+                    "Name": "Mission10097_102",
+                    "Text": "One blade holds the pass; ten thousand cannot break through. The Tempered King Jin Dahaad holds the holy precinct alone—who dares challenge it?"
+                },
+                {
+                    "Name": "Mission10097_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10097_132",
+                    "Text": ""
+                }
+            ]
+        }
+    ],
+    "_StreamQuestData": {
+        "_EmSetData": {
+            "_EmSet_AnimalTag": {
+                "_FieldID": {
+                    "_Name": "st403_ラスボス戦闘",
+                    "_Value": 905584064
+                },
+                "_Value": 1
+            },
+            "_EmSet_BossZako": null,
+            "_Stage": {
+                "_Name": "st403_ラスボス戦闘",
+                "_Value": 905584064
+            }
+        },
+        "_IsFixWorldTime": false,
+        "_IsFixWorldTimeQuest": false,
+        "_IsSetWorldTime": false,
+        "_IsSetWorldTimeQuest": true,
+        "_IsStopTimeTiming": false,
+        "_IsStopTimeTimingQuest": false,
+        "_MissionTypeSerial": {
+            "_Name": "配信イベントクエスト",
+            "_Value": 1025928384
+        },
+        "_SetEnvironmentDataList": [
+            {
+                "_EnvTimeRate": 0,
+                "_EnvType": {
+                    "_Name": "異常気象",
+                    "_Value": -1111779072
+                },
+                "_ForcastDatas": [],
+                "_IsFixEnv": false,
+                "_IsTransitionEnv": false,
+                "_StageType": {
+                    "_Name": "st403_ラスボス戦闘",
+                    "_Value": 905584064
+                },
+                "_StopTiming_EnvType": {
+                    "_Name": "無効値",
+                    "_Value": 2110947200
+                }
+            }
+        ],
+        "_SetLGuideMsgData": {
+            "IsSubOrder": false,
+            "SetMsgID": "00000000-0000-0000-0000-000000000000",
+            "gaugeSpritNum": 0,
+            "isCanSkip": false,
+            "isGauge": false
+        },
+        "_SetMoonData": {
+            "_IsSetMoon": false,
+            "_MoonOptionsVariationIndex": 0,
+            "_MoonSetting": {
+                "_Name": "無効値",
+                "_Value": -770399616
+            },
+            "_MoonTextureVariationIndex": 0
+        },
+        "_StopTimeTimingHour": 0,
+        "_StopTimeTimingHourQuest": 0,
+        "_StopTimeTimingMinute": 0,
+        "_StopTimeTimingMinuteQuest": 0,
+        "_WorldTimeHour": 0,
+        "_WorldTimeHourQuest": 12,
+        "_WorldTimeMinute": 0,
+        "_WorldTimeMinuteQuest": 0
+    }
+}
