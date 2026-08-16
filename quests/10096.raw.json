@@ -311,7 +311,7 @@
             "_TitleMsg": "10096000-0000-4000-8000-000000000100"
         },
         "_QuestType": 6,
-        "_RemMoney": 47160,
+        "_RemMoney": 147160,
         "_Stage": {
             "_Name": "st403_ラスボス戦闘",
             "_Value": 905584064
@@ -325,7 +325,7 @@
                     "_StartAfterFirstCondition": false
                 },
                 "_EmID": -1363370496,
-                "_EmTargetID": 11,
+                "_EmTargetID": 10,
                 "_LegendaryID": "NONE",
                 "_RoleID": "ROLE_COLLAB_01"
             }
@@ -338,7 +338,7 @@
         "_TimeLimit": 60,
         "_Version": 7
     },
-    "_IsRecommended": false,
+    "_IsRecommended": true,
     "_MessageAssetList": [
         {
             "Language": 4,
@@ -353,7 +353,7 @@
                 },
                 {
                     "Name": "Mission10096_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">Quartett des Untergangs</COLOR>"
+                    "Text": "Quartett des Untergangs"
                 },
                 {
                     "Name": "Mission10096_101",
@@ -390,7 +390,7 @@
                 },
                 {
                     "Name": "Mission10096_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">Cuarteto del Fin</COLOR>"
+                    "Text": "Cuarteto del Fin"
                 },
                 {
                     "Name": "Mission10096_101",
@@ -427,7 +427,7 @@
                 },
                 {
                     "Name": "Mission10096_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">终末四重奏</COLOR>"
+                    "Text": "终末四重奏"
                 },
                 {
                     "Name": "Mission10096_101",
@@ -464,7 +464,7 @@
                 },
                 {
                     "Name": "Mission10096_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">Квартет конца</COLOR>"
+                    "Text": "Квартет конца"
                 },
                 {
                     "Name": "Mission10096_101",
@@ -501,7 +501,7 @@
                 },
                 {
                     "Name": "Mission10096_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">Kwartet Końca</COLOR>"
+                    "Text": "Kwartet Końca"
                 },
                 {
                     "Name": "Mission10096_101",
@@ -538,7 +538,7 @@
                 },
                 {
                     "Name": "Mission10096_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">종말의 사중주</COLOR>"
+                    "Text": "종말의 사중주"
                 },
                 {
                     "Name": "Mission10096_101",
@@ -575,7 +575,7 @@
                 },
                 {
                     "Name": "Mission10096_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">Quartetto della Fine</COLOR>"
+                    "Text": "Quartetto della Fine"
                 },
                 {
                     "Name": "Mission10096_101",
@@ -612,7 +612,7 @@
                 },
                 {
                     "Name": "Mission10096_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">Quarteto do Fim</COLOR>"
+                    "Text": "Quarteto do Fim"
                 },
                 {
                     "Name": "Mission10096_101",
@@ -649,7 +649,7 @@
                 },
                 {
                     "Name": "Mission10096_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">終末四重奏</COLOR>"
+                    "Text": "終末四重奏"
                 },
                 {
                     "Name": "Mission10096_101",
@@ -686,7 +686,7 @@
                 },
                 {
                     "Name": "Mission10096_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">رباعية النهاية</COLOR>"
+                    "Text": "رباعية النهاية"
                 },
                 {
                     "Name": "Mission10096_101",
@@ -723,7 +723,7 @@
                 },
                 {
                     "Name": "Mission10096_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">Cuarteto del Fin</COLOR>"
+                    "Text": "Cuarteto del Fin"
                 },
                 {
                     "Name": "Mission10096_101",
@@ -760,7 +760,7 @@
                 },
                 {
                     "Name": "Mission10096_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">終末の四重奏</COLOR>"
+                    "Text": "終末の四重奏"
                 },
                 {
                     "Name": "Mission10096_101",
@@ -797,7 +797,7 @@
                 },
                 {
                     "Name": "Mission10096_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">Quatuor de la Fin</COLOR>"
+                    "Text": "Quatuor de la Fin"
                 },
                 {
                     "Name": "Mission10096_101",
@@ -834,7 +834,7 @@
                 },
                 {
                     "Name": "Mission10096_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">Quartet of the End</COLOR>"
+                    "Text": "Quartet of the End"
                 },
                 {
                     "Name": "Mission10096_101",
@@ -871,7 +871,7 @@
                 },
                 {
                     "Name": "Mission10096_100",
-                    "Text": "<COLOR preset=\"TXT_Danger\">Quartet of the End</COLOR>"
+                    "Text": "Quartet of the End"
                 },
                 {
                     "Name": "Mission10096_101",
