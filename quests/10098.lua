@@ -35,20 +35,6 @@ local function get_enemy_display_name(emId)
     return sdk.find_type_definition("via.gui.message"):get_method("get(System.Guid)"):call(nil, guid)
 end
 
--- 中间加入判定(原生 createMainTargetContext 同款门): 加入者不本地建, 等网络复制
-local function is_late_join()
-    local net = sdk.get_managed_singleton("app.NetworkManager")
-    if net == nil then
-        return false
-    end
-    local uim = net:call("get_UserInfoManager()")
-    if uim == nil then
-        return false
-    end
-    local info = uim:call("getSelfUserInfo(app.net_session_manager.SESSION_TYPE, System.Boolean)", 2, false)
-    return info ~= nil and info:get_field("<IsLateJoin>k__BackingField") == true
-end
-
 -- ==================== 1. 对话目录 ====================
 -- 对话数据按任务 ID 加载: registerCatalog 把 cCatalogData._TargetMissionIDFixedList 索引进
 --   DialogueResourceManager._DialogueCatalogDataList_MissionID, 任务开始时只加载目标列表含
