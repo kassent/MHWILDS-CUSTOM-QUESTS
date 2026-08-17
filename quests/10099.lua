@@ -289,6 +289,22 @@ local QUEST_ENEMY_SPAWNS = {
     },
 }
 
+-- 中间加入者判定(与原生 createMainTargetContext 开头的门同款):
+-- NetworkManager -> get_UserInfoManager() -> getSelfUserInfo(QUEST, false) -> IsLateJoin
+-- 原生语义: 中间加入不本地创建任务怪, 等网络复制; 注入遵循同一规则, 避免孤儿副本。
+local function is_late_join()
+    local net = sdk.get_managed_singleton("app.NetworkManager")
+    if net == nil then
+        return false
+    end
+    local uim = net:call("get_UserInfoManager()")
+    if uim == nil then
+        return false
+    end
+    local info = uim:call("getSelfUserInfo(app.net_session_manager.SESSION_TYPE, System.Boolean)", 2, false)
+    return info ~= nil and info:get_field("<IsLateJoin>k__BackingField") == true
+end
+
 -- json 里的 _EmID(fixedId) → 运行时 EnemyDef.ID, 失败返回 nil
 local function resolve_em_id(fixedId)
     local w = ValueType.new(sdk.find_type_definition("app.EnemyDef.ID"))
@@ -315,7 +331,7 @@ local function calc_route_guid_hash(s)
     return v
 end
 
-local function spawn_quest_enemy(layouter, em, stage, entry, emId, slot)
+local function spawn_quest_enemy(em, stage, entry, emId, slot)
     --- @type app.cContextCreateArg_Enemy
     local arg = sdk.find_type_definition("app.cContextCreateArg_Enemy"):create_instance()
     --- @type app.cContextTransform
@@ -348,7 +364,7 @@ local function spawn_quest_enemy(layouter, em, stage, entry, emId, slot)
 
     local bits = arg:get_field("<CreateOptionBit>k__BackingField")
     if entry.deepSleep then
-        bits:call("on(System.Int32)", CREATE_OPTION_BIT.DEFAULT_DEEP_SLEEP)
+        bits:call("on(System.Int32)", CREATE_OPTION_BIT.DEFAULT_DEEP_SLEEP_FROM_STORY)
     end
 
     -- 尺寸(照抄原生 _IsUseRandomSize 分支): false → bit7 禁随机体型 + ModelFixedSize
@@ -379,42 +395,42 @@ local function spawn_quest_enemy(layouter, em, stage, entry, emId, slot)
     local info = em:call(
         "create(app.EnemyDef.CONTEXT_SUB_CATEGORY, System.Int32, app.cContextCreateArg_Enemy, app.EnemyDef.SYNC_TYPE, via.GameObject)",
         0, contextId, arg, 2, nil) -- CONTEXT_SUB_CATEGORY.STATIC / SYNC_TYPE.ONLY_LOCAL
+    if info ~= nil then
+        -- 官方无父 context 账本(createMainTargetContext 同款: create 第 5 参 GO=null 后登记)
+        local handle = info:call("get_Context()"):get_field("_Handle")
+        em:get_field("_NoParentContextHandleList"):call("Add(app.CONTEXT_HANDLE)", handle)
+    end
     log.info(string.format("%s spawn %s(emId=%d, fixed=%d): stage=%d area=%d contextId=%d -> %s",
         QUEST_TAG, get_enemy_display_name(emId), emId, entry.emFixedId, stage, areaNo, contextId, info ~= nil and "OK" or "null"))
-    -- 登记进 layouter 的创建账本: onDestroy 会按它逐个 requestRemove(原生布局怪同款销毁链)
-    if info ~= nil then
-        local handle = info:call("get_Context()"):get_field("_Handle")
-        layouter:get_field("_CreatedContextHandleList"):call("Add(app.CONTEXT_HANDLE)", handle)
-    end
 end
 
--- 触发器: ContextLayouter.requestCreateContextEnemy —— 布局链收敛点, quest pog 图(含蜘蛛节点)
---   就在这条链里被处理(游戏内实测本函数必调, 宿主/多人无内建检查, 每客户端各自调)。
---   post 阶段等原生布局放置落地后再注入。
--- ⚠ a8561ce 时代的观察: 编造 GUID(无资源)的任务里本函数可能不被调 —— 若 _SubBossLayoutID
---   换编造 GUID 后 log 无 "layouter fired", 得退回 createMainTargetContext 触发器。
-sdk.hook(sdk.find_type_definition("app.ContextLayouter"):get_method("requestCreateContextEnemy()"),
+-- 触发器: EnemyManager.createMainTargetContext —— updateChangeLayout 的 STORY 分支,
+--   每个客户端(任何座位)的任务布局流程必经(四组联机实测; layouter 触发依赖场景有非空敌人图,
+--   干净客户端不成立)。post 阶段等原生主怪创建落地后注入。
+-- IsLateJoin 门与原生同款: 中间加入者不本地建, 等网络复制(复制包自带全套创建参数, 实测)。
+sdk.hook(sdk.find_type_definition("app.EnemyManager"):get_method("createMainTargetContext(app.FieldDef.STAGE, System.Boolean)"),
     function(args)
         local storage = thread.get_hook_storage()
-        storage.layouter = sdk.to_managed_object(args[2])
+        storage.em = sdk.to_managed_object(args[2])
+        storage.stage = sdk.to_int64(args[3]) & 0xFFFFFFFF
     end,
     function(retval)
         local storage = thread.get_hook_storage()
-        local layouter = storage.layouter
-        if layouter == nil then
+        local em, stage = storage.em, storage.stage
+        if em == nil then
             return
         end
-        local stage = layouter:get_field("_StageNo")
-        log.info(string.format("%s layouter fired: stage=%d layoutTypeEm=%d",
-            QUEST_TAG, stage, layouter:get_field("_LayoutTypeEm")))
-
-        local em = sdk.get_managed_singleton("app.EnemyManager")
+        log.info(string.format("%s createMainTargetContext fired: stage=%d", QUEST_TAG, stage))
+        if is_late_join() then
+            log.info(string.format("%s spawn skipped: late join, wait for net replication", QUEST_TAG))
+            return
+        end
         for slot, entry in ipairs(QUEST_ENEMY_SPAWNS) do
             local emId = resolve_em_id(entry.emFixedId)
             if emId == nil then
                 log.error(string.format("%s spawn: getIDFromFixed failed for %d", QUEST_TAG, entry.emFixedId))
             else
-                spawn_quest_enemy(layouter, em, stage, entry, emId, slot)
+                spawn_quest_enemy(em, stage, entry, emId, slot)
             end
         end
     end)

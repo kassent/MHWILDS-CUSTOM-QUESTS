@@ -14,7 +14,7 @@
                 "_AdvancedSettings": {
                     "_IsDeepSleepCreate": false
                 },
-                "_AreaNo": 255,
+                "_AreaNo": 1,
                 "_DifficultyAdjustRange": 0,
                 "_DifficultyRankId": {
                     "Name": "★8-5（零式オメガ）",
@@ -45,8 +45,8 @@
             }
         ],
         "_SubBossLayoutID": {
-            "_ID": "f0a398b1-1277-4caa-a8b5-bbffbc9e9ea3",
-            "_Resource": "assets:/GameDesign/Stage/st403/Layout/Loaded/Enemy/SubBoss/st403_SubBoss_Ms990025.pog.json"
+            "_ID": "00000000-0000-0000-0000-000000000000",
+            "_Resource": null
         },
         "_ZakoLayoutID": {
             "_ID": "00000000-0000-0000-0000-000000000000",
@@ -163,7 +163,7 @@
                     "_StartAfterFirstCondition": false
                 },
                 "_EmID": -1363370496,
-                "_EmTargetID": 11,
+                "_EmTargetID": 10,
                 "_LegendaryID": "NONE",
                 "_RoleID": "ROLE_COLLAB_01"
             }
@@ -199,7 +199,7 @@
                 },
                 {
                     "Name": "Mission10098_102",
-                    "Text": "A mechanical weapon from a distant star—Zero-type Planetary Omega descends upon the holy precinct. Only the strongest hunters can stop this cataclysm."
+                    "Text": "A mechanical weapon from a distant star—\nZero-type Planetary Omega descends upon the holy precinct.\nOnly the strongest hunters can stop this cataclysm."
                 },
                 {
                     "Name": "Mission10098_122",
@@ -236,7 +236,7 @@
                 },
                 {
                     "Name": "Mission10098_102",
-                    "Text": "A mechanical weapon from a distant star—Zero-type Planetary Omega descends upon the holy precinct. Only the strongest hunters can stop this cataclysm."
+                    "Text": "A mechanical weapon from a distant star—\nZero-type Planetary Omega descends upon the holy precinct.\nOnly the strongest hunters can stop this cataclysm."
                 },
                 {
                     "Name": "Mission10098_122",
@@ -273,7 +273,7 @@
                 },
                 {
                     "Name": "Mission10098_102",
-                    "Text": "来自遥远星海的机械兵器——零式游星欧米茄降临龙灯圣域。集结最强猎人，阻止这场浩劫。"
+                    "Text": "来自遥远星海的机械兵器——零式游星欧米茄降临龙灯圣域。\n集结最强猎人，阻止这场浩劫。"
                 },
                 {
                     "Name": "Mission10098_122",
@@ -310,7 +310,7 @@
                 },
                 {
                     "Name": "Mission10098_102",
-                    "Text": "A mechanical weapon from a distant star—Zero-type Planetary Omega descends upon the holy precinct. Only the strongest hunters can stop this cataclysm."
+                    "Text": "A mechanical weapon from a distant star—\nZero-type Planetary Omega descends upon the holy precinct.\nOnly the strongest hunters can stop this cataclysm."
                 },
                 {
                     "Name": "Mission10098_122",
@@ -347,7 +347,7 @@
                 },
                 {
                     "Name": "Mission10098_102",
-                    "Text": "A mechanical weapon from a distant star—Zero-type Planetary Omega descends upon the holy precinct. Only the strongest hunters can stop this cataclysm."
+                    "Text": "A mechanical weapon from a distant star—\nZero-type Planetary Omega descends upon the holy precinct.\nOnly the strongest hunters can stop this cataclysm."
                 },
                 {
                     "Name": "Mission10098_122",
@@ -384,7 +384,7 @@
                 },
                 {
                     "Name": "Mission10098_102",
-                    "Text": "머나먼 성해에서 온 기계병기, 제로식 유성 오메가가 성역에 강림. 최강의 헌터를 모아 이 재앙을 막아라."
+                    "Text": "머나먼 성해에서 온 기계병기,\n제로식 유성 오메가가 성역에 강림.\n최강의 헌터를 모아 이 재앙을 막아라."
                 },
                 {
                     "Name": "Mission10098_122",
@@ -421,7 +421,7 @@
                 },
                 {
                     "Name": "Mission10098_102",
-                    "Text": "A mechanical weapon from a distant star—Zero-type Planetary Omega descends upon the holy precinct. Only the strongest hunters can stop this cataclysm."
+                    "Text": "A mechanical weapon from a distant star—\nZero-type Planetary Omega descends upon the holy precinct.\nOnly the strongest hunters can stop this cataclysm."
                 },
                 {
                     "Name": "Mission10098_122",
@@ -458,7 +458,7 @@
                 },
                 {
                     "Name": "Mission10098_102",
-                    "Text": "A mechanical weapon from a distant star—Zero-type Planetary Omega descends upon the holy precinct. Only the strongest hunters can stop this cataclysm."
+                    "Text": "A mechanical weapon from a distant star—\nZero-type Planetary Omega descends upon the holy precinct.\nOnly the strongest hunters can stop this cataclysm."
                 },
                 {
                     "Name": "Mission10098_122",
@@ -495,7 +495,7 @@
                 },
                 {
                     "Name": "Mission10098_102",
-                    "Text": "來自遙遠星海的機械兵器——零式遊星歐米茄降臨龍燈聖域。集結最強獵人，阻止這場浩劫。"
+                    "Text": "來自遙遠星海的機械兵器——零式遊星歐米茄降臨龍燈聖域。\n集結最強獵人，阻止這場浩劫。"
                 },
                 {
                     "Name": "Mission10098_122",
@@ -532,7 +532,7 @@
                 },
                 {
                     "Name": "Mission10098_102",
-                    "Text": "A mechanical weapon from a distant star—Zero-type Planetary Omega descends upon the holy precinct. Only the strongest hunters can stop this cataclysm."
+                    "Text": "A mechanical weapon from a distant star—\nZero-type Planetary Omega descends upon the holy precinct.\nOnly the strongest hunters can stop this cataclysm."
                 },
                 {
                     "Name": "Mission10098_122",
@@ -569,7 +569,7 @@
                 },
                 {
                     "Name": "Mission10098_102",
-                    "Text": "A mechanical weapon from a distant star—Zero-type Planetary Omega descends upon the holy precinct. Only the strongest hunters can stop this cataclysm."
+                    "Text": "A mechanical weapon from a distant star—\nZero-type Planetary Omega descends upon the holy precinct.\nOnly the strongest hunters can stop this cataclysm."
                 },
                 {
                     "Name": "Mission10098_122",
@@ -606,7 +606,7 @@
                 },
                 {
                     "Name": "Mission10098_102",
-                    "Text": "遥かなる星海より来たりし機械兵器、零式遊星オメガが龍灯聖域に降臨。最強のハンターを集め、この浩劫を食い止めよ。"
+                    "Text": "遥かなる星海より来たりし機械兵器、\n零式遊星オメガが龍灯聖域に降臨。最強のハンターを集め、\nこの浩劫を食い止めよ。"
                 },
                 {
                     "Name": "Mission10098_122",
@@ -643,7 +643,7 @@
                 },
                 {
                     "Name": "Mission10098_102",
-                    "Text": "A mechanical weapon from a distant star—Zero-type Planetary Omega descends upon the holy precinct. Only the strongest hunters can stop this cataclysm."
+                    "Text": "A mechanical weapon from a distant star—\nZero-type Planetary Omega descends upon the holy precinct.\nOnly the strongest hunters can stop this cataclysm."
                 },
                 {
                     "Name": "Mission10098_122",
@@ -680,7 +680,7 @@
                 },
                 {
                     "Name": "Mission10098_102",
-                    "Text": "A mechanical weapon from a distant star—Zero-type Planetary Omega descends upon the holy precinct. Only the strongest hunters can stop this cataclysm."
+                    "Text": "A mechanical weapon from a distant star—\nZero-type Planetary Omega descends upon the holy precinct.\nOnly the strongest hunters can stop this cataclysm."
                 },
                 {
                     "Name": "Mission10098_122",
@@ -717,7 +717,7 @@
                 },
                 {
                     "Name": "Mission10098_102",
-                    "Text": "A mechanical weapon from a distant star—Zero-type Planetary Omega descends upon the holy precinct. Only the strongest hunters can stop this cataclysm."
+                    "Text": "A mechanical weapon from a distant star—\nZero-type Planetary Omega descends upon the holy precinct.\nOnly the strongest hunters can stop this cataclysm."
                 },
                 {
                     "Name": "Mission10098_122",

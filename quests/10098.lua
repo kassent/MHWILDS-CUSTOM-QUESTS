@@ -1,4 +1,4 @@
--- 任务 10096 (终末四重奏) 运行时定制脚本。
+-- 任务 10098 (零式欧米茄复刻) 运行时定制脚本。
 -- 生命周期由插件宿主管理: cQuestSceneLoading 时装载本脚本, cQuestResult 时销毁 state 并自动摘钩;
 --   各功能块自带"还原"函数, 统一在文末 quest.on_unload 里收尾。
 --
@@ -6,9 +6,10 @@
 --   1. 对话目录     手动加载原 Omega 任务的对话目录(自定义任务不在其目标列表, 不加台词沉默)
 --   2. 预放置敌人   QUEST_ENEMY_SPAWNS 表驱动注入(影蜘蛛联动召唤)
 --   3. 台词 NPC     补 spawn 欧米茄台词的两个说话 NPC
+--   4. 常驻声明     require_enemies 声明魔界花幼苗/仙人刺(环境生物不在 Boss+Zako 全量范围)
 -- (高难增强版 —— 动作速度/火海寿命/暴走锁定/双蜘蛛 —— 见 10099.lua)
 
-local QUEST_TAG = "[quest 10096]"
+local QUEST_TAG = "[quest 10098]"
 
 -- ==================== 通用工具 ====================
 
@@ -85,21 +86,24 @@ end
 -- hook 每次触发都全表放(一条 entry 一只, 无防重/无 stage 过滤); 不查场上已有,
 --   与 pog 等外部放置互不感知 —— 多只同种就写多条 entry。
 --
--- entry 字段对照 quest MainTargetDataList / pog ContextLayoutEnemy 节点:
---   emFixedId      必填, EnemyDef.ID_Fixed(json 里的 _EmID, 如 -1363370496=影蜘蛛 EM0070_00_0)
---   pos            必填, {x,y,z} 世界坐标
---   difficultyGuid 必填, 难度 GUID(照抄同星数活动任务/原 pog 节点)
---   roleId         默认 NORMAL; ROLE_COLLAB_01(requestCollaboEmAppear 联动唤醒只认它)
---   legendaryId    默认 NONE
---   optionTag      默认 0(照抄源节点)
---   storyTargetId  默认 0
---   fixedSize      默认 100(useRandomSize=false 时生效)
---   useRandomSize  默认 false; true 走随机体型: randomSizeTblGuid 非零填 _RandomSizeTblId 的 GUID,
---                  留空退回 difficultyGuid 当随机尺寸源(照抄原生 _IsUseRandomSize 分支)
---   areaNo         默认 -1 = 按 pos 自动算(getAreaNoNearPoint)
---   deepSleep      默认 false; true → CREATE_OPTION_BIT.DEFAULT_DEEP_SLEEP(预放置深眠, 唤醒链前置条件)
---   routeGuid      默认无路线(0); 填 MainTarget/pog 节点里的 _RouteID._Value(如 st403 白炽龙 fc4f203d-...)
---   groupId        默认 0; layoutKeepId 默认 -1
+-- entry 字段与 pog ContextLayoutEnemy 节点同名字段一一对照(见 st402_Em5010/5011_AnimalContextLayout.pog.12.json),
+-- 方便和官方文件逐字段对照修改:
+--   _EmID               必填, EnemyDef.ID_Fixed(pog 节点 _EmID / graph 级 cSharedData._EmId, 如 -1363370496=影蜘蛛)
+--   _Position           必填, {x,y,z} 世界坐标(pog Position)
+--   _Rotation           可选, {x,y,z,w}, 缺省 identity
+--   _DifficultyRankId   必填, 难度 GUID(pog _DifficultyRankId.Value; 环境怪照官方填全零)
+--   _RoleID             默认 NORMAL; ROLE_COLLAB_01(requestCollaboEmAppear 联动唤醒只认它)
+--   _LegendaryID        默认 NONE
+--   _OptionTag          默认 0(照抄源节点); 植物 1/2=入睡变体(wakeUpEm5010Em5011 用 STANDBY 唤醒)
+--   _StoryTargetID      默认 0; _EventTargetID 默认 -1; _GroupID 默认 0; _LayoutKeepID 默认 -1
+--   _SetAreaNo          默认 255(自动, getAreaNoNearPoint; pog 同款哨兵)
+--   _IsUseRandomSize    默认 false → bit7 禁随机体型 + _FixedSize(Nullable (size<<16)|1);
+--                       true → _RandomSizeTblId 非全零填随机尺寸表 GUID, 否则退回 _DifficultyRankId
+--                       当随机尺寸源(照抄原生 _IsUseRandomSize 分支)
+--   _RouteID            默认无路线(0); 填 MainTarget/pog 节点里的 _RouteID._Value(如 st403 白炽龙 fc4f203d-...)
+--   _AdvancedSettings   { _IsDefaultDeepSleep = true } → CREATE_OPTION_BIT.DEFAULT_DEEP_SLEEP_FROM_STORY
+--                       (bit4 预放置深眠, FSM 通道, 蜘蛛唤醒链前置条件; 植物入睡走 _OptionTag 变体, 不用这个)
+--   _LayoutType         默认 ENEMY_LAYOUT_TYPE.MISSION_BOSS; 环境怪填 DEFAULT(官方植物实测 0)
 
 ---@enum app.EnemyDef.ROLE_ID System.Int32
 local ROLE_ID = {
@@ -118,6 +122,15 @@ local LEGENDARY_ID = {
     NORMAL = 1,
     KING = 2,
     MAX = 3,
+}
+
+---@enum app.EnemyDef.ENEMY_LAYOUT_TYPE System.Int32
+local ENEMY_LAYOUT_TYPE = {
+    DEFAULT = 0,       -- 场景常驻/环境怪(官方植物走这条)
+    MISSION_BOSS = 1,  -- 任务 boss 布局(SubBoss pog 通道)
+    MISSION_ZAKO = 2,
+    MISSION_ANIMAL = 3,
+    MAX = 4,
 }
 
 ---@enum app.EnemyDef.CREATE_OPTION_BIT System.Int32
@@ -141,14 +154,45 @@ local CREATE_OPTION_BIT = {
 }
 
 local QUEST_ENEMY_SPAWNS = {
-    { -- 影蜘蛛 A(欧米茄 SpAtk 召唤用, 参数照抄 st402_SubBoss_Ms730025 节点 / 自制 pog 实测值)
-        emFixedId = -1363370496, -- EM0070_00_0
-        roleId = ROLE_ID.ROLE_COLLAB_01,
-        optionTag = 1,
-        storyTargetId = 10,
-        pos = { 12.509, -0.254, 89.623 },                         -- 竞技场中心(pog 实测位置)
-        difficultyGuid = "f326f227-c0ff-47bb-92e7-aa187d61ad3c", -- Ms630007 蜘蛛节点难度
-        deepSleep = true,
+    { -- 影蜘蛛(欧米茄 SpAtk 召唤用, 参数照抄 st402_SubBoss_Ms730025 节点 / 自制 pog 实测值)
+        _EmID = -1363370496, -- EM0070_00_0
+        _RoleID = ROLE_ID.ROLE_COLLAB_01,
+        _OptionTag = 1,
+        _StoryTargetID = 10, -- 对齐 _SubBossInfoArray._EmTargetID
+        _Position = { 12.509, -0.254, 89.623 },                     -- 竞技场中心(pog 实测位置)
+        _DifficultyRankId = "f326f227-c0ff-47bb-92e7-aa187d61ad3c", -- Ms630007 蜘蛛节点难度
+        _AdvancedSettings = { _IsDefaultDeepSleep = true },
+    },
+    -- 掩体植物×4, 参数照抄 st402_Em5010/5011_00_0_AnimalContextLayout 节点:
+    --   零难度 GUID / 固定体型 100 / _OptionTag=1 入睡变体(出生 t+10s 自行隐形埋地, STANDBY 通道);
+    --   Omega 大招 checkSpAtkSummonStarted → wakeUpEm5010Em5011 按区域位自动唤醒, 结束 exitEm5010Em5011 移除
+    { -- 魔界花幼苗 EM5011_00_0 (南侧, 实测点)
+        _EmID = 31768,
+        _OptionTag = 1,
+        _LayoutType = ENEMY_LAYOUT_TYPE.DEFAULT,
+        _Position = { 14.050, 0.089, 67.122 },
+        _DifficultyRankId = "00000000-0000-0000-0000-000000000000",
+    },
+    { -- 魔界花幼苗 EM5011_00_0 (北侧, 实测点)
+        _EmID = 31768,
+        _OptionTag = 1,
+        _LayoutType = ENEMY_LAYOUT_TYPE.DEFAULT,
+        _Position = { 8.506, -0.299, 111.814 },
+        _DifficultyRankId = "00000000-0000-0000-0000-000000000000",
+    },
+    { -- 仙人刺 EM5010_00_0 (东侧, 实测点)
+        _EmID = 9549,
+        _OptionTag = 1,
+        _LayoutType = ENEMY_LAYOUT_TYPE.DEFAULT,
+        _Position = { 30.620, -0.284, 90.972 },
+        _DifficultyRankId = "00000000-0000-0000-0000-000000000000",
+    },
+    { -- 仙人刺 EM5010_00_0 (西侧, 与东侧点关于蜘蛛对称补的, 朝向镜像)
+        _EmID = 9549,
+        _OptionTag = 1,
+        _LayoutType = ENEMY_LAYOUT_TYPE.DEFAULT,
+        _Position = { -5.602, -0.284, 90.972 },
+        _DifficultyRankId = "00000000-0000-0000-0000-000000000000",
     },
 }
 
@@ -204,48 +248,50 @@ local function spawn_quest_enemy(em, stage, entry, emId, slot)
         return
     end
 
-    local pos = Vector3f.new(entry.pos[1], entry.pos[2], entry.pos[3])
+    local pos = Vector3f.new(entry._Position[1], entry._Position[2], entry._Position[3])
     transform:set_field("<Position>k__BackingField", pos)
-    transform:set_field("<Rotation>k__BackingField", Quaternion.identity())
+    local rot = entry._Rotation
+    transform:set_field("<Rotation>k__BackingField",
+        rot ~= nil and Quaternion.new(rot[1], rot[2], rot[3], rot[4]) or Quaternion.identity())
     arg:set_field("<Transform>k__BackingField", transform)
 
     arg:set_field("<EmID>k__BackingField", emId)
-    arg:set_field("<RoleID>k__BackingField", entry.roleId or ROLE_ID.NORMAL)
-    arg:set_field("<LegendaryID>k__BackingField", entry.legendaryId or LEGENDARY_ID.NONE)
-    arg:set_field("<LayoutType>k__BackingField", 1) -- ENEMY_LAYOUT_TYPE.MISSION_BOSS
+    arg:set_field("<RoleID>k__BackingField", entry._RoleID or ROLE_ID.NORMAL)
+    arg:set_field("<LegendaryID>k__BackingField", entry._LegendaryID or LEGENDARY_ID.NONE)
+    arg:set_field("<LayoutType>k__BackingField", entry._LayoutType or ENEMY_LAYOUT_TYPE.MISSION_BOSS)
     arg:set_field("<StageNo>k__BackingField", stage)
-    arg:set_field("<OptionTag>k__BackingField", entry.optionTag or 0)
-    arg:set_field("<StoryTargetID>k__BackingField", entry.storyTargetId or 0)
-    arg:set_field("<LayoutKeepID>k__BackingField", entry.layoutKeepId or -1)
-    arg:set_field("<GroupID>k__BackingField", entry.groupId or 0)
-    arg:set_field("<AreaMoveRouteID>k__BackingField", entry.routeGuid ~= nil and calc_route_guid_hash(entry.routeGuid) or 0)
-    arg:set_field("<EventTargetID>k__BackingField", -1)
+    arg:set_field("<OptionTag>k__BackingField", entry._OptionTag or 0)
+    arg:set_field("<StoryTargetID>k__BackingField", entry._StoryTargetID or 0)
+    arg:set_field("<LayoutKeepID>k__BackingField", entry._LayoutKeepID or -1)
+    arg:set_field("<GroupID>k__BackingField", entry._GroupID or 0)
+    arg:set_field("<AreaMoveRouteID>k__BackingField", entry._RouteID ~= nil and calc_route_guid_hash(entry._RouteID) or 0)
+    arg:set_field("<EventTargetID>k__BackingField", entry._EventTargetID or -1)
     arg:set_field("<IsMainTarget>k__BackingField", false)
 
-    local difficultyGuid = parse_guid(entry.difficultyGuid)
+    local difficultyGuid = parse_guid(entry._DifficultyRankId)
     arg:set_field("<DifficultyRankId>k__BackingField", difficultyGuid)
 
     local bits = arg:get_field("<CreateOptionBit>k__BackingField")
-    if entry.deepSleep then
+    if entry._AdvancedSettings ~= nil and entry._AdvancedSettings._IsDefaultDeepSleep then
         bits:call("on(System.Int32)", CREATE_OPTION_BIT.DEFAULT_DEEP_SLEEP_FROM_STORY)
     end
 
-    -- 尺寸(照抄原生 _IsUseRandomSize 分支): false → bit7 禁随机体型 + ModelFixedSize
+    -- 尺寸(照抄原生 _IsUseRandomSize 分支): false → bit7 禁随机体型 + _FixedSize
     --   (Nullable 打包 (size<<16)|1, 与 createMainTargetContext 算法一致);
-    --   true → randomSizeTblGuid 非零填随机尺寸表 GUID, 否则退回难度 GUID 当随机尺寸源
-    if entry.useRandomSize then
-        if entry.randomSizeTblGuid ~= nil and entry.randomSizeTblGuid ~= "00000000-0000-0000-0000-000000000000" then
-            arg:set_field("<ModelRandomSizeTblId>k__BackingField", parse_guid(entry.randomSizeTblGuid))
+    --   true → _RandomSizeTblId 非全零填随机尺寸表 GUID, 否则退回难度 GUID 当随机尺寸源
+    if entry._IsUseRandomSize then
+        if entry._RandomSizeTblId ~= nil and entry._RandomSizeTblId ~= "00000000-0000-0000-0000-000000000000" then
+            arg:set_field("<ModelRandomSizeTblId>k__BackingField", parse_guid(entry._RandomSizeTblId))
         else
             arg:set_field("<ModelRandomSizeDifficultyRankId>k__BackingField", difficultyGuid)
         end
     else
         bits:call("on(System.Int32)", CREATE_OPTION_BIT.DISABLE_RANDOM_SCALE)
-        arg:set_field("<ModelFixedSize>k__BackingField", (entry.fixedSize or 100) * 0x10000 + 1)
+        arg:set_field("<ModelFixedSize>k__BackingField", (entry._FixedSize or 100) * 0x10000 + 1)
     end
 
-    local areaNo = entry.areaNo or -1
-    if areaNo < 0 then
+    local areaNo = entry._SetAreaNo or 255
+    if areaNo < 0 or areaNo == 255 then
         areaNo = em:call("getAreaNoNearPoint(via.vec3, app.FieldDef.STAGE)", pos, stage)
     end
     arg:set_field("<AreaNo>k__BackingField", areaNo)
@@ -264,7 +310,7 @@ local function spawn_quest_enemy(em, stage, entry, emId, slot)
         em:get_field("_NoParentContextHandleList"):call("Add(app.CONTEXT_HANDLE)", handle)
     end
     log.info(string.format("%s spawn %s(emId=%d, fixed=%d): stage=%d area=%d contextId=%d -> %s",
-        QUEST_TAG, get_enemy_display_name(emId), emId, entry.emFixedId, stage, areaNo, contextId, info ~= nil and "OK" or "null"))
+        QUEST_TAG, get_enemy_display_name(emId), emId, entry._EmID, stage, areaNo, contextId, info ~= nil and "OK" or "null"))
 end
 
 -- 触发器: EnemyManager.createMainTargetContext —— updateChangeLayout 的 STORY 分支,
@@ -289,9 +335,9 @@ sdk.hook(sdk.find_type_definition("app.EnemyManager"):get_method("createMainTarg
             return
         end
         for slot, entry in ipairs(QUEST_ENEMY_SPAWNS) do
-            local emId = resolve_em_id(entry.emFixedId)
+            local emId = resolve_em_id(entry._EmID)
             if emId == nil then
-                log.error(string.format("%s spawn: getIDFromFixed failed for %d", QUEST_TAG, entry.emFixedId))
+                log.error(string.format("%s spawn: getIDFromFixed failed for %d", QUEST_TAG, entry._EmID))
             else
                 spawn_quest_enemy(em, stage, entry, emId, slot)
             end
@@ -354,6 +400,12 @@ end)
 
 -- ==================== 生命周期 ====================
 quest.on_load(function()
+    -- 声明本任务场景需要的 EnemyDef.ID_Fixed: 宿主 hook setStageResidentDataDicts 时
+    --   合并进当前场景 _EmIDList(不限场景), 场景即可刷新它们(环境生物不在 Boss+Zako 全量范围)
+    quest.require_enemies{
+        31768, -- EM5011_00_0 魔界花幼苗
+        9549,  -- EM5010_00_0 仙人刺
+    }
     load_omega_mission_dialogues()
     log.info(string.format("%s quest script loaded", QUEST_TAG))
 end)
