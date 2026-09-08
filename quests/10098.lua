@@ -7,8 +7,7 @@
 --   1. 对话目录     手动加载原 Omega 任务的对话目录(自定义任务不在其目标列表, 不加台词沉默)
 --   2. 预放置敌人   QUEST_ENEMY_SPAWNS 表驱动注入(影蜘蛛联动召唤 + 掩体植物)
 --   3. 台词 NPC     补 spawn 欧米茄台词的两个说话 NPC
---   4. 常驻声明     require_enemies 声明魔界花幼苗/仙人刺(环境生物不在 Boss+Zako 全量范围)
---   5. 大招中心     中心与蓄力点独立; 爆炸长轴平行于蓄力点到中心, 爆炸整体缩放, 伤害不变
+--   4. 大招配置     中心与蓄力点独立; 爆炸长轴平行于蓄力点到中心, 爆炸整体缩放, 伤害不变
 -- (高难增强版 —— 动作速度/火海寿命/暴走锁定/双蜘蛛 —— 见 10099.lua)
 
 local lib = require("scripts.quest_lib")
@@ -107,16 +106,17 @@ sdk.hook(sdk.find_type_definition("app.ContextManager"):get_method("createContex
     end
 end)
 
--- ==================== 4. 大招中心 ====================
--- 2026-09-09 固定配置: 起飞目标、无罩激光目标与爆炸共用中心; 蓄力点单独设置。
+-- ==================== 4. 大招配置 ====================
+-- 起飞/无罩激光与爆炸共用中心; CHARGE_POS用于原生绕飞目标，不直接设置怪物Transform。
 -- 原生 loadArgmentData 在非 ST402 会将 StartPos 清为世界原点, 因此必须 post 写回。
 -- Nullable<via.vec3> 修改后写回整个字段; 此方式已经临时 ShootingInfo 对象往返验证。
 local ATTACK_CENTER = Vector3f.new(-14.372429, 4, 95.872467)
 local CHARGE_POS = Vector3f.new(-44.845703, 4, 94.235413)
 local BURST_SCALE = 1.5 -- 整体缩放: 原版半径42/端点Z=±30 -> 半径63/端点Z=±45
-local burst_yaw = math.atan(ATTACK_CENTER.x - CHARGE_POS.x, ATTACK_CENTER.z - CHARGE_POS.z)
-local BURST_ROTATION = Quaternion.new(math.cos(burst_yaw / 2), 0, math.sin(burst_yaw / 2), 0)
+local BURST_YAW = math.atan(ATTACK_CENTER.x - CHARGE_POS.x, ATTACK_CENTER.z - CHARGE_POS.z)
+local BURST_ROTATION = Quaternion.new(math.cos(BURST_YAW / 2), 0, math.sin(BURST_YAW / 2), 0)
 
+-- 4.1 爆炸出生参数: 仅Creator 47 / Shell 26; 不改激光、伤害或EffectScale。
 sdk.hook(sdk.find_type_definition("app.cAppShellShooter"):get_method("loadArgmentData(ace.user_data.ShellCreatorInfoDataBase.ShellCreatorInfoArgumentBase, app.cShellShootingInfo, ace.user_data.ShellCreatorInfoDataBase.ShellCreatorInfoBase, app.cAppShellShooter.overWriteOffset)"),
     function(args)
         local storage = thread.get_hook_storage()
@@ -137,28 +137,31 @@ sdk.hook(sdk.find_type_definition("app.cAppShellShooter"):get_method("loadArgmen
             pos:set_field("_HasValue", true)
             pos:set_field("_Value", ATTACK_CENTER)
             info:set_field("<StartPos>k__BackingField", pos)
+
             local rot = info:get_field("<StartRot>k__BackingField")
             rot:set_field("_HasValue", true)
             rot:set_field("_Value", BURST_ROTATION)
             info:set_field("<StartRot>k__BackingField", rot)
+
             local scale = info:get_field("<Scale>k__BackingField")
             scale:set_field("_HasValue", true)
             scale:set_field("_Value", Vector3f.new(BURST_SCALE, BURST_SCALE, BURST_SCALE))
             info:set_field("<Scale>k__BackingField", scale)
+
             log.info(string.format("%s burst center=(%.6f, %.6f, %.6f), yaw=%.6f, scale=%.3f",
-                QUEST_TAG, ATTACK_CENTER.x, ATTACK_CENTER.y, ATTACK_CENTER.z, math.deg(burst_yaw), BURST_SCALE))
+                QUEST_TAG, ATTACK_CENTER.x, ATTACK_CENTER.y, ATTACK_CENTER.z, math.deg(BURST_YAW), BURST_SCALE))
         end
         return retval
     end)
 
--- app.cQuestStart 时一次性获取并修改 ParamUnique，on_unload 还原。getter 不修改或恢复参数。
+-- 4.2 共享参数: cQuestStart时备份并应用，on_unload时还原中心、蓄力点和召唤组。
 local VEC3_TYPE = sdk.find_type_definition("via.vec3")
-local delta_param_backup = nil
+local attack_param_backup = nil
 
-local function apply_delta_params()
+local function apply_attack_params()
     local resident = sdk.get_managed_singleton("app.EnemyManager"):call("getEnemyStageResident(app.EnemyDef.ID)", 34)
     local pu = resident:get_field("_Unique"):get_field("_SpeciesInfo")
-    delta_param_backup = {
+    attack_param_backup = {
         obj = pu,
         center = pu:get_field("_SpAtkCenterPos"),
         charge = pu:get_field("_SpAtkChargePos"),
@@ -172,8 +175,8 @@ local function apply_delta_params()
         local group = groups[i]
         if group:get_field("_PosType") == 2 then -- DIRECT
             local original = group:get_field("_CenterPos")
-            delta_param_backup.groups[#delta_param_backup.groups + 1] = { obj = group, pos = original }
-            local center = delta_param_backup.center
+            attack_param_backup.groups[#attack_param_backup.groups + 1] = { obj = group, pos = original }
+            local center = attack_param_backup.center
             local encoded = Vector3f.new(
                 original.x - center.x + 2 * ATTACK_CENTER.x,
                 original.y,
@@ -190,8 +193,8 @@ local function apply_delta_params()
         CHARGE_POS.x, CHARGE_POS.y, CHARGE_POS.z))
 end
 
-local function restore_delta_params()
-    local backup = delta_param_backup
+local function restore_attack_params()
+    local backup = attack_param_backup
     if backup == nil then
         return
     end
@@ -200,11 +203,11 @@ local function restore_delta_params()
     end
     backup.obj:set_field("_SpAtkCenterPos", backup.center)
     backup.obj:set_field("_SpAtkChargePos", backup.charge)
-    delta_param_backup = nil
+    attack_param_backup = nil
     log.info(string.format("%s ParamUnique and summon group positions restored", QUEST_TAG))
 end
 
--- 非 ST402 的原生分支会将中心变成(0,4,0)、将蓄力点做减法。
+-- 4.3 跨场景getter修正: 非ST402原生返回固定中心或相对蓄力坐标。
 -- 这里只修正返回值为已配置的世界坐标，位置来源始终是 ParamUnique。
 -- this=args[3]（via.vec3 隐藏返回缓冲，两个 getter 均已 CLI 实测）。
 -- 起飞/召唤区域与无罩激光读取中心；有防护罩时仍走原生防护罩分支。
@@ -236,48 +239,6 @@ sdk.hook(sdk.find_type_definition("app.cEm0166_00Extend"):get_method("getSpAtkCh
         return retval
     end)
 
--- -- ==================== 5. 绕飞动画混合基准（试验） ====================
--- -- 原生 blend=wrap(yaw-106.533996)/360；仅替换本次 Round 调用中的混合输入。
--- -- 这是动画混合基准，不保证最终朝向等于该值，也可能影响绕飞落点。
--- local ROUND_BASE_YAW = 98.0
--- local ORIGINAL_ROUND_BASE_YAW = 106.53399658203125
--- -- 两个不同 hook 之间传递作用域，按线程隔离；自身 pre/post 的恢复状态仍用 hook_storage。
--- local round_blend_context = {}
-
--- sdk.hook(sdk.find_type_definition("app.Em0166_00Action.cSpAtkRound"):get_method("doEnter()"),
---     function(args)
---         local storage = thread.get_hook_storage()
---         local id = thread.get_id()
---         storage.previous = round_blend_context[id]
---         local action = sdk.to_managed_object(args[2])
---         local motion = action:call("get_Chara()"):call("get_EmMot()"):call("get_MotionComponent()")
---         round_blend_context[id] = { motion = motion:get_address(), used = false }
---     end,
---     function(retval)
---         local id = thread.get_id()
---         local context = round_blend_context[id]
---         round_blend_context[id] = thread.get_hook_storage().previous
---         if context ~= nil and not context.used then
---             log.info(string.format("%s Round entered but blend override was not reached", QUEST_TAG))
---         end
---         return retval
---     end)
-
--- sdk.hook(sdk.find_type_definition("app.CharacterUtil"):get_method("setVariableBlendRate(via.motion.Motion, System.Single, System.Nullable`1<System.UInt32>)"),
---     function(args)
---         local context = round_blend_context[thread.get_id()]
---         -- 静态方法: args[1]=vmctx, args[2]=Motion, args[3]=float blend, args[4]=Nullable参数ID。
---         if context == nil or context.used or sdk.to_int64(args[2]) ~= context.motion then
---             return
---         end
---         local original = sdk.to_float(args[3])
---         local adjusted = (original + (ORIGINAL_ROUND_BASE_YAW - ROUND_BASE_YAW) / 360) % 1
---         args[3] = sdk.float_to_ptr(adjusted)
---         context.used = true
---         log.info(string.format("%s Round blend %.6f -> %.6f; base yaw %.6f -> %.6f",
---             QUEST_TAG, original, adjusted, ORIGINAL_ROUND_BASE_YAW, ROUND_BASE_YAW))
---     end)
-
 -- ==================== 生命周期 ====================
 quest.on_load(function()
     -- 声明本任务场景需要的 EnemyDef.ID_Fixed: 宿主 hook setStageResidentDataDicts 时
@@ -293,13 +254,13 @@ end)
 -- 任务进入 cQuestStart 时修改一次; 重复通知不覆盖最初备份。
 quest.on_flow_changed(function(flow)
     log.info(string.format("%s flow: %s", QUEST_TAG, flow))
-    if flow == "app.cQuestStart" and delta_param_backup == nil then
-        apply_delta_params()
+    if flow == "app.cQuestStart" and attack_param_backup == nil then
+        apply_attack_params()
     end
 end)
 
 quest.on_unload(function()
-    restore_delta_params()
+    restore_attack_params()
     lib.unload_mission_dialogues(OMEGA_MISSION_FIXED)
     log.info(string.format("%s unloading quest script, hooks will be removed", QUEST_TAG))
 end)
