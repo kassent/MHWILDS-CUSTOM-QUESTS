@@ -11,9 +11,10 @@
 --   5. 预放置敌人   QUEST_ENEMY_SPAWNS 表驱动注入(双影蜘蛛联动召唤 + 掩体植物)
 --   6. 台词 NPC     补 spawn 欧米茄台词的两个说话 NPC
 --   7. 龙乳结晶     普通地面也可生成GM651结晶，保留原生结晶效果
---   8. 大招配置     欧米茄中心/蓄力目标、爆炸朝向与缩放、小欧米茄运行时落点
---   9. 绕飞混合     doEnter post覆盖blend，基准取蓄力点指向中心的水平角
---  10. 生命周期     常驻怪物声明、对话装卸、增强参数还原及任务流程日志
+--   8. 王锁血量门槛 解放/自动充能加速门槛设为100%，任务结束还原
+--   9. 大招配置     欧米茄中心/蓄力目标、爆炸朝向与缩放、小欧米茄运行时落点
+--  10. 绕飞混合     doEnter post覆盖blend，基准取蓄力点指向中心的水平角
+--  11. 生命周期     常驻怪物声明、对话装卸、增强参数还原及任务流程日志
 
 local lib = require("scripts.quest_lib")
 
@@ -289,7 +290,6 @@ do
             local result = request_crystal:call(manager, GM651, position, rotation, owner_key, callback, -1, option, true, false, 0, INVALID_ITEM)
             -- 保留请求失败时的上游重试机会；true 表示请求接受，不是异步实例化完成。
             thread.get_hook_storage().crystal_requested = result ~= nil
-            print("[crystal] result=%s", tostring(result ~= nil))
             return sdk.PreHookResult.SKIP_ORIGINAL
         end,
         function(retval)
@@ -299,9 +299,47 @@ do
     print("[crystal] hook registered; create=%s request=%s", tostring(create_crystal:get_function()), tostring(request_crystal:get_function()))
 end
 
+-- ==================== 8. 王锁血量门槛配置 ====================
+do
+    -- 两项均为严格 HP% < 阈值：100表示掉血后生效，满血不满足。
+    -- 只调整门槛，不直接改Mode，也不改自动充能量或计时周期。
+    local UNLEASH_MODE_CHANGE_THRESHOLD = 100.0
+    local AUTO_ELEMENT_CHARGE_ACCELERATION_THRESHOLD = 100.0
+    local EM0160_00_0 = 27 -- EnemyDef.ID，运行时ID
+    local param, original_unleash, original_acceleration
+
+    print("[thresholds] script loading; unleash=%g acceleration=%g",
+        UNLEASH_MODE_CHANGE_THRESHOLD, AUTO_ELEMENT_CHARGE_ACCELERATION_THRESHOLD)
+    quest.on_flow_changed(function(flow)
+        -- cQuestStart时取已加载的常驻参数；重复通知不覆盖最初备份。
+        if flow ~= "app.cQuestStart" or param ~= nil then return end
+        local resident = sdk.get_managed_singleton("app.EnemyManager"):call("getEnemyStageResident(app.EnemyDef.ID)", EM0160_00_0)
+        -- 原生判定读Genus，不是Species；已核对与实例基类ParamUnique为同一对象。
+        param = resident:get_field("_Unique"):get_field("_GenusInfo")
+        original_unleash = param:get_field("UnleashModeChangeThreshold")
+        original_acceleration = param:get_field("AutoElementChargeAccelerationThreshold")
+        param:set_field("UnleashModeChangeThreshold", UNLEASH_MODE_CHANGE_THRESHOLD)
+        param:set_field("AutoElementChargeAccelerationThreshold", AUTO_ELEMENT_CHARGE_ACCELERATION_THRESHOLD)
+        print("[thresholds] flow=%s; UnleashModeChangeThreshold=%g -> %g; AutoElementChargeAccelerationThreshold=%g -> %g",
+            flow, original_unleash, param:get_field("UnleashModeChangeThreshold"),
+            original_acceleration, param:get_field("AutoElementChargeAccelerationThreshold"))
+    end)
+    print("[thresholds] flow callback registered; flow=%s", "app.cQuestStart")
+
+    -- ParamUnique来自共享资源，任务结束必须还原；Lua引用持有参数对象。
+    quest.on_unload(function()
+        if param == nil then return end
+        param:set_field("UnleashModeChangeThreshold", original_unleash)
+        param:set_field("AutoElementChargeAccelerationThreshold", original_acceleration)
+        print("[thresholds] restored; unleash=%g acceleration=%g",
+            param:get_field("UnleashModeChangeThreshold"), param:get_field("AutoElementChargeAccelerationThreshold"))
+        param = nil
+    end)
+end
+
 -- 欧米茄大招：同步10098当前配置，局部作用域不影响本任务其他功能。
 do
--- ==================== 8. 大招配置 ====================
+-- ==================== 9. 大招配置 ====================
 -- 起飞/无罩激光与爆炸共用中心; CHARGE_POS用于原生绕飞目标，不直接设置怪物Transform。
 -- 原生 loadArgmentData 在非 ST402 会将 StartPos 清为世界原点, 因此必须 post 写回。
 -- Nullable<via.vec3> 修改后写回整个字段; 此方式已经临时 ShootingInfo 对象往返验证。
@@ -312,7 +350,7 @@ local BURST_SCALE = 1.5 -- 整体缩放: 原版半径42/端点Z=±30 -> 半径63
 local BURST_YAW = math.atan(ATTACK_CENTER.x - CHARGE_POS.x, ATTACK_CENTER.z - CHARGE_POS.z)
 local BURST_ROTATION = Quaternion.new(math.cos(BURST_YAW / 2), 0, math.sin(BURST_YAW / 2), 0)
 
--- 8.1 爆炸出生参数: 仅Creator 47 / Shell 26; 不改激光、伤害或EffectScale。
+-- 9.1 爆炸出生参数: 仅Creator 47 / Shell 26; 不改激光、伤害或EffectScale。
 sdk.hook(sdk.find_type_definition("app.cAppShellShooter"):get_method("loadArgmentData(ace.user_data.ShellCreatorInfoDataBase.ShellCreatorInfoArgumentBase, app.cShellShootingInfo, ace.user_data.ShellCreatorInfoDataBase.ShellCreatorInfoBase, app.cAppShellShooter.overWriteOffset)"),
     function(args)
         local storage = thread.get_hook_storage()
@@ -352,7 +390,7 @@ sdk.hook(sdk.find_type_definition("app.cAppShellShooter"):get_method("loadArgmen
 
 local VEC3_TYPE = sdk.find_type_definition("via.vec3")
 
--- 8.2 跨场景getter修正: 非ST402原生返回固定中心或相对蓄力坐标。
+-- 9.2 跨场景getter修正: 非ST402原生返回固定中心或相对蓄力坐标。
 -- post直接用配置常量覆写世界坐标，不读取ParamUnique或缓存位置。
 -- 起飞/召唤区域与无罩激光读取中心；有防护罩时仍走原生防护罩分支。
 sdk.hook(sdk.find_type_definition("app.cEm0166_00Extend"):get_method("getSpAtkCenterPos()"),
@@ -376,7 +414,7 @@ sdk.hook(sdk.find_type_definition("app.cEm0166_00Extend"):get_method("getSpAtkCh
     end)
 
 
--- 8.3 小欧米茄运行时落点：不修改共享参数或召唤数组。
+-- 9.3 小欧米茄运行时落点：不修改共享参数或召唤数组。
 -- 由任务脚本生命周期限定作用域；仅修正大招DIRECT召唤，保留随机偏移与高度。
 -- 隐藏vec3返回缓冲：args[3]=this，args[4]=原点，args[5]=候选点，已CLI核对。
 sdk.hook(sdk.find_type_definition("app.cEm0166_00Extend"):get_method("checkSaftySummonPos(via.vec3, via.vec3)"),
@@ -397,7 +435,7 @@ sdk.hook(sdk.find_type_definition("app.cEm0166_00Extend"):get_method("checkSafty
         sdk.set_native_field(args[5], VEC3_TYPE, "z", shifted_z)
     end)
 
--- ==================== 9. 绕飞动画混合基准（试验） ====================
+-- ==================== 10. 绕飞动画混合基准（试验） ====================
 -- 原生blend使用106.533996度基准；本实现保存进入朝向，在doEnter post再次写入新blend。
 -- 这是动画混合基准，不保证最终朝向等于该值，也可能影响绕飞落点。
 -- 使用配置蓄力点指向中心的水平角，与爆炸长轴一致；弧度转角度并归一化。
@@ -439,7 +477,7 @@ sdk.hook(sdk.find_type_definition("app.Em0166_00Action.cSpAtkRound"):get_method(
     end)
 end
 
--- ==================== 10. 生命周期 ====================
+-- ==================== 11. 生命周期 ====================
 -- 兜底: package 卸载若发生在脚本摘钩之后, 这里把还没还原的一次性还原
 quest.on_load(function()
     -- 声明本任务场景需要的 EnemyDef.ID_Fixed: 宿主 hook setStageResidentDataDicts 时
