@@ -110,8 +110,9 @@ end)
 -- 起飞/无罩激光与爆炸共用中心; CHARGE_POS用于原生绕飞目标，不直接设置怪物Transform。
 -- 原生 loadArgmentData 在非 ST402 会将 StartPos 清为世界原点, 因此必须 post 写回。
 -- Nullable<via.vec3> 修改后写回整个字段; 此方式已经临时 ShootingInfo 对象往返验证。
-local ATTACK_CENTER = Vector3f.new(-14.372429, 4, 95.872467)
-local CHARGE_POS = Vector3f.new(-44.845703, 4, 94.235413)
+local ATTACK_CENTER = Vector3f.new(-6.099601, 5, 98.362564)
+-- local CHARGE_POS = Vector3f.new(-42.243317, 5, 99.290459)
+local CHARGE_POS = Vector3f.new(-32.265949, 5, 98.130585)
 local BURST_SCALE = 1.5 -- 整体缩放: 原版半径42/端点Z=±30 -> 半径63/端点Z=±45
 local BURST_YAW = math.atan(ATTACK_CENTER.x - CHARGE_POS.x, ATTACK_CENTER.z - CHARGE_POS.z)
 local BURST_ROTATION = Quaternion.new(math.cos(BURST_YAW / 2), 0, math.sin(BURST_YAW / 2), 0)
@@ -218,10 +219,10 @@ sdk.hook(sdk.find_type_definition("app.cEm0166_00Extend"):get_method("getSpAtkCe
     end,
     function(retval)
         local pos = thread.get_hook_storage().position
-        sdk.set_native_field(retval, VEC3_TYPE, "x", pos.x)
-        sdk.set_native_field(retval, VEC3_TYPE, "y", pos.y)
-        sdk.set_native_field(retval, VEC3_TYPE, "z", pos.z)
-        log.info(string.format("%s getSpAtkCenterPos -> (%.6f, %.6f, %.6f)", QUEST_TAG, pos.x, pos.y, pos.z))
+        sdk.set_native_field(retval, VEC3_TYPE, "x", ATTACK_CENTER.x)
+        sdk.set_native_field(retval, VEC3_TYPE, "y", ATTACK_CENTER.y)
+        sdk.set_native_field(retval, VEC3_TYPE, "z", ATTACK_CENTER.z)
+        log.info(string.format("%s getSpAtkCenterPos -> (%.6f, %.6f, %.6f)", QUEST_TAG, ATTACK_CENTER.x, ATTACK_CENTER.y, ATTACK_CENTER.z))
         return retval
     end)
 
@@ -232,13 +233,76 @@ sdk.hook(sdk.find_type_definition("app.cEm0166_00Extend"):get_method("getSpAtkCh
     end,
     function(retval)
         local pos = thread.get_hook_storage().position
-        sdk.set_native_field(retval, VEC3_TYPE, "x", pos.x)
-        sdk.set_native_field(retval, VEC3_TYPE, "y", pos.y)
-        sdk.set_native_field(retval, VEC3_TYPE, "z", pos.z)
-        log.info(string.format("%s getSpAtkChargePos -> (%.6f, %.6f, %.6f)", QUEST_TAG, pos.x, pos.y, pos.z))
+        sdk.set_native_field(retval, VEC3_TYPE, "x", CHARGE_POS.x)
+        sdk.set_native_field(retval, VEC3_TYPE, "y", CHARGE_POS.y)
+        sdk.set_native_field(retval, VEC3_TYPE, "z", CHARGE_POS.z)
+        log.info(string.format("%s getSpAtkChargePos -> (%.6f, %.6f, %.6f)", QUEST_TAG, CHARGE_POS.x, CHARGE_POS.y, CHARGE_POS.z))
         return retval
     end)
 
+
+-- 4.4 小欧米茄运行时落点：旧数组修改代码保留且仍未启用，不同时使用两种平移。
+-- 由任务脚本生命周期限定作用域；仅修正大招DIRECT召唤，保留随机偏移与高度。
+-- 隐藏vec3返回缓冲：args[3]=this，args[4]=原点，args[5]=候选点，已CLI核对。
+sdk.hook(sdk.find_type_definition("app.cEm0166_00Extend"):get_method("checkSaftySummonPos(via.vec3, via.vec3)"),
+    function(args)
+        local ext = sdk.to_managed_object(args[3])
+        if not ext:get_field("_IsRequestCallServant") or ext:get_field("_RequestSummonType") ~= 2 then
+            return
+        end
+        -- 原候选XZ = 原组XZ - 当前参数中心XZ + 随机偏移。
+        -- 加新中心 + 当前参数中心 - 原版中心，恢复阵型相对原版中心的偏移。
+        local center = ext:call("get_ParamUnique()"):get_field("_SpAtkCenterPos")
+        local x = sdk.get_native_field(args[5], VEC3_TYPE, "x")
+        local y = sdk.get_native_field(args[5], VEC3_TYPE, "y")
+        local z = sdk.get_native_field(args[5], VEC3_TYPE, "z")
+        local shifted_x = x + ATTACK_CENTER.x + center.x + 302.645752
+        local shifted_z = z + ATTACK_CENTER.z + center.z - 824.168091
+        sdk.set_native_field(args[5], VEC3_TYPE, "x", shifted_x)
+        sdk.set_native_field(args[5], VEC3_TYPE, "z", shifted_z)
+    end)
+
+-- ==================== 5. 绕飞动画混合基准（试验） ====================
+-- 原生 blend=wrap(yaw-106.533996)/360；仅替换本次 Round 调用中的混合输入。
+-- 这是动画混合基准，不保证最终朝向等于该值，也可能影响绕飞落点。
+-- 使用配置蓄力点指向中心的水平角，与爆炸长轴一致；弧度转角度并归一化。
+local ROUND_BASE_YAW = math.deg(BURST_YAW) % 360
+-- post覆盖试验：原生已启动动画，是否赶得上轨迹初始化需实测。
+local set_blend_rate = sdk.find_type_definition("app.CharacterUtil"):get_method(
+    "setVariableBlendRate(via.motion.Motion, System.Single, System.Nullable`1<System.UInt32>)")
+local BLEND_ID_TYPE = sdk.find_type_definition("System.Nullable`1<System.UInt32>")
+
+sdk.hook(sdk.find_type_definition("app.Em0166_00Action.cSpAtkRound"):get_method("doEnter()"),
+    function(args)
+        local storage = thread.get_hook_storage()
+        local action = sdk.to_managed_object(args[2])
+        local character = action:call("get_Chara()")
+        local em_mot = character:call("get_EmMot()")
+        storage.motion = em_mot and em_mot:call("get_MotionComponent()")
+        if storage.motion == nil then return end
+        local rotation = character:call("get_GameObject()"):call("get_Transform()"):call("get_Rotation()")
+        local forward = rotation * Vector3f.new(0, 0, 1)
+        storage.yaw = math.deg(math.atan(forward.x, forward.z)) % 360
+    end,
+    function(retval)
+        -- TU5原函数正常返回NORMAL=0前已调用setVariableBlendRate和setMotionGroup。
+        local result = sdk.to_int64(retval) & 0xFFFFFFFF
+        if result ~= 0 then
+            log.info(string.format("%s Round post skipped: enter result=%d", QUEST_TAG, result))
+            return retval
+        end
+        local storage = thread.get_hook_storage()
+        if storage.motion == nil then return retval end
+        local blend = ((storage.yaw - ROUND_BASE_YAW) % 360) / 360
+        local variable_id = ValueType.new(BLEND_ID_TYPE)
+        variable_id:set_field("_HasValue", true)
+        variable_id:set_field("_Value", 0x067C962F)
+        set_blend_rate:call(nil, storage.motion, blend, variable_id)
+        log.info(string.format("%s Round post blend=%.6f; entry yaw=%.6f; base yaw=%.6f",
+            QUEST_TAG, blend, storage.yaw, ROUND_BASE_YAW))
+        return retval
+    end)
+    
 -- ==================== 生命周期 ====================
 quest.on_load(function()
     -- 声明本任务场景需要的 EnemyDef.ID_Fixed: 宿主 hook setStageResidentDataDicts 时
@@ -254,13 +318,13 @@ end)
 -- 任务进入 cQuestStart 时修改一次; 重复通知不覆盖最初备份。
 quest.on_flow_changed(function(flow)
     log.info(string.format("%s flow: %s", QUEST_TAG, flow))
-    if flow == "app.cQuestStart" and attack_param_backup == nil then
-        apply_attack_params()
-    end
+    -- if flow == "app.cQuestStart" and attack_param_backup == nil then
+    --     apply_attack_params()
+    -- end
 end)
 
 quest.on_unload(function()
-    restore_attack_params()
+    -- restore_attack_params()
     lib.unload_mission_dialogues(OMEGA_MISSION_FIXED)
     log.info(string.format("%s unloading quest script, hooks will be removed", QUEST_TAG))
 end)
