@@ -10,6 +10,10 @@
 --   4. 暴走锁定     欧米茄暴走不可被脚伤击破解除
 --   5. 预放置敌人   QUEST_ENEMY_SPAWNS 表驱动注入(双影蜘蛛联动召唤 + 掩体植物)
 --   6. 台词 NPC     补 spawn 欧米茄台词的两个说话 NPC
+--   7. 龙乳结晶     普通地面也可生成GM651结晶，保留原生结晶效果
+--   8. 大招配置     欧米茄中心/蓄力目标、爆炸朝向与缩放、小欧米茄运行时落点
+--   9. 绕飞混合     doEnter post覆盖blend，基准取蓄力点指向中心的水平角
+--  10. 生命周期     常驻怪物声明、对话装卸、增强参数还原及任务流程日志
 
 local lib = require("scripts.quest_lib")
 
@@ -254,9 +258,10 @@ sdk.hook(sdk.find_type_definition("app.ContextManager"):get_method("createContex
     end
 end)
 
--- ==================== 7. 龙乳结晶 ====================
+-- ==================== 7. 普通地面龙乳结晶 ====================
 do
-    -- 任务 10099：让招式在普通地面也能生成龙乳结晶（GM651）。
+    -- 让原本受地面条件限制的招式也能请求生成龙乳结晶（GM651）。
+    -- 此处只调整生成条件，不改结晶自身的命中、拘束或其他行为参数。
     -- 依据：createEnergyCrystal 原版先查询 SENSOR_GET，再要求 SensorParamGm / GM650。
     -- 这里直接执行后续 requestSetLimeStone；不依赖查询命中数，也不读取错误类型字段。
     -- 保留上游贴地、敌人主控检查，以及原始位置、方向、ownerKey、option、创建回调。
@@ -296,7 +301,7 @@ end
 
 -- 欧米茄大招：同步10098当前配置，局部作用域不影响本任务其他功能。
 do
--- ==================== 4. 大招配置 ====================
+-- ==================== 8. 大招配置 ====================
 -- 起飞/无罩激光与爆炸共用中心; CHARGE_POS用于原生绕飞目标，不直接设置怪物Transform。
 -- 原生 loadArgmentData 在非 ST402 会将 StartPos 清为世界原点, 因此必须 post 写回。
 -- Nullable<via.vec3> 修改后写回整个字段; 此方式已经临时 ShootingInfo 对象往返验证。
@@ -307,7 +312,7 @@ local BURST_SCALE = 1.5 -- 整体缩放: 原版半径42/端点Z=±30 -> 半径63
 local BURST_YAW = math.atan(ATTACK_CENTER.x - CHARGE_POS.x, ATTACK_CENTER.z - CHARGE_POS.z)
 local BURST_ROTATION = Quaternion.new(math.cos(BURST_YAW / 2), 0, math.sin(BURST_YAW / 2), 0)
 
--- 4.1 爆炸出生参数: 仅Creator 47 / Shell 26; 不改激光、伤害或EffectScale。
+-- 8.1 爆炸出生参数: 仅Creator 47 / Shell 26; 不改激光、伤害或EffectScale。
 sdk.hook(sdk.find_type_definition("app.cAppShellShooter"):get_method("loadArgmentData(ace.user_data.ShellCreatorInfoDataBase.ShellCreatorInfoArgumentBase, app.cShellShootingInfo, ace.user_data.ShellCreatorInfoDataBase.ShellCreatorInfoBase, app.cAppShellShooter.overWriteOffset)"),
     function(args)
         local storage = thread.get_hook_storage()
@@ -347,7 +352,7 @@ sdk.hook(sdk.find_type_definition("app.cAppShellShooter"):get_method("loadArgmen
 
 local VEC3_TYPE = sdk.find_type_definition("via.vec3")
 
--- 4.2 跨场景getter修正: 非ST402原生返回固定中心或相对蓄力坐标。
+-- 8.2 跨场景getter修正: 非ST402原生返回固定中心或相对蓄力坐标。
 -- post直接用配置常量覆写世界坐标，不读取ParamUnique或缓存位置。
 -- 起飞/召唤区域与无罩激光读取中心；有防护罩时仍走原生防护罩分支。
 sdk.hook(sdk.find_type_definition("app.cEm0166_00Extend"):get_method("getSpAtkCenterPos()"),
@@ -371,7 +376,7 @@ sdk.hook(sdk.find_type_definition("app.cEm0166_00Extend"):get_method("getSpAtkCh
     end)
 
 
--- 4.3 小欧米茄运行时落点：不修改共享参数或召唤数组。
+-- 8.3 小欧米茄运行时落点：不修改共享参数或召唤数组。
 -- 由任务脚本生命周期限定作用域；仅修正大招DIRECT召唤，保留随机偏移与高度。
 -- 隐藏vec3返回缓冲：args[3]=this，args[4]=原点，args[5]=候选点，已CLI核对。
 sdk.hook(sdk.find_type_definition("app.cEm0166_00Extend"):get_method("checkSaftySummonPos(via.vec3, via.vec3)"),
@@ -392,8 +397,8 @@ sdk.hook(sdk.find_type_definition("app.cEm0166_00Extend"):get_method("checkSafty
         sdk.set_native_field(args[5], VEC3_TYPE, "z", shifted_z)
     end)
 
--- ==================== 5. 绕飞动画混合基准（试验） ====================
--- 原生 blend=wrap(yaw-106.533996)/360；仅替换本次 Round 调用中的混合输入。
+-- ==================== 9. 绕飞动画混合基准（试验） ====================
+-- 原生blend使用106.533996度基准；本实现保存进入朝向，在doEnter post再次写入新blend。
 -- 这是动画混合基准，不保证最终朝向等于该值，也可能影响绕飞落点。
 -- 使用配置蓄力点指向中心的水平角，与爆炸长轴一致；弧度转角度并归一化。
 local ROUND_BASE_YAW = math.deg(BURST_YAW) % 360
@@ -434,7 +439,7 @@ sdk.hook(sdk.find_type_definition("app.Em0166_00Action.cSpAtkRound"):get_method(
     end)
 end
 
--- ==================== 生命周期 ====================
+-- ==================== 10. 生命周期 ====================
 -- 兜底: package 卸载若发生在脚本摘钩之后, 这里把还没还原的一次性还原
 quest.on_load(function()
     -- 声明本任务场景需要的 EnemyDef.ID_Fixed: 宿主 hook setStageResidentDataDicts 时

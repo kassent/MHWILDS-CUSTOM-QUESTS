@@ -7,8 +7,10 @@
 --   1. 对话目录     手动加载原 Omega 任务的对话目录(自定义任务不在其目标列表, 不加台词沉默)
 --   2. 预放置敌人   QUEST_ENEMY_SPAWNS 表驱动注入(影蜘蛛联动召唤 + 掩体植物)
 --   3. 台词 NPC     补 spawn 欧米茄台词的两个说话 NPC
---   4. 常驻声明     require_enemies 声明魔界花幼苗/仙人刺(环境生物不在 Boss+Zako 全量范围)
--- (高难增强版 —— 动作速度/火海寿命/暴走锁定/双蜘蛛 —— 见 10099.lua)
+--   4. 大招配置     欧米茄中心/蓄力目标、爆炸朝向与缩放、小欧米茄运行时落点
+--   5. 绕飞混合     doEnter post覆盖blend，基准取蓄力点指向中心的水平角
+--   6. 生命周期     声明魔界花幼苗/仙人刺，加载/卸载对话，记录任务流程
+-- (高难增强版 —— 动作速度/火海寿命/暴走锁定/双蜘蛛/普通地面龙乳结晶 —— 见 10099.lua)
 
 local lib = require("scripts.quest_lib")
 
@@ -205,7 +207,7 @@ sdk.hook(sdk.find_type_definition("app.cEm0166_00Extend"):get_method("checkSafty
     end)
 
 -- ==================== 5. 绕飞动画混合基准（试验） ====================
--- 原生 blend=wrap(yaw-106.533996)/360；仅替换本次 Round 调用中的混合输入。
+-- 原生blend使用106.533996度基准；本实现保存进入朝向，在doEnter post再次写入新blend。
 -- 这是动画混合基准，不保证最终朝向等于该值，也可能影响绕飞落点。
 -- 使用配置蓄力点指向中心的水平角，与爆炸长轴一致；弧度转角度并归一化。
 local ROUND_BASE_YAW = math.deg(BURST_YAW) % 360
@@ -246,7 +248,7 @@ sdk.hook(sdk.find_type_definition("app.Em0166_00Action.cSpAtkRound"):get_method(
     end)
 end
 
--- ==================== 生命周期 ====================
+-- ==================== 6. 生命周期 ====================
 quest.on_load(function()
     -- 声明本任务场景需要的 EnemyDef.ID_Fixed: 宿主 hook setStageResidentDataDicts 时
     --   合并进当前场景 _EmIDList(不限场景), 场景即可刷新它们(环境生物不在 Boss+Zako 全量范围)
