@@ -6,6 +6,7 @@
 --
 -- 提供(纯被动函数库, 所有 sdk.hook 安装都在各任务脚本里, 挂什么钩子任务文件一眼可见):
 --   通用工具     parse_guid / get_mission_id_from_fixed / get_enemy_display_name
+--   任务日志     print(fmt, ...) —— 自动添加当前任务前缀，写入log.info
 --                is_late_join / resolve_em_id / calc_route_guid_hash / get_npc_runtime_id
 --   枚举         ROLE_ID / LEGENDARY_ID / ENEMY_LAYOUT_TYPE / CREATE_OPTION_BIT
 --   预放置敌人   spawn_preplaced_enemies(em, stage, spawns) —— 表驱动注入
@@ -19,6 +20,10 @@ local lib = {}
 local QUEST_TAG = string.format("[quest %d]", quest.quest_id)
 
 -- ==================== 通用工具 ====================
+
+function lib.print(fmt, ...)
+    log.info(QUEST_TAG .. " " .. string.format(fmt, ...))
+end
 
 function lib.parse_guid(s)
     return sdk.find_type_definition("System.Guid"):get_method("Parse(System.String)"):call(nil, s)

@@ -11,8 +11,8 @@
 -- (高难增强版 —— 动作速度/火海寿命/暴走锁定/双蜘蛛 —— 见 10099.lua)
 
 local lib = require("scripts.quest_lib")
+local print = lib.print
 
-local QUEST_TAG = string.format("[quest %d]", quest.quest_id)
 
 -- ==================== 1. 对话目录 ====================
 
@@ -149,99 +149,39 @@ sdk.hook(sdk.find_type_definition("app.cAppShellShooter"):get_method("loadArgmen
             scale:set_field("_Value", Vector3f.new(BURST_SCALE, BURST_SCALE, BURST_SCALE))
             info:set_field("<Scale>k__BackingField", scale)
 
-            log.info(string.format("%s burst center=(%.6f, %.6f, %.6f), yaw=%.6f, scale=%.3f",
-                QUEST_TAG, ATTACK_CENTER.x, ATTACK_CENTER.y, ATTACK_CENTER.z, math.deg(BURST_YAW), BURST_SCALE))
+            print("burst center=(%.6f, %.6f, %.6f), yaw=%.6f, scale=%.3f",
+                ATTACK_CENTER.x, ATTACK_CENTER.y, ATTACK_CENTER.z, math.deg(BURST_YAW), BURST_SCALE)
         end
         return retval
     end)
 
--- 4.2 共享参数: cQuestStart时备份并应用，on_unload时还原中心、蓄力点和召唤组。
 local VEC3_TYPE = sdk.find_type_definition("via.vec3")
-local attack_param_backup = nil
 
-local function apply_attack_params()
-    local resident = sdk.get_managed_singleton("app.EnemyManager"):call("getEnemyStageResident(app.EnemyDef.ID)", 34)
-    local pu = resident:get_field("_Unique"):get_field("_SpeciesInfo")
-    attack_param_backup = {
-        obj = pu,
-        center = pu:get_field("_SpAtkCenterPos"),
-        charge = pu:get_field("_SpAtkChargePos"),
-        groups = {},
-    }
-    -- 本任务 ST403: 原生 DIRECT 落点 = (组.x-center.x, 组.y-150, 组.z-center.z)。
-    -- 目标阵型 = 新中心XZ + (原组XZ-原中心XZ)，地面高度保留原组.y-150。
-    -- 因此反算组XZ = 原组XZ-原中心XZ+2*新中心XZ；不是直接填目标世界坐标。
-    local groups = pu:get_field("_SummonSetDataArray_SP")
-    for i = 0, groups:get_Length() - 1 do
-        local group = groups[i]
-        if group:get_field("_PosType") == 2 then -- DIRECT
-            local original = group:get_field("_CenterPos")
-            attack_param_backup.groups[#attack_param_backup.groups + 1] = { obj = group, pos = original }
-            local center = attack_param_backup.center
-            local encoded = Vector3f.new(
-                original.x - center.x + 2 * ATTACK_CENTER.x,
-                original.y,
-                original.z - center.z + 2 * ATTACK_CENTER.z)
-            group:set_field("_CenterPos", encoded)
-            log.info(string.format("%s summon group %d: base world=(%.6f, %.6f, %.6f)",
-                QUEST_TAG, i, encoded.x - ATTACK_CENTER.x, encoded.y - 150, encoded.z - ATTACK_CENTER.z))
-        end
-    end
-    pu:set_field("_SpAtkCenterPos", ATTACK_CENTER)
-    pu:set_field("_SpAtkChargePos", CHARGE_POS)
-    log.info(string.format("%s ParamUnique applied: center=(%.6f, %.6f, %.6f), charge=(%.6f, %.6f, %.6f)",
-        QUEST_TAG, ATTACK_CENTER.x, ATTACK_CENTER.y, ATTACK_CENTER.z,
-        CHARGE_POS.x, CHARGE_POS.y, CHARGE_POS.z))
-end
-
-local function restore_attack_params()
-    local backup = attack_param_backup
-    if backup == nil then
-        return
-    end
-    for _, group in ipairs(backup.groups) do
-        group.obj:set_field("_CenterPos", group.pos)
-    end
-    backup.obj:set_field("_SpAtkCenterPos", backup.center)
-    backup.obj:set_field("_SpAtkChargePos", backup.charge)
-    attack_param_backup = nil
-    log.info(string.format("%s ParamUnique and summon group positions restored", QUEST_TAG))
-end
-
--- 4.3 跨场景getter修正: 非ST402原生返回固定中心或相对蓄力坐标。
--- 这里只修正返回值为已配置的世界坐标，位置来源始终是 ParamUnique。
--- this=args[3]（via.vec3 隐藏返回缓冲，两个 getter 均已 CLI 实测）。
+-- 4.2 跨场景getter修正: 非ST402原生返回固定中心或相对蓄力坐标。
+-- post直接用配置常量覆写世界坐标，不读取ParamUnique或缓存位置。
 -- 起飞/召唤区域与无罩激光读取中心；有防护罩时仍走原生防护罩分支。
 sdk.hook(sdk.find_type_definition("app.cEm0166_00Extend"):get_method("getSpAtkCenterPos()"),
-    function(args)
-        local ext = sdk.to_managed_object(args[3])
-        thread.get_hook_storage().position = ext:call("get_ParamUnique()"):get_field("_SpAtkCenterPos")
-    end,
+    nil,
     function(retval)
-        local pos = thread.get_hook_storage().position
         sdk.set_native_field(retval, VEC3_TYPE, "x", ATTACK_CENTER.x)
         sdk.set_native_field(retval, VEC3_TYPE, "y", ATTACK_CENTER.y)
         sdk.set_native_field(retval, VEC3_TYPE, "z", ATTACK_CENTER.z)
-        log.info(string.format("%s getSpAtkCenterPos -> (%.6f, %.6f, %.6f)", QUEST_TAG, ATTACK_CENTER.x, ATTACK_CENTER.y, ATTACK_CENTER.z))
+        print("getSpAtkCenterPos -> (%.6f, %.6f, %.6f)", ATTACK_CENTER.x, ATTACK_CENTER.y, ATTACK_CENTER.z)
         return retval
     end)
 
 sdk.hook(sdk.find_type_definition("app.cEm0166_00Extend"):get_method("getSpAtkChargePos()"),
-    function(args)
-        local ext = sdk.to_managed_object(args[3])
-        thread.get_hook_storage().position = ext:call("get_ParamUnique()"):get_field("_SpAtkChargePos")
-    end,
+    nil,
     function(retval)
-        local pos = thread.get_hook_storage().position
         sdk.set_native_field(retval, VEC3_TYPE, "x", CHARGE_POS.x)
         sdk.set_native_field(retval, VEC3_TYPE, "y", CHARGE_POS.y)
         sdk.set_native_field(retval, VEC3_TYPE, "z", CHARGE_POS.z)
-        log.info(string.format("%s getSpAtkChargePos -> (%.6f, %.6f, %.6f)", QUEST_TAG, CHARGE_POS.x, CHARGE_POS.y, CHARGE_POS.z))
+        print("getSpAtkChargePos -> (%.6f, %.6f, %.6f)", CHARGE_POS.x, CHARGE_POS.y, CHARGE_POS.z)
         return retval
     end)
 
 
--- 4.4 小欧米茄运行时落点：旧数组修改代码保留且仍未启用，不同时使用两种平移。
+-- 4.3 小欧米茄运行时落点：不修改共享参数或召唤数组。
 -- 由任务脚本生命周期限定作用域；仅修正大招DIRECT召唤，保留随机偏移与高度。
 -- 隐藏vec3返回缓冲：args[3]=this，args[4]=原点，args[5]=候选点，已CLI核对。
 sdk.hook(sdk.find_type_definition("app.cEm0166_00Extend"):get_method("checkSaftySummonPos(via.vec3, via.vec3)"),
@@ -288,7 +228,7 @@ sdk.hook(sdk.find_type_definition("app.Em0166_00Action.cSpAtkRound"):get_method(
         -- TU5原函数正常返回NORMAL=0前已调用setVariableBlendRate和setMotionGroup。
         local result = sdk.to_int64(retval) & 0xFFFFFFFF
         if result ~= 0 then
-            log.info(string.format("%s Round post skipped: enter result=%d", QUEST_TAG, result))
+            print("Round post skipped: enter result=%d", result)
             return retval
         end
         local storage = thread.get_hook_storage()
@@ -298,8 +238,8 @@ sdk.hook(sdk.find_type_definition("app.Em0166_00Action.cSpAtkRound"):get_method(
         variable_id:set_field("_HasValue", true)
         variable_id:set_field("_Value", 0x067C962F)
         set_blend_rate:call(nil, storage.motion, blend, variable_id)
-        log.info(string.format("%s Round post blend=%.6f; entry yaw=%.6f; base yaw=%.6f",
-            QUEST_TAG, blend, storage.yaw, ROUND_BASE_YAW))
+        print("Round post blend=%.6f; entry yaw=%.6f; base yaw=%.6f",
+            blend, storage.yaw, ROUND_BASE_YAW)
         return retval
     end)
     
@@ -312,19 +252,15 @@ quest.on_load(function()
         9549,  -- EM5010_00_0 仙人刺
     }
     lib.load_mission_dialogues(OMEGA_MISSION_FIXED)
-    log.info(string.format("%s quest script loaded", QUEST_TAG))
+    print("quest script loaded")
 end)
 
--- 任务进入 cQuestStart 时修改一次; 重复通知不覆盖最初备份。
+-- 记录任务流程变化。
 quest.on_flow_changed(function(flow)
-    log.info(string.format("%s flow: %s", QUEST_TAG, flow))
-    -- if flow == "app.cQuestStart" and attack_param_backup == nil then
-    --     apply_attack_params()
-    -- end
+    print("flow: %s", flow)
 end)
 
 quest.on_unload(function()
-    -- restore_attack_params()
     lib.unload_mission_dialogues(OMEGA_MISSION_FIXED)
-    log.info(string.format("%s unloading quest script, hooks will be removed", QUEST_TAG))
+    print("unloading quest script, hooks will be removed")
 end)
