@@ -4,7 +4,10 @@
 -- 保留上游贴地、敌人主控检查，以及原始位置、方向、ownerKey、option、创建回调。
 -- hook 由任务独立 ScriptState 托管，任务结束自动摘除；不要放入 autorun。
 
-log.info(string.format("[quest 10097][crystal] script loading; quest_id=%s", tostring(quest.quest_id)))
+local lib = require("scripts.quest_lib")
+local print = lib.print
+
+print("[crystal] script loading; quest_id=%s", tostring(quest.quest_id))
 assert(quest.quest_id == 10097, "10097.lua must run in quest 10097")
 
 local create_crystal = sdk.find_type_definition("app.cEnemyDepletionCondition"):get_method("createEnergyCrystal")
@@ -32,7 +35,7 @@ sdk.hook(create_crystal,
         return sdk.to_ptr(thread.get_hook_storage().crystal_requested and 1 or 0)
     end)
 
-log.info(string.format("[quest 10097][crystal] hook registered; create=%s request=%s", tostring(create_crystal:get_function()), tostring(request_crystal:get_function())))
+print("[crystal] hook registered; create=%s request=%s", tostring(create_crystal:get_function()), tostring(request_crystal:get_function()))
 
 -- ==================== 王锁开局解放 ====================
 -- 暂停直接写Mode，保留旧方案；当前使用下方的血量门槛配置。
@@ -42,7 +45,7 @@ do
     -- UNLEASH=1 已核对运行时枚举；后续 doUpdateBegin 按此状态启用解放动作过滤器。
     -- 只在 doStartBegin post 写入，不每帧锁定，也不调用会恢复伤口的 unleash()。
     -- hook 由任务 ScriptState 托管，任务结束自动摘除。
-    log.info(string.format("[quest 10097][unleash] script loading; quest_id=%s", tostring(quest.quest_id)))
+    print("[unleash] script loading; quest_id=%s", tostring(quest.quest_id))
     local start = sdk.find_type_definition("app.cEm0160Extend"):get_method("doStartBegin()")
     sdk.hook(start,
         function(args)
@@ -52,10 +55,10 @@ do
             local extend = thread.get_hook_storage().extend
             local mode = extend:get_field("_Mode")
             extend:set_field("_Mode", 1) -- app.cEm0160Extend.MODE.UNLEASH
-            log.info(string.format("[quest 10097][unleash] initial mode=%d -> %d (UNLEASH)", mode, extend:get_field("_Mode")))
+            print("[unleash] initial mode=%d -> %d (UNLEASH)", mode, extend:get_field("_Mode"))
             return retval
         end)
-    log.info(string.format("[quest 10097][unleash] hook registered; start=%s", tostring(start:get_function())))
+    print("[unleash] hook registered; start=%s", tostring(start:get_function()))
 end
 ]=]
 
@@ -68,8 +71,8 @@ do
     local EM0160_00_0 = 27 -- EnemyDef.ID，运行时ID
     local param, original_unleash, original_acceleration
 
-    log.info(string.format("[quest 10097][thresholds] script loading; unleash=%g acceleration=%g",
-        UNLEASH_MODE_CHANGE_THRESHOLD, AUTO_ELEMENT_CHARGE_ACCELERATION_THRESHOLD))
+    print("[thresholds] script loading; unleash=%g acceleration=%g",
+        UNLEASH_MODE_CHANGE_THRESHOLD, AUTO_ELEMENT_CHARGE_ACCELERATION_THRESHOLD)
     quest.on_flow_changed(function(flow)
         -- cQuestStart时取已加载的常驻参数；重复通知不覆盖最初备份。
         if flow ~= "app.cQuestStart" or param ~= nil then return end
@@ -80,19 +83,19 @@ do
         original_acceleration = param:get_field("AutoElementChargeAccelerationThreshold")
         param:set_field("UnleashModeChangeThreshold", UNLEASH_MODE_CHANGE_THRESHOLD)
         param:set_field("AutoElementChargeAccelerationThreshold", AUTO_ELEMENT_CHARGE_ACCELERATION_THRESHOLD)
-        log.info(string.format("[quest 10097][thresholds] flow=%s; UnleashModeChangeThreshold=%g -> %g; AutoElementChargeAccelerationThreshold=%g -> %g",
+        print("[thresholds] flow=%s; UnleashModeChangeThreshold=%g -> %g; AutoElementChargeAccelerationThreshold=%g -> %g",
             flow, original_unleash, param:get_field("UnleashModeChangeThreshold"),
-            original_acceleration, param:get_field("AutoElementChargeAccelerationThreshold")))
+            original_acceleration, param:get_field("AutoElementChargeAccelerationThreshold"))
     end)
-    log.info(string.format("[quest 10097][thresholds] flow callback registered; flow=%s", "app.cQuestStart"))
+    print("[thresholds] flow callback registered; flow=%s", "app.cQuestStart")
 
     -- ParamUnique来自共享资源，任务结束必须还原；Lua引用持有参数对象。
     quest.on_unload(function()
         if param == nil then return end
         param:set_field("UnleashModeChangeThreshold", original_unleash)
         param:set_field("AutoElementChargeAccelerationThreshold", original_acceleration)
-        log.info(string.format("[quest 10097][thresholds] restored; unleash=%g acceleration=%g",
-            param:get_field("UnleashModeChangeThreshold"), param:get_field("AutoElementChargeAccelerationThreshold")))
+        print("[thresholds] restored; unleash=%g acceleration=%g",
+            param:get_field("UnleashModeChangeThreshold"), param:get_field("AutoElementChargeAccelerationThreshold"))
         param = nil
     end)
 end
