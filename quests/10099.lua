@@ -353,15 +353,13 @@ local BURST_ROTATION = Quaternion.new(math.cos(BURST_YAW / 2), 0, math.sin(BURST
 -- 9.1 爆炸出生参数: 仅Creator 47 / Shell 26; 不改激光、伤害或EffectScale。
 sdk.hook(sdk.find_type_definition("app.cAppShellShooter"):get_method("loadArgmentData(ace.user_data.ShellCreatorInfoDataBase.ShellCreatorInfoArgumentBase, app.cShellShootingInfo, ace.user_data.ShellCreatorInfoDataBase.ShellCreatorInfoBase, app.cAppShellShooter.overWriteOffset)"),
     function(args)
-        local storage = thread.get_hook_storage()
-        storage.info = nil
         local arg = sdk.to_managed_object(args[3])
         if arg == nil or arg:get_type_definition():get_full_name() ~= "app.Em0166_00SpAtkBurstShellCreatorInfoArgument" then
             return
         end
         local creator = sdk.to_managed_object(args[5])
         if creator:get_field("_UniqueID") == 47 and creator:get_field("_ShellListNo") == 26 then
-            storage.info = sdk.to_managed_object(args[4])
+            thread.get_hook_storage().info = sdk.to_managed_object(args[4])
         end
     end,
     function(retval)
