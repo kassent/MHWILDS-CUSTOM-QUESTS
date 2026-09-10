@@ -8,10 +8,10 @@
 --   2. 动作速度     白炽龙/黑蚀龙/欧米茄动作提速(package 加载时改 Legendary 参数)
 --   3. 火海寿命     芥末炸弹火海出生即无限寿命
 --   4. 暴走锁定     欧米茄暴走不可被脚伤击破解除
---   5. 预放置敌人   QUEST_ENEMY_SPAWNS 表驱动注入(双影蜘蛛联动召唤 + 掩体植物)
---   6. 台词 NPC     补 spawn 欧米茄台词的两个说话 NPC
---   7. 龙乳结晶     普通地面也可生成GM651结晶，保留原生结晶效果
---   8. 王锁血量门槛 解放/自动充能加速门槛设为100%，任务结束还原
+--   5. 王锁血量门槛 解放/自动充能加速门槛设为100%，任务结束还原
+--   6. 预放置敌人   QUEST_ENEMY_SPAWNS 表驱动注入(双影蜘蛛联动召唤 + 掩体植物)
+--   7. 台词 NPC     补 spawn 欧米茄台词的两个说话 NPC
+--   8. 龙乳结晶     普通地面也可生成GM651结晶，保留原生结晶效果
 --   9. 大招配置     欧米茄中心/蓄力目标、爆炸朝向与缩放、小欧米茄运行时落点
 --  10. 绕飞混合     doEnter post覆盖blend，基准取蓄力点指向中心的水平角
 --  11. 生命周期     常驻怪物声明、对话装卸、增强参数还原及任务流程日志
@@ -25,8 +25,8 @@ local print = lib.print
 local OMEGA_MISSION_FIXED = 26820 -- Ms730020 零式欧米茄 (Dia_stCh7301_Ms730020_*)
 
 -- ==================== 2. 动作速度 ====================
--- hook EnemyManager 的 package 加载/卸载。加载完成后沿着
---   _PackageHolders[EmID]._PackageData._ParamPack._Legendary 逐级访问, 对表内 EmID 写
+-- 订阅 lib 的 package 加载/卸载请求事件。加载完成后沿着
+--   EnemyManager.getPackage(EmID)._ParamPack._Legendary 逐级访问, 对表内 EmID 写
 --   MotionSpeedRate / MotionSpeedRate_Hard, 卸载时还原。
 -- 备份表持有 obj 引用: 既防对象被提前释放, 还原时也不用重新走 EnemyManager 逐级查。
 
@@ -38,131 +38,130 @@ local MOTION_SPEED_PATCHES = {
 
 local motion_speed_patched = {} -- EmID -> { obj = legendary 对象, rate/rateHard = 原值 }
 
-local function restore_motion_speed_patch(id)
-    local b = motion_speed_patched[id]
-    if b == nil then
-        return
-    end
-    local cur, curHard = b.obj.MotionSpeedRate, b.obj.MotionSpeedRate_Hard
-    b.obj.MotionSpeedRate = b.rate
-    b.obj.MotionSpeedRate_Hard = b.rateHard
-    motion_speed_patched[id] = nil
-    print("restored motion speed for EmID=%d(%s): MotionSpeedRate %.2f -> %.2f, MotionSpeedRate_Hard %.2f -> %.2f", id, lib.get_enemy_display_name(id), cur, b.rate, curHard, b.rateHard)
-end
-
--- args[1]=vmctx args[2]=this args[3]=EmID(32位枚举: to_int64 后 & 0xFFFFFFFF 截出来)
-sdk.hook(sdk.find_type_definition("app.EnemyManager"):get_method("onLoadPackage(app.EnemyDef.ID)"), function(args)
-    local id = sdk.to_int64(args[3]) & 0xFFFFFFFF
-    print("onLoadPackage EmID=%d(%s)", id, lib.get_enemy_display_name(id))
-
-    local em = sdk.to_managed_object(args[2])
-    local holder = em._PackageHolders[id]
-    if holder == nil then
-        return
-    end
-    ---@field getPackage fun(self, arg0: app.EnemyDef.ID): app.user_data.EnemyPackage public 0x1455f90c0 / id: 611130
-    local legendary = holder._PackageData._ParamPack._Legendary
-    if legendary == nil then
-        return
-    end
-    local targetSpeed = MOTION_SPEED_PATCHES[id]
-    if targetSpeed ~= nil then
+for enemy_id, targetSpeed in pairs(MOTION_SPEED_PATCHES) do
+    lib.on_enemy_package_loaded(enemy_id, function(id)
+        local package = sdk.get_managed_singleton("app.EnemyManager"):call("getPackage(app.EnemyDef.ID)", id)
+        local legendary = package:get_field("_ParamPack"):get_field("_Legendary")
         local rate, rateHard = legendary.MotionSpeedRate, legendary.MotionSpeedRate_Hard
         motion_speed_patched[id] = { obj = legendary, rate = rate, rateHard = rateHard }
         legendary.MotionSpeedRate = targetSpeed
         legendary.MotionSpeedRate_Hard = targetSpeed
         print("patched motion speed for EmID=%d(%s): MotionSpeedRate %.2f -> %.2f, MotionSpeedRate_Hard %.2f -> %.2f", id, lib.get_enemy_display_name(id), rate, legendary.MotionSpeedRate, rateHard, legendary.MotionSpeedRate_Hard)
-    end
-end)
+    end)
 
-sdk.hook(sdk.find_type_definition("app.EnemyManager"):get_method("onUnloadRequestPackage(app.EnemyDef.ID)"), function(args)
-    local id = sdk.to_int64(args[3]) & 0xFFFFFFFF
-    print("onUnloadRequestPackage EmID=%d(%s)", id, lib.get_enemy_display_name(id))
-    restore_motion_speed_patch(id)
-end)
+    lib.on_enemy_package_unloaded(enemy_id, function(id)
+        local b = motion_speed_patched[id]
+        if b == nil then return end
+        local cur, curHard = b.obj.MotionSpeedRate, b.obj.MotionSpeedRate_Hard
+        b.obj.MotionSpeedRate = b.rate
+        b.obj.MotionSpeedRate_Hard = b.rateHard
+        motion_speed_patched[id] = nil
+        print("restored motion speed for EmID=%d(%s): MotionSpeedRate %.2f -> %.2f, MotionSpeedRate_Hard %.2f -> %.2f", id, lib.get_enemy_display_name(id), cur, b.rate, curHard, b.rateHard)
+    end)
+end
 
 -- ==================== 3. 火海寿命 ====================
--- 芥末炸弹火海(MasteredBombSlipArea)出生即无限寿命:
+-- 芥末炸弹火海(MasteredBombSlipArea)在 package 加载完成时调整源参数:
 --   ShellBase.update 的寿命守卫是 `0 < _LifeSec && LifeTimer 超时`, 写 0 即引擎"无寿命"语义。
---   _CommonParam 是该 Omega 本次加载的 ShellList 里共享的源头数据: 第一颗火海写入后,
---   同场后续火海(读同一份数据)出生即无限; 每只新 Omega 加载新副本, hook 幂等覆盖。
+--   _CommonParam 来自 ShellList，共享给实例 Setting；不等第一颗火海 onSetup，也不创建副本。
 --   注意: 只去掉 120s 自然寿命, SlipArea::update 的"新一轮施法清场"仍在,
 --   火海最长活到 Omega 下一次放芥末炸弹(或死亡/任务结束)。
 
-local slip_lifetime_patched = {} -- [{ obj = CommonParam, orig = 原 LifeSec }]
+local EM0166_00_0 = 34 -- EnemyDef.ID，运行时 ID
+local slip_lifetime_patch = nil -- { obj = CommonParam, orig = 原 LifeSec }
 
-sdk.hook(sdk.find_type_definition("app.mcShellMiniParamEm0166_00MasteredBombSlipArea"):get_method("onSetup()"), function(args)
-    local this = sdk.to_managed_object(args[2])
-    if this == nil then
-        return
-    end
-    local shell = this:call("get_Shell()")
-    local setting = shell ~= nil and shell:call("get_Setting()") or nil
-    if setting == nil then
-        return
-    end
-    local mainParam = setting:get_field("_MainParam")
-    local cp = mainParam ~= nil and mainParam:get_field("_CommonParam") or nil
-    if cp == nil then
-        return
-    end
+lib.on_enemy_package_loaded(EM0166_00_0, function(id)
+    local package = sdk.get_managed_singleton("app.EnemyManager"):call("getPackage(app.EnemyDef.ID)", id)
+    local shell_list = package:get_field("_ParamPack"):get_field("_ShellCreatorInfoData"):get_field("_ShellList")
+    local index = shell_list:call("findShellIndexFromShellID", 24) -- FixedID，不是数组下标
+    assert(index >= 0, "Omega MasteredBombSlipArea (FixedID=24) missing from ShellList")
+    local shell_package = shell_list:call("getShellPackage", index)
+    local cp = shell_package:get_field("_MainParam"):get_field("_CommonParam")
+
     local life = cp:get_field("_LifeSec")
     if life > 0 then
+        slip_lifetime_patch = { obj = cp, orig = life }
         cp:set_field("_LifeSec", 0.0)
-        slip_lifetime_patched[#slip_lifetime_patched + 1] = { obj = cp, orig = life }
-        print("slip area lifetime %.1f -> infinite", life)
+        print("slip area lifetime %.1f -> infinite (package loaded; EmID=%d)", life, id)
     end
 end)
 
-local function restore_slip_lifetime()
-    for _, b in ipairs(slip_lifetime_patched) do
-        b.obj:set_field("_LifeSec", b.orig)
-    end
-    if #slip_lifetime_patched > 0 then
-        print("restored slip area lifetime for %d CommonParam(s)", #slip_lifetime_patched)
-    end
-    slip_lifetime_patched = {}
-end
+lib.on_enemy_package_unloaded(EM0166_00_0, function()
+    local b = slip_lifetime_patch
+    if b == nil then return end
+    b.obj:set_field("_LifeSec", b.orig)
+    slip_lifetime_patch = nil
+    print("restored slip area lifetime -> %.1f", b.orig)
+end)
 
 -- ==================== 4. 暴走锁定 ====================
 -- 全能之主(Rampage)不可被脚伤击破解除:
 --   subRampageDownVital @0x14746bbb0 每次击破脚伤扣暴走血条的 _ScarRampageDownRate(_HL)%(原生 35),
 --   扣到见底才 endRampageMode + 长倒地。写 0 → 每次扣 0, 血条永不见底,
 --   只剩 _RampageTime 计时(零式 600s)和第 2 次暴走的血量线(零式 10%)能退出。
---   ParamUnique 是 per-Omega 实例数据(extend.get_ParamUnique()), 每只新 Omega 各一份;
---   hook 每次进暴走前幂等写入(rate==0 跳过)。
+--   派生 Extend 的 ParamUnique 直接引用 StageResident._Unique._SpeciesInfo，并非每只独立副本。
+--   按任务约定 package 就绪时 StageResident 已就绪，在资源事件中修改并备份/还原。
 
-local rampage_rate_patched = {} -- [{ obj = ParamUnique, orig = 原rate, origHl = 原rate_HL }]
+local rampage_rate_patch = nil -- { obj = SpeciesInfo, orig = 原rate, origHl = 原rate_HL }
 
-sdk.hook(sdk.find_type_definition("app.cEm0166_00Extend"):get_method("startRampageMode()"), function(args)
-    local ext = sdk.to_managed_object(args[2])
-    local pu = ext ~= nil and ext:call("get_ParamUnique()") or nil
-    if pu == nil then
-        return
-    end
+lib.on_enemy_package_loaded(EM0166_00_0, function(id)
+    local resident = sdk.get_managed_singleton("app.EnemyManager"):call("getEnemyStageResident(app.EnemyDef.ID)", id)
+    local pu = resident:get_field("_Unique"):get_field("_SpeciesInfo")
+    if rampage_rate_patch ~= nil and rampage_rate_patch.obj:get_address() == pu:get_address() then return end
+
     local rate = pu:get_field("_ScarRampageDownRate")
-    if rate == 0 then
-        return
-    end
     local rateHl = pu:get_field("_ScarRampageDownRate_HL")
+    if rate == 0 and rateHl == 0 then return end
+    rampage_rate_patch = { obj = pu, orig = rate, origHl = rateHl }
     pu:set_field("_ScarRampageDownRate", 0)
     pu:set_field("_ScarRampageDownRate_HL", 0)
-    rampage_rate_patched[#rampage_rate_patched + 1] = { obj = pu, orig = rate, origHl = rateHl }
-    print("rampage scar down rate %d/%d -> 0/0 (leg scar break no longer exits rampage)", rate, rateHl)
+    print("rampage scar down rate %d/%d -> 0/0 (package loaded; EmID=%d)", rate, rateHl, id)
 end)
 
-local function restore_rampage_rate()
-    for _, b in ipairs(rampage_rate_patched) do
-        b.obj:set_field("_ScarRampageDownRate", b.orig)
-        b.obj:set_field("_ScarRampageDownRate_HL", b.origHl)
-    end
-    if #rampage_rate_patched > 0 then
-        print("restored rampage scar down rate for %d ParamUnique(s)", #rampage_rate_patched)
-    end
-    rampage_rate_patched = {}
+lib.on_enemy_package_unloaded(EM0166_00_0, function()
+    local b = rampage_rate_patch
+    if b == nil then return end
+    b.obj:set_field("_ScarRampageDownRate", b.orig)
+    b.obj:set_field("_ScarRampageDownRate_HL", b.origHl)
+    rampage_rate_patch = nil
+    print("restored rampage scar down rate -> %d/%d", b.orig, b.origHl)
+end)
+
+-- ==================== 5. 王锁血量门槛配置 ====================
+do
+    -- 两项均为严格 HP% < 阈值：100表示掉血后生效，满血不满足。
+    -- 只调整门槛，不直接改Mode，也不改自动充能量或计时周期。
+    local UNLEASH_MODE_CHANGE_THRESHOLD = 100.0
+    local AUTO_ELEMENT_CHARGE_ACCELERATION_THRESHOLD = 100.0
+    local EM0160_00_0 = 27 -- EnemyDef.ID，运行时ID
+    local param, original_unleash, original_acceleration
+
+    lib.on_enemy_package_loaded(EM0160_00_0, function(id)
+        -- 按任务约定 package 就绪时 StageResident 已就绪；原生判定读基类 Genus，不是 Species。
+        local resident = sdk.get_managed_singleton("app.EnemyManager"):call("getEnemyStageResident(app.EnemyDef.ID)", id)
+        param = resident:get_field("_Unique"):get_field("_GenusInfo")
+        original_unleash = param:get_field("UnleashModeChangeThreshold")
+        original_acceleration = param:get_field("AutoElementChargeAccelerationThreshold")
+        param:set_field("UnleashModeChangeThreshold", UNLEASH_MODE_CHANGE_THRESHOLD)
+        param:set_field("AutoElementChargeAccelerationThreshold", AUTO_ELEMENT_CHARGE_ACCELERATION_THRESHOLD)
+        print("[thresholds] package loaded; enemy_id=%d; UnleashModeChangeThreshold=%g -> %g; AutoElementChargeAccelerationThreshold=%g -> %g",
+            id, original_unleash, param:get_field("UnleashModeChangeThreshold"),
+            original_acceleration, param:get_field("AutoElementChargeAccelerationThreshold"))
+    end)
+    lib.on_enemy_package_unloaded(EM0160_00_0, function()
+        if param == nil then return end
+        param:set_field("UnleashModeChangeThreshold", original_unleash)
+        param:set_field("AutoElementChargeAccelerationThreshold", original_acceleration)
+        print("[thresholds] restored; unleash=%g acceleration=%g",
+            param:get_field("UnleashModeChangeThreshold"), param:get_field("AutoElementChargeAccelerationThreshold"))
+        param = nil
+    end)
+    print("[thresholds] package callbacks registered; enemy_id=%d", EM0160_00_0)
+
+    -- 参数恢复统一走 unloaded；任务结束时由 lib 检查驻留包并补发。
 end
 
--- ==================== 5. 预放置敌人 ====================
+-- ==================== 6. 预放置敌人 ====================
 -- entry 字段文档见 scripts/quest_lib.lua(与 pog ContextLayoutEnemy 节点同名字段一一对照)。
 -- 触发器: EnemyManager.createMainTargetContext —— updateChangeLayout 的 STORY 分支,
 --   每个客户端(任何座位)的任务布局流程必经(四组联机实测; layouter 触发依赖场景有非空敌人图,
@@ -236,7 +235,7 @@ sdk.hook(sdk.find_type_definition("app.EnemyManager"):get_method("createMainTarg
         end
     end)
 
--- ==================== 6. 台词 NPC ====================
+-- ==================== 7. 台词 NPC ====================
 -- 位置用本任务竞技场中心附近(st403), 原 st402 坐标不适用。
 -- 触发器: 阿尔玛(fixed 86)是任务必刷 NPC, 她的 createContextHolder_Npc 时刻场景必然已加载,
 --   比 cQuestPlaying 更早更稳。我们自己的 spawn 会重入本 hook, 但 NpcID 不匹配触发条件, 不会递归。
@@ -259,7 +258,7 @@ sdk.hook(sdk.find_type_definition("app.ContextManager"):get_method("createContex
     end
 end)
 
--- ==================== 7. 普通地面龙乳结晶 ====================
+-- ==================== 8. 普通地面龙乳结晶 ====================
 do
     -- 让原本受地面条件限制的招式也能请求生成龙乳结晶（GM651）。
     -- 此处只调整生成条件，不改结晶自身的命中、拘束或其他行为参数。
@@ -267,9 +266,6 @@ do
     -- 这里直接执行后续 requestSetLimeStone；不依赖查询命中数，也不读取错误类型字段。
     -- 保留上游贴地、敌人主控检查，以及原始位置、方向、ownerKey、option、创建回调。
     -- hook 由任务独立 ScriptState 托管，任务结束自动摘除；不要放入 autorun。
-
-    print("[crystal] script loading; quest_id=%s", tostring(quest.quest_id))
-    assert(quest.quest_id == 10099, "10099.lua must run in quest 10099")
 
     local create_crystal = sdk.find_type_definition("app.cEnemyDepletionCondition"):get_method("createEnergyCrystal")
     local request_crystal = sdk.find_type_definition("app.cLimeStoneManager"):get_method("requestSetLimeStone")
@@ -296,45 +292,7 @@ do
             return sdk.to_ptr(thread.get_hook_storage().crystal_requested and 1 or 0)
         end)
 
-    print("[crystal] hook registered; create=%s request=%s", tostring(create_crystal:get_function()), tostring(request_crystal:get_function()))
-end
-
--- ==================== 8. 王锁血量门槛配置 ====================
-do
-    -- 两项均为严格 HP% < 阈值：100表示掉血后生效，满血不满足。
-    -- 只调整门槛，不直接改Mode，也不改自动充能量或计时周期。
-    local UNLEASH_MODE_CHANGE_THRESHOLD = 100.0
-    local AUTO_ELEMENT_CHARGE_ACCELERATION_THRESHOLD = 100.0
-    local EM0160_00_0 = 27 -- EnemyDef.ID，运行时ID
-    local param, original_unleash, original_acceleration
-
-    print("[thresholds] script loading; unleash=%g acceleration=%g",
-        UNLEASH_MODE_CHANGE_THRESHOLD, AUTO_ELEMENT_CHARGE_ACCELERATION_THRESHOLD)
-    quest.on_flow_changed(function(flow)
-        -- cQuestStart时取已加载的常驻参数；重复通知不覆盖最初备份。
-        if flow ~= "app.cQuestStart" or param ~= nil then return end
-        local resident = sdk.get_managed_singleton("app.EnemyManager"):call("getEnemyStageResident(app.EnemyDef.ID)", EM0160_00_0)
-        -- 原生判定读Genus，不是Species；已核对与实例基类ParamUnique为同一对象。
-        param = resident:get_field("_Unique"):get_field("_GenusInfo")
-        original_unleash = param:get_field("UnleashModeChangeThreshold")
-        original_acceleration = param:get_field("AutoElementChargeAccelerationThreshold")
-        param:set_field("UnleashModeChangeThreshold", UNLEASH_MODE_CHANGE_THRESHOLD)
-        param:set_field("AutoElementChargeAccelerationThreshold", AUTO_ELEMENT_CHARGE_ACCELERATION_THRESHOLD)
-        print("[thresholds] flow=%s; UnleashModeChangeThreshold=%g -> %g; AutoElementChargeAccelerationThreshold=%g -> %g",
-            flow, original_unleash, param:get_field("UnleashModeChangeThreshold"),
-            original_acceleration, param:get_field("AutoElementChargeAccelerationThreshold"))
-    end)
-    print("[thresholds] flow callback registered; flow=%s", "app.cQuestStart")
-
-    -- ParamUnique来自共享资源，任务结束必须还原；Lua引用持有参数对象。
-    quest.on_unload(function()
-        if param == nil then return end
-        param:set_field("UnleashModeChangeThreshold", original_unleash)
-        param:set_field("AutoElementChargeAccelerationThreshold", original_acceleration)
-        print("[thresholds] restored; unleash=%g acceleration=%g",
-            param:get_field("UnleashModeChangeThreshold"), param:get_field("AutoElementChargeAccelerationThreshold"))
-        param = nil
-    end)
+    print("hook registered; create=%s request=%s", tostring(create_crystal:get_function()), tostring(request_crystal:get_function()))
 end
 
 -- 欧米茄大招：同步10098当前配置，局部作用域不影响本任务其他功能。
@@ -476,7 +434,7 @@ sdk.hook(sdk.find_type_definition("app.Em0166_00Action.cSpAtkRound"):get_method(
 end
 
 -- ==================== 11. 生命周期 ====================
--- 兜底: package 卸载若发生在脚本摘钩之后, 这里把还没还原的一次性还原
+-- 敌人参数恢复由 lib 的 unloaded 通知统一处理；此处保留任务其他生命周期业务。
 quest.on_load(function()
     -- 声明本任务场景需要的 EnemyDef.ID_Fixed: 宿主 hook setStageResidentDataDicts 时
     --   合并进当前场景 _EmIDList(不限场景), 场景即可刷新它们(环境生物不在 Boss+Zako 全量范围)
@@ -494,11 +452,6 @@ quest.on_flow_changed(function(flow)
 end)
 
 quest.on_unload(function()
-    for id in pairs(motion_speed_patched) do
-        restore_motion_speed_patch(id)
-    end
-    restore_slip_lifetime()
-    restore_rampage_rate()
     lib.unload_mission_dialogues(OMEGA_MISSION_FIXED)
     print("unloading quest script, hooks will be removed")
 end)

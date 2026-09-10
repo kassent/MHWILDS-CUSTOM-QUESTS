@@ -4,7 +4,10 @@
 -- 每个任务独占一个 ScriptState, require 缓存是 per-state 的: 每个任务各持一份副本,
 --   卸载随 state 销毁, 无跨任务污染。
 --
--- 提供(纯被动函数库, 所有 sdk.hook 安装都在各任务脚本里, 挂什么钩子任务文件一眼可见):
+-- 默认 require 不安装 hook；首次订阅敌人包事件时，按需安装一对生命周期 hook。
+-- 具体参数修改和其他业务 hook 仍由任务脚本负责。
+-- 提供:
+--   敌人包事件   on_enemy_package_loaded / on_enemy_package_unloaded(enemy_id, callback)
 --   通用工具     parse_guid / get_mission_id_from_fixed / get_enemy_display_name
 --   任务日志     print(fmt, ...) —— 自动添加当前任务前缀，写入log.info
 --                is_late_join / resolve_em_id / calc_route_guid_hash / get_npc_runtime_id
@@ -23,6 +26,82 @@ local QUEST_TAG = string.format("[quest %d]", quest.quest_id)
 
 function lib.print(fmt, ...)
     log.info(QUEST_TAG .. " " .. string.format(fmt, ...))
+end
+
+-- ==================== 敌人包事件 ====================
+-- loaded 在 EnemyManager.onLoadPackage pre 派发：包已写入管理器，原生尚未派发初始化。
+-- 按任务约定，此时对应 StageResident 也已就绪；业务按 enemy_id 自行获取两类资源。
+-- unloaded 在 onUnloadRequestPackage pre 派发；任务卸载时给仍驻留且已订阅的包补发清理通知。
+-- 补发不卸载游戏资源；回调需幂等，任务脚本不再重复注册参数恢复的 quest.on_unload。
+-- 按 enemy_id 订阅，只调用匹配 ID 的回调；同 ID 按注册顺序执行，回调仍接收该 ID。
+-- loaded 只转发订阅后的真实通知，不补发、不轮询。enemy_id 是 EnemyDef.ID，不是 ID_Fixed。
+local enemy_package_loaded_callbacks = {}
+local enemy_package_unloaded_callbacks = {}
+local enemy_package_events_installed = false
+
+local function dispatch_enemy_package_event(name, callbacks, enemy_id)
+    local subscribers = callbacks[enemy_id]
+    if subscribers == nil then return end
+    lib.print("[enemy_package] event=%s; enemy_id=%d; enemy_name=%s",
+        name, enemy_id, tostring(lib.get_enemy_display_name(enemy_id)))
+    for i = 1, #subscribers do
+        -- 与 quest 事件宿主一致：仅在订阅者边界隔离错误，记录后继续原版及其他订阅者。
+        local ok, err = pcall(subscribers[i], enemy_id)
+        if not ok then
+            log.error(string.format("%s [enemy_package] %s callback #%d failed; enemy_id=%d: %s",
+                QUEST_TAG, name, i, enemy_id, tostring(err)))
+        end
+    end
+end
+
+local function install_enemy_package_events()
+    if enemy_package_events_installed then return end
+    local td = sdk.find_type_definition("app.EnemyManager")
+    local loaded = td:get_method("onLoadPackage(app.EnemyDef.ID)")
+    local unloaded = td:get_method("onUnloadRequestPackage(app.EnemyDef.ID)")
+
+    sdk.hook(loaded, function(args)
+        dispatch_enemy_package_event("loaded", enemy_package_loaded_callbacks,
+            sdk.to_int64(args[3]) & 0xFFFFFFFF)
+    end)
+    sdk.hook(unloaded, function(args)
+        dispatch_enemy_package_event("unloaded", enemy_package_unloaded_callbacks,
+            sdk.to_int64(args[3]) & 0xFFFFFFFF)
+    end)
+    quest.on_unload(function()
+        -- 任务结束时包可能仍被游戏缓存；仅向有卸载订阅且包仍存在的 ID 补发清理通知。
+        local em = sdk.get_managed_singleton("app.EnemyManager")
+        for enemy_id in pairs(enemy_package_unloaded_callbacks) do
+            if em:call("getPackage(app.EnemyDef.ID)", enemy_id) ~= nil then
+                dispatch_enemy_package_event("unloaded", enemy_package_unloaded_callbacks, enemy_id)
+            end
+        end
+    end)
+    enemy_package_events_installed = true
+    lib.print("[enemy_package] hooks registered; loaded=%s unloaded=%s",
+        tostring(loaded:get_function()), tostring(unloaded:get_function()))
+end
+
+---@param enemy_id integer app.EnemyDef.ID（运行时 ID）
+---@param callback fun(enemy_id: integer)
+function lib.on_enemy_package_loaded(enemy_id, callback)
+    assert(type(enemy_id) == "number" and enemy_id % 1 == 0, "on_enemy_package_loaded expects an integer enemy_id")
+    assert(type(callback) == "function", "on_enemy_package_loaded expects a callback")
+    install_enemy_package_events()
+    local callbacks = enemy_package_loaded_callbacks[enemy_id] or {}
+    enemy_package_loaded_callbacks[enemy_id] = callbacks
+    callbacks[#callbacks + 1] = callback
+end
+
+---@param enemy_id integer app.EnemyDef.ID（运行时 ID）
+---@param callback fun(enemy_id: integer)
+function lib.on_enemy_package_unloaded(enemy_id, callback)
+    assert(type(enemy_id) == "number" and enemy_id % 1 == 0, "on_enemy_package_unloaded expects an integer enemy_id")
+    assert(type(callback) == "function", "on_enemy_package_unloaded expects a callback")
+    install_enemy_package_events()
+    local callbacks = enemy_package_unloaded_callbacks[enemy_id] or {}
+    enemy_package_unloaded_callbacks[enemy_id] = callbacks
+    callbacks[#callbacks + 1] = callback
 end
 
 function lib.parse_guid(s)

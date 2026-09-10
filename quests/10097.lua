@@ -4,11 +4,55 @@
 -- 保留上游贴地、敌人主控检查，以及原始位置、方向、ownerKey、option、创建回调。
 -- hook 由任务独立 ScriptState 托管，任务结束自动摘除；不要放入 autorun。
 
+-- 功能块:
+--   1. 王锁血量门槛 package 加载时将解放/自动充能加速门槛设为100%，卸载时还原
+--   2. 龙乳结晶     普通地面也能生成GM651结晶
+--   3. 王锁开局解放 停用的旧方案，仅保留注释
+
 local lib = require("scripts.quest_lib")
 local print = lib.print
 
-print("[crystal] script loading; quest_id=%s", tostring(quest.quest_id))
 assert(quest.quest_id == 10097, "10097.lua must run in quest 10097")
+
+-- ==================== 1. 王锁血量门槛配置 ====================
+do
+    -- 两项均为严格 HP% < 阈值：100表示掉血后生效，满血不满足。
+    -- 只调整门槛，不直接改Mode，也不改自动充能量或计时周期。
+    local UNLEASH_MODE_CHANGE_THRESHOLD = 100.0
+    local AUTO_ELEMENT_CHARGE_ACCELERATION_THRESHOLD = 100.0
+    local EM0160_00_0 = 27 -- EnemyDef.ID，运行时ID
+    local param, original_unleash, original_acceleration
+
+    print("[thresholds] script loading; unleash=%g acceleration=%g",
+        UNLEASH_MODE_CHANGE_THRESHOLD, AUTO_ELEMENT_CHARGE_ACCELERATION_THRESHOLD)
+    lib.on_enemy_package_loaded(EM0160_00_0, function(id)
+        -- 按任务约定 package 就绪时 StageResident 已就绪；原生判定读基类 Genus，不是 Species。
+        local resident = sdk.get_managed_singleton("app.EnemyManager"):call("getEnemyStageResident(app.EnemyDef.ID)", id)
+        param = resident:get_field("_Unique"):get_field("_GenusInfo")
+        original_unleash = param:get_field("UnleashModeChangeThreshold")
+        original_acceleration = param:get_field("AutoElementChargeAccelerationThreshold")
+        param:set_field("UnleashModeChangeThreshold", UNLEASH_MODE_CHANGE_THRESHOLD)
+        param:set_field("AutoElementChargeAccelerationThreshold", AUTO_ELEMENT_CHARGE_ACCELERATION_THRESHOLD)
+        print("[thresholds] package loaded; enemy_id=%d; UnleashModeChangeThreshold=%g -> %g; AutoElementChargeAccelerationThreshold=%g -> %g",
+            id, original_unleash, param:get_field("UnleashModeChangeThreshold"),
+            original_acceleration, param:get_field("AutoElementChargeAccelerationThreshold"))
+    end)
+    lib.on_enemy_package_unloaded(EM0160_00_0, function()
+        if param == nil then return end
+        param:set_field("UnleashModeChangeThreshold", original_unleash)
+        param:set_field("AutoElementChargeAccelerationThreshold", original_acceleration)
+        print("[thresholds] restored; unleash=%g acceleration=%g",
+            param:get_field("UnleashModeChangeThreshold"), param:get_field("AutoElementChargeAccelerationThreshold"))
+        param = nil
+    end)
+    print("[thresholds] package callbacks registered; enemy_id=%d", EM0160_00_0)
+
+    -- 参数恢复统一走 unloaded；任务结束时由 lib 检查驻留包并补发。
+end
+
+-- ==================== 2. 龙乳结晶 ====================
+
+print("[crystal] script loading; quest_id=%s", tostring(quest.quest_id))
 
 local create_crystal = sdk.find_type_definition("app.cEnemyDepletionCondition"):get_method("createEnergyCrystal")
 local request_crystal = sdk.find_type_definition("app.cLimeStoneManager"):get_method("requestSetLimeStone")
@@ -37,8 +81,8 @@ sdk.hook(create_crystal,
 
 print("[crystal] hook registered; create=%s request=%s", tostring(create_crystal:get_function()), tostring(request_crystal:get_function()))
 
--- ==================== 王锁开局解放 ====================
--- 暂停直接写Mode，保留旧方案；当前使用下方的血量门槛配置。
+-- ==================== 3. 王锁开局解放（停用） ====================
+-- 暂停直接写Mode，保留旧方案；当前使用第1节的血量门槛配置。
 --[=[
 do
     -- 本任务只有一只王锁；在原生初始化完成后直接设置实际形态，不等血量或护龙吼。
@@ -61,41 +105,3 @@ do
     print("[unleash] hook registered; start=%s", tostring(start:get_function()))
 end
 ]=]
-
--- ==================== 王锁血量门槛配置 ====================
-do
-    -- 两项均为严格 HP% < 阈值：100表示掉血后生效，满血不满足。
-    -- 只调整门槛，不直接改Mode，也不改自动充能量或计时周期。
-    local UNLEASH_MODE_CHANGE_THRESHOLD = 100.0
-    local AUTO_ELEMENT_CHARGE_ACCELERATION_THRESHOLD = 100.0
-    local EM0160_00_0 = 27 -- EnemyDef.ID，运行时ID
-    local param, original_unleash, original_acceleration
-
-    print("[thresholds] script loading; unleash=%g acceleration=%g",
-        UNLEASH_MODE_CHANGE_THRESHOLD, AUTO_ELEMENT_CHARGE_ACCELERATION_THRESHOLD)
-    quest.on_flow_changed(function(flow)
-        -- cQuestStart时取已加载的常驻参数；重复通知不覆盖最初备份。
-        if flow ~= "app.cQuestStart" or param ~= nil then return end
-        local resident = sdk.get_managed_singleton("app.EnemyManager"):call("getEnemyStageResident(app.EnemyDef.ID)", EM0160_00_0)
-        -- 原生判定读Genus，不是Species；已核对与实例基类ParamUnique为同一对象。
-        param = resident:get_field("_Unique"):get_field("_GenusInfo")
-        original_unleash = param:get_field("UnleashModeChangeThreshold")
-        original_acceleration = param:get_field("AutoElementChargeAccelerationThreshold")
-        param:set_field("UnleashModeChangeThreshold", UNLEASH_MODE_CHANGE_THRESHOLD)
-        param:set_field("AutoElementChargeAccelerationThreshold", AUTO_ELEMENT_CHARGE_ACCELERATION_THRESHOLD)
-        print("[thresholds] flow=%s; UnleashModeChangeThreshold=%g -> %g; AutoElementChargeAccelerationThreshold=%g -> %g",
-            flow, original_unleash, param:get_field("UnleashModeChangeThreshold"),
-            original_acceleration, param:get_field("AutoElementChargeAccelerationThreshold"))
-    end)
-    print("[thresholds] flow callback registered; flow=%s", "app.cQuestStart")
-
-    -- ParamUnique来自共享资源，任务结束必须还原；Lua引用持有参数对象。
-    quest.on_unload(function()
-        if param == nil then return end
-        param:set_field("UnleashModeChangeThreshold", original_unleash)
-        param:set_field("AutoElementChargeAccelerationThreshold", original_acceleration)
-        print("[thresholds] restored; unleash=%g acceleration=%g",
-            param:get_field("UnleashModeChangeThreshold"), param:get_field("AutoElementChargeAccelerationThreshold"))
-        param = nil
-    end)
-end
