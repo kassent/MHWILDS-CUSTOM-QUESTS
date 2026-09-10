@@ -7,7 +7,7 @@
 -- 默认 require 不安装 hook；首次订阅敌人包事件时，按需安装一对生命周期 hook。
 -- 具体参数修改和其他业务 hook 仍由任务脚本负责。
 -- 提供:
---   敌人包事件   on_enemy_package_loaded / on_enemy_package_unloaded(enemy_id, callback)
+--   敌人包事件   on_enemy_package(enemy_id, on_loaded, on_unloaded)，回调可为 nil
 --   通用工具     parse_guid / get_mission_id_from_fixed / get_enemy_display_name
 --   任务日志     print(fmt, ...) —— 自动添加当前任务前缀，写入log.info
 --                is_late_join / resolve_em_id / calc_route_guid_hash / get_npc_runtime_id
@@ -83,25 +83,26 @@ local function install_enemy_package_events()
 end
 
 ---@param enemy_id integer app.EnemyDef.ID（运行时 ID）
----@param callback fun(enemy_id: integer)
-function lib.on_enemy_package_loaded(enemy_id, callback)
-    assert(type(enemy_id) == "number" and enemy_id % 1 == 0, "on_enemy_package_loaded expects an integer enemy_id")
-    assert(type(callback) == "function", "on_enemy_package_loaded expects a callback")
-    install_enemy_package_events()
-    local callbacks = enemy_package_loaded_callbacks[enemy_id] or {}
-    enemy_package_loaded_callbacks[enemy_id] = callbacks
-    callbacks[#callbacks + 1] = callback
-end
+---@param on_loaded? fun(enemy_id: integer)
+---@param on_unloaded? fun(enemy_id: integer)
+function lib.on_enemy_package(enemy_id, on_loaded, on_unloaded)
+    assert(type(enemy_id) == "number" and enemy_id % 1 == 0, "on_enemy_package expects an integer enemy_id")
+    assert(on_loaded == nil or type(on_loaded) == "function", "on_enemy_package expects on_loaded to be a function or nil")
+    assert(on_unloaded == nil or type(on_unloaded) == "function", "on_enemy_package expects on_unloaded to be a function or nil")
+    if on_loaded == nil and on_unloaded == nil then return end
 
----@param enemy_id integer app.EnemyDef.ID（运行时 ID）
----@param callback fun(enemy_id: integer)
-function lib.on_enemy_package_unloaded(enemy_id, callback)
-    assert(type(enemy_id) == "number" and enemy_id % 1 == 0, "on_enemy_package_unloaded expects an integer enemy_id")
-    assert(type(callback) == "function", "on_enemy_package_unloaded expects a callback")
+    -- 两个参数分别对应加载与卸载事件，不是同一原生函数的 pre/post。
     install_enemy_package_events()
-    local callbacks = enemy_package_unloaded_callbacks[enemy_id] or {}
-    enemy_package_unloaded_callbacks[enemy_id] = callbacks
-    callbacks[#callbacks + 1] = callback
+    if on_loaded ~= nil then
+        local callbacks = enemy_package_loaded_callbacks[enemy_id] or {}
+        enemy_package_loaded_callbacks[enemy_id] = callbacks
+        callbacks[#callbacks + 1] = on_loaded
+    end
+    if on_unloaded ~= nil then
+        local callbacks = enemy_package_unloaded_callbacks[enemy_id] or {}
+        enemy_package_unloaded_callbacks[enemy_id] = callbacks
+        callbacks[#callbacks + 1] = on_unloaded
+    end
 end
 
 function lib.parse_guid(s)

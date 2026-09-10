@@ -39,7 +39,7 @@ local MOTION_SPEED_PATCHES = {
 local motion_speed_patched = {} -- EmID -> { obj = legendary 对象, rate/rateHard = 原值 }
 
 for enemy_id, targetSpeed in pairs(MOTION_SPEED_PATCHES) do
-    lib.on_enemy_package_loaded(enemy_id, function(id)
+    lib.on_enemy_package(enemy_id, function(id)
         local package = sdk.get_managed_singleton("app.EnemyManager"):call("getPackage(app.EnemyDef.ID)", id)
         local legendary = package:get_field("_ParamPack"):get_field("_Legendary")
         local rate, rateHard = legendary.MotionSpeedRate, legendary.MotionSpeedRate_Hard
@@ -47,9 +47,7 @@ for enemy_id, targetSpeed in pairs(MOTION_SPEED_PATCHES) do
         legendary.MotionSpeedRate = targetSpeed
         legendary.MotionSpeedRate_Hard = targetSpeed
         print("patched motion speed for EmID=%d(%s): MotionSpeedRate %.2f -> %.2f, MotionSpeedRate_Hard %.2f -> %.2f", id, lib.get_enemy_display_name(id), rate, legendary.MotionSpeedRate, rateHard, legendary.MotionSpeedRate_Hard)
-    end)
-
-    lib.on_enemy_package_unloaded(enemy_id, function(id)
+    end, function(id)
         local b = motion_speed_patched[id]
         if b == nil then return end
         local cur, curHard = b.obj.MotionSpeedRate, b.obj.MotionSpeedRate_Hard
@@ -70,7 +68,7 @@ end
 local EM0166_00_0 = 34 -- EnemyDef.ID，运行时 ID
 local slip_lifetime_patch = nil -- { obj = CommonParam, orig = 原 LifeSec }
 
-lib.on_enemy_package_loaded(EM0166_00_0, function(id)
+lib.on_enemy_package(EM0166_00_0, function(id)
     local package = sdk.get_managed_singleton("app.EnemyManager"):call("getPackage(app.EnemyDef.ID)", id)
     local shell_list = package:get_field("_ParamPack"):get_field("_ShellCreatorInfoData"):get_field("_ShellList")
     local index = shell_list:call("findShellIndexFromShellID", 24) -- FixedID，不是数组下标
@@ -84,9 +82,7 @@ lib.on_enemy_package_loaded(EM0166_00_0, function(id)
         cp:set_field("_LifeSec", 0.0)
         print("slip area lifetime %.1f -> infinite (package loaded; EmID=%d)", life, id)
     end
-end)
-
-lib.on_enemy_package_unloaded(EM0166_00_0, function()
+end, function()
     local b = slip_lifetime_patch
     if b == nil then return end
     b.obj:set_field("_LifeSec", b.orig)
@@ -104,7 +100,7 @@ end)
 
 local rampage_rate_patch = nil -- { obj = SpeciesInfo, orig = 原rate, origHl = 原rate_HL }
 
-lib.on_enemy_package_loaded(EM0166_00_0, function(id)
+lib.on_enemy_package(EM0166_00_0, function(id)
     local resident = sdk.get_managed_singleton("app.EnemyManager"):call("getEnemyStageResident(app.EnemyDef.ID)", id)
     local pu = resident:get_field("_Unique"):get_field("_SpeciesInfo")
     if rampage_rate_patch ~= nil and rampage_rate_patch.obj:get_address() == pu:get_address() then return end
@@ -116,9 +112,7 @@ lib.on_enemy_package_loaded(EM0166_00_0, function(id)
     pu:set_field("_ScarRampageDownRate", 0)
     pu:set_field("_ScarRampageDownRate_HL", 0)
     print("rampage scar down rate %d/%d -> 0/0 (package loaded; EmID=%d)", rate, rateHl, id)
-end)
-
-lib.on_enemy_package_unloaded(EM0166_00_0, function()
+end, function()
     local b = rampage_rate_patch
     if b == nil then return end
     b.obj:set_field("_ScarRampageDownRate", b.orig)
@@ -136,7 +130,7 @@ do
     local EM0160_00_0 = 27 -- EnemyDef.ID，运行时ID
     local param, original_unleash, original_acceleration
 
-    lib.on_enemy_package_loaded(EM0160_00_0, function(id)
+    lib.on_enemy_package(EM0160_00_0, function(id)
         -- 按任务约定 package 就绪时 StageResident 已就绪；原生判定读基类 Genus，不是 Species。
         local resident = sdk.get_managed_singleton("app.EnemyManager"):call("getEnemyStageResident(app.EnemyDef.ID)", id)
         param = resident:get_field("_Unique"):get_field("_GenusInfo")
@@ -147,8 +141,7 @@ do
         print("[thresholds] package loaded; enemy_id=%d; UnleashModeChangeThreshold=%g -> %g; AutoElementChargeAccelerationThreshold=%g -> %g",
             id, original_unleash, param:get_field("UnleashModeChangeThreshold"),
             original_acceleration, param:get_field("AutoElementChargeAccelerationThreshold"))
-    end)
-    lib.on_enemy_package_unloaded(EM0160_00_0, function()
+    end, function()
         if param == nil then return end
         param:set_field("UnleashModeChangeThreshold", original_unleash)
         param:set_field("AutoElementChargeAccelerationThreshold", original_acceleration)

@@ -25,7 +25,7 @@ do
 
     print("[thresholds] script loading; unleash=%g acceleration=%g",
         UNLEASH_MODE_CHANGE_THRESHOLD, AUTO_ELEMENT_CHARGE_ACCELERATION_THRESHOLD)
-    lib.on_enemy_package_loaded(EM0160_00_0, function(id)
+    lib.on_enemy_package(EM0160_00_0, function(id)
         -- 按任务约定 package 就绪时 StageResident 已就绪；原生判定读基类 Genus，不是 Species。
         local resident = sdk.get_managed_singleton("app.EnemyManager"):call("getEnemyStageResident(app.EnemyDef.ID)", id)
         param = resident:get_field("_Unique"):get_field("_GenusInfo")
@@ -36,8 +36,7 @@ do
         print("[thresholds] package loaded; enemy_id=%d; UnleashModeChangeThreshold=%g -> %g; AutoElementChargeAccelerationThreshold=%g -> %g",
             id, original_unleash, param:get_field("UnleashModeChangeThreshold"),
             original_acceleration, param:get_field("AutoElementChargeAccelerationThreshold"))
-    end)
-    lib.on_enemy_package_unloaded(EM0160_00_0, function()
+    end, function()
         if param == nil then return end
         param:set_field("UnleashModeChangeThreshold", original_unleash)
         param:set_field("AutoElementChargeAccelerationThreshold", original_acceleration)
