@@ -5,7 +5,7 @@
 --
 -- 功能块:
 --   1. 对话目录     手动加载原 Omega 任务的对话目录(自定义任务不在其目标列表, 不加台词沉默)
---   2. 动作速度     白炽龙/黑蚀龙/欧米茄动作提速(package 加载时改 Legendary 参数)
+--   2. 动作速度     白炽龙/黑蚀龙/欧米茄/王锁动作提速(package 加载时改 Legendary 参数)
 --   3. 火海寿命     芥末炸弹火海出生即无限寿命
 --   4. 暴走锁定     欧米茄暴走不可被脚伤击破解除
 --   5. 王锁增强     参数、控制免疫、开局UNLEASH、跨地图结晶及愤怒时龙属性自动激活
@@ -19,23 +19,32 @@ local lib = require("scripts.quest_lib")
 
 local print = lib.print
 
+-- EnemyDef.ID：运行时ID，用于参数包和实例判断。
+local EM0164_50_0 = 32 -- 白炽龙
+local EM0071_00_0 = 10 -- 黑蚀龙
+local EM0166_00_0 = 34 -- 游星欧米茄
+local EM0160_00_0 = 27 -- 锁刃龙
+
+-- EnemyDef.ID_Fixed：定点ID，用于敌人预放置和场景常驻声明。
+local EM0070_00_0_FIXED = -1363370496 -- 影蜘蛛
+local EM5011_00_0_FIXED = 31768 -- 魔界花幼苗
+local EM5010_00_0_FIXED = 9549 -- 仙人刺
+
+
 -- ==================== 1. 对话目录 ====================
 
 local OMEGA_MISSION_FIXED = 26820 -- Ms730020 零式欧米茄 (Dia_stCh7301_Ms730020_*)
 
 -- ==================== 2. 动作速度 ====================
--- 订阅 lib 的 package 加载/卸载请求事件。加载完成后沿着
---   EnemyManager.getPackage(EmID)._ParamPack._Legendary 逐级访问, 对表内 EmID 写
---   MotionSpeedRate / MotionSpeedRate_Hard, 卸载时还原。
--- 备份表持有 obj 引用: 既防对象被提前释放, 还原时也不用重新走 EnemyManager 逐级查。
-
+-- 同一倍率统一写入MotionSpeedRate和MotionSpeedRate_Hard，package卸载时还原。
 local MOTION_SPEED_PATCHES = {
-    [32] = 1.2, -- 白炽龙
-    [10] = 1.2, -- 黑蚀龙
-    [34] = 1.3, -- 游星欧米茄
+    [EM0164_50_0] = 1.2, -- 白炽龙
+    [EM0071_00_0] = 1.2, -- 黑蚀龙
+    [EM0166_00_0] = 1.3, -- 游星欧米茄
+    [EM0160_00_0] = 1.15, -- 王锁
 }
 
-local motion_speed_patched = {} -- EmID -> { obj = legendary 对象, rate/rateHard = 原值 }
+local motion_speed_patched = {} -- EmID -> { obj = legendary对象, rate/rateHard = 原值 }
 
 for enemy_id, targetSpeed in pairs(MOTION_SPEED_PATCHES) do
     lib.on_enemy_package(enemy_id, function(id)
@@ -45,7 +54,8 @@ for enemy_id, targetSpeed in pairs(MOTION_SPEED_PATCHES) do
         motion_speed_patched[id] = { obj = legendary, rate = rate, rateHard = rateHard }
         legendary.MotionSpeedRate = targetSpeed
         legendary.MotionSpeedRate_Hard = targetSpeed
-        print("patched motion speed for EmID=%d(%s): MotionSpeedRate %.2f -> %.2f, MotionSpeedRate_Hard %.2f -> %.2f", id, lib.get_enemy_display_name(id), rate, legendary.MotionSpeedRate, rateHard, legendary.MotionSpeedRate_Hard)
+        print("[motion-speed] applied; EmID=%d(%s); MotionSpeedRate=%g -> %g; MotionSpeedRate_Hard=%g -> %g",
+            id, lib.get_enemy_display_name(id), rate, legendary.MotionSpeedRate, rateHard, legendary.MotionSpeedRate_Hard)
     end, function(id)
         local b = motion_speed_patched[id]
         if b == nil then return end
@@ -53,9 +63,11 @@ for enemy_id, targetSpeed in pairs(MOTION_SPEED_PATCHES) do
         b.obj.MotionSpeedRate = b.rate
         b.obj.MotionSpeedRate_Hard = b.rateHard
         motion_speed_patched[id] = nil
-        print("restored motion speed for EmID=%d(%s): MotionSpeedRate %.2f -> %.2f, MotionSpeedRate_Hard %.2f -> %.2f", id, lib.get_enemy_display_name(id), cur, b.rate, curHard, b.rateHard)
+        print("[motion-speed] restored; EmID=%d(%s); MotionSpeedRate=%g -> %g; MotionSpeedRate_Hard=%g -> %g",
+            id, lib.get_enemy_display_name(id), cur, b.rate, curHard, b.rateHard)
     end)
 end
+print("[motion-speed] registered; waiting=package-load; enemy_count=4")
 
 -- ==================== 3. 火海寿命 ====================
 -- 芥末炸弹火海(MasteredBombSlipArea)在 package 加载完成时调整源参数:
@@ -64,7 +76,6 @@ end
 --   注意: 只去掉 120s 自然寿命, SlipArea::update 的"新一轮施法清场"仍在,
 --   火海最长活到 Omega 下一次放芥末炸弹(或死亡/任务结束)。
 
-local EM0166_00_0 = 34 -- EnemyDef.ID，运行时 ID
 local slip_lifetime_patch = nil -- { obj = CommonParam, orig = 原 LifeSec }
 
 lib.on_enemy_package(EM0166_00_0, function(id)
@@ -122,9 +133,8 @@ end)
 
 -- ==================== 5. 王锁增强 ====================
 
-local EM0160_00_0 = 27 -- EnemyDef.ID，运行时ID
-
 -- ==================== 5.1 参数配置 ====================
+-- 王锁动作速度统一配置在第2节MOTION_SPEED_PATCHES。
 do
     -- 两项均为严格 HP% < 阈值：100表示掉血后生效，满血不满足。
     -- 只调整门槛，不直接改Mode，也不改自动充能量或计时周期。
@@ -133,9 +143,7 @@ do
     -- 原版两项均约为1.1111；设为1.0后，玩家/NPC翼刃积蓄约为原版90%。
     local PL_GALIAN_RATE_KING = 1.0
     local NPC_GALIAN_RATE_KING = 1.0
-    local KING_MOTION_SPEED = 1.15
     local param, original_unleash, original_acceleration, original_pl_galian, original_npc_galian
-    local legendary, original_motion_speed_hard
 
     lib.on_enemy_package(EM0160_00_0, function(id)
         -- 按任务约定 package 就绪时 StageResident 已就绪；原生判定读基类 Genus，不是 Species。
@@ -155,19 +163,7 @@ do
             original_pl_galian, param:get_field("PLGalianRate_King"),
             original_npc_galian, param:get_field("NPCGalianRate_King"))
 
-        -- 只调整Em0160包当前生效的Hard倍率，不动King覆盖开关。
-        legendary = sdk.get_managed_singleton("app.EnemyManager"):call("getPackage(app.EnemyDef.ID)", id)
-            :get_field("_ParamPack"):get_field("_Legendary")
-        original_motion_speed_hard = legendary:get_field("MotionSpeedRate_Hard")
-        legendary:set_field("MotionSpeedRate_Hard", KING_MOTION_SPEED)
-        print("[king-speed] applied; MotionSpeedRate_Hard=%g -> %g",
-            original_motion_speed_hard, legendary:get_field("MotionSpeedRate_Hard"))
     end, function()
-        if legendary ~= nil then
-            legendary:set_field("MotionSpeedRate_Hard", original_motion_speed_hard)
-            print("[king-speed] restored; MotionSpeedRate_Hard=%g", original_motion_speed_hard)
-            legendary = nil
-        end
         if param == nil then return end
         param:set_field("UnleashModeChangeThreshold", original_unleash)
         param:set_field("AutoElementChargeAccelerationThreshold", original_acceleration)
@@ -181,7 +177,6 @@ do
     print("[king-param] registered; waiting=package-load; enemy_id=%d; target_unleash=%g target_acceleration=%g target_pl_galian=%g target_npc_galian=%g",
         EM0160_00_0, UNLEASH_MODE_CHANGE_THRESHOLD, AUTO_ELEMENT_CHARGE_ACCELERATION_THRESHOLD,
         PL_GALIAN_RATE_KING, NPC_GALIAN_RATE_KING)
-    print("[king-speed] registered; waiting=package-load; MotionSpeedRate_Hard=%g", KING_MOTION_SPEED)
 
     -- 参数恢复统一走 unloaded；任务结束时由 lib 检查驻留包并补发。
 end
@@ -356,7 +351,7 @@ local ENEMY_LAYOUT_TYPE = lib.ENEMY_LAYOUT_TYPE
 
 local QUEST_ENEMY_SPAWNS = {
     { -- 影蜘蛛 A(欧米茄 SpAtk 召唤用, 参数照抄 st402_SubBoss_Ms730025 节点 / 自制 pog 实测值)
-        _EmID = -1363370496, -- EM0070_00_0
+        _EmID = EM0070_00_0_FIXED, -- EM0070_00_0
         _RoleID = ROLE_ID.ROLE_COLLAB_01,
         _OptionTag = 1,
         _StoryTargetID = 10, -- 对齐 _SubBossInfoArray._EmTargetID
@@ -365,7 +360,7 @@ local QUEST_ENEMY_SPAWNS = {
         _AdvancedSettings = { _IsDefaultDeepSleep = true },
     },
     { -- 影蜘蛛 B(同上, 站位不同)
-        _EmID = -1363370496, -- EM0070_00_0
+        _EmID = EM0070_00_0_FIXED, -- EM0070_00_0
         _RoleID = ROLE_ID.ROLE_COLLAB_01,
         _OptionTag = 1,
         _StoryTargetID = 11,
@@ -377,28 +372,28 @@ local QUEST_ENEMY_SPAWNS = {
     --   零难度 GUID / 固定体型 100 / _OptionTag=1 入睡变体(出生 t+10s 自行隐形埋地, STANDBY 通道);
     --   Omega 大招 checkSpAtkSummonStarted → wakeUpEm5010Em5011 按区域位自动唤醒, 结束 exitEm5010Em5011 移除
     { -- 魔界花幼苗 EM5011_00_0 (南侧, 实测点)
-        _EmID = 31768,
+        _EmID = EM5011_00_0_FIXED,
         _OptionTag = 1,
         _LayoutType = ENEMY_LAYOUT_TYPE.DEFAULT,
         _Position = { 14.050, 0.089, 67.122 },
         _DifficultyRankId = "00000000-0000-0000-0000-000000000000",
     },
     { -- 魔界花幼苗 EM5011_00_0 (北侧, 实测点)
-        _EmID = 31768,
+        _EmID = EM5011_00_0_FIXED,
         _OptionTag = 1,
         _LayoutType = ENEMY_LAYOUT_TYPE.DEFAULT,
         _Position = { 8.506, -0.299, 111.814 },
         _DifficultyRankId = "00000000-0000-0000-0000-000000000000",
     },
     { -- 仙人刺 EM5010_00_0 (东侧, 实测点)
-        _EmID = 9549,
+        _EmID = EM5010_00_0_FIXED,
         _OptionTag = 1,
         _LayoutType = ENEMY_LAYOUT_TYPE.DEFAULT,
         _Position = { 30.620, -0.284, 90.972 },
         _DifficultyRankId = "00000000-0000-0000-0000-000000000000",
     },
     { -- 仙人刺 EM5010_00_0 (西侧, 与东侧点关于蜘蛛对称补的, 朝向镜像)
-        _EmID = 9549,
+        _EmID = EM5010_00_0_FIXED,
         _OptionTag = 1,
         _LayoutType = ENEMY_LAYOUT_TYPE.DEFAULT,
         _Position = { -5.602, -0.284, 90.972 },
@@ -586,8 +581,8 @@ quest.on_load(function()
     -- 声明本任务场景需要的 EnemyDef.ID_Fixed: 宿主 hook setStageResidentDataDicts 时
     --   合并进当前场景 _EmIDList(不限场景), 场景即可刷新它们(环境生物不在 Boss+Zako 全量范围)
     quest.require_enemies{
-        31768, -- EM5011_00_0 魔界花幼苗
-        9549,  -- EM5010_00_0 仙人刺
+        EM5011_00_0_FIXED, -- EM5011_00_0 魔界花幼苗
+        EM5010_00_0_FIXED,  -- EM5010_00_0 仙人刺
     }
     lib.load_mission_dialogues(OMEGA_MISSION_FIXED)
     print("quest script loaded")

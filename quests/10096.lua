@@ -16,6 +16,11 @@ local lib = require("scripts.quest_lib")
 
 local print = lib.print
 
+-- EnemyDef.ID_Fixed：定点ID，用于敌人预放置和场景常驻声明。
+local EM0070_00_0_FIXED = -1363370496 -- 影蜘蛛
+local EM5011_00_0_FIXED = 31768 -- 魔界花幼苗
+local EM5010_00_0_FIXED = 9549 -- 仙人刺
+
 -- ==================== 1. 对话目录 ====================
 
 local OMEGA_MISSION_FIXED = 26820 -- Ms730020 零式欧米茄 (Dia_stCh7301_Ms730020_*)
@@ -31,7 +36,7 @@ local ENEMY_LAYOUT_TYPE = lib.ENEMY_LAYOUT_TYPE
 
 local QUEST_ENEMY_SPAWNS = {
     { -- 影蜘蛛(欧米茄 SpAtk 召唤用, 参数照抄 st402_SubBoss_Ms730025 节点 / 自制 pog 实测值)
-        _EmID = -1363370496, -- EM0070_00_0
+        _EmID = EM0070_00_0_FIXED, -- EM0070_00_0
         _RoleID = ROLE_ID.ROLE_COLLAB_01,
         _OptionTag = 1,
         _StoryTargetID = 10, -- 对齐 _SubBossInfoArray._EmTargetID
@@ -43,28 +48,28 @@ local QUEST_ENEMY_SPAWNS = {
     --   零难度 GUID / 固定体型 100 / _OptionTag=1 入睡变体(出生 t+10s 自行隐形埋地, STANDBY 通道);
     --   Omega 大招 checkSpAtkSummonStarted → wakeUpEm5010Em5011 按区域位自动唤醒, 结束 exitEm5010Em5011 移除
     { -- 魔界花幼苗 EM5011_00_0 (南侧, 实测点)
-        _EmID = 31768,
+        _EmID = EM5011_00_0_FIXED,
         _OptionTag = 1,
         _LayoutType = ENEMY_LAYOUT_TYPE.DEFAULT,
         _Position = { 14.050, 0.089, 67.122 },
         _DifficultyRankId = "00000000-0000-0000-0000-000000000000",
     },
     { -- 魔界花幼苗 EM5011_00_0 (北侧, 实测点)
-        _EmID = 31768,
+        _EmID = EM5011_00_0_FIXED,
         _OptionTag = 1,
         _LayoutType = ENEMY_LAYOUT_TYPE.DEFAULT,
         _Position = { 8.506, -0.299, 111.814 },
         _DifficultyRankId = "00000000-0000-0000-0000-000000000000",
     },
     { -- 仙人刺 EM5010_00_0 (东侧, 实测点)
-        _EmID = 9549,
+        _EmID = EM5010_00_0_FIXED,
         _OptionTag = 1,
         _LayoutType = ENEMY_LAYOUT_TYPE.DEFAULT,
         _Position = { 30.620, -0.284, 90.972 },
         _DifficultyRankId = "00000000-0000-0000-0000-000000000000",
     },
     { -- 仙人刺 EM5010_00_0 (西侧, 与东侧点关于蜘蛛对称补的, 朝向镜像)
-        _EmID = 9549,
+        _EmID = EM5010_00_0_FIXED,
         _OptionTag = 1,
         _LayoutType = ENEMY_LAYOUT_TYPE.DEFAULT,
         _Position = { -5.602, -0.284, 90.972 },
@@ -251,8 +256,8 @@ quest.on_load(function()
     -- 声明本任务场景需要的 EnemyDef.ID_Fixed: 宿主 hook setStageResidentDataDicts 时
     --   合并进当前场景 _EmIDList(不限场景), 场景即可刷新它们(环境生物不在 Boss+Zako 全量范围)
     quest.require_enemies{
-        31768, -- EM5011_00_0 魔界花幼苗
-        9549,  -- EM5010_00_0 仙人刺
+        EM5011_00_0_FIXED, -- EM5011_00_0 魔界花幼苗
+        EM5010_00_0_FIXED,  -- EM5010_00_0 仙人刺
     }
     lib.load_mission_dialogues(OMEGA_MISSION_FIXED)
     print("quest script loaded")
