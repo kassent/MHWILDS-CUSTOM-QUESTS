@@ -45,12 +45,7 @@ local function dispatch_enemy_package_event(name, callbacks, enemy_id)
     lib.print("[enemy_package] event=%s; enemy_id=%d; enemy_name=%s",
         name, enemy_id, tostring(lib.get_enemy_display_name(enemy_id)))
     for i = 1, #subscribers do
-        -- 与 quest 事件宿主一致：仅在订阅者边界隔离错误，记录后继续原版及其他订阅者。
-        local ok, err = pcall(subscribers[i], enemy_id)
-        if not ok then
-            log.error(string.format("%s [enemy_package] %s callback #%d failed; enemy_id=%d: %s",
-                QUEST_TAG, name, i, enemy_id, tostring(err)))
-        end
+        subscribers[i](enemy_id)
     end
 end
 
