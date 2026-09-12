@@ -5,10 +5,11 @@
 -- hook 由任务独立 ScriptState 托管，任务结束自动摘除；不要放入 autorun。
 
 -- 功能块:
---   1. 王锁参数       package加载时调整血量门槛和玩家/NPC翼刃积蓄倍率，卸载时还原
---   2. 龙乳结晶     普通地面也能生成GM651结晶
+--   1. 王锁参数       package加载时调整血量门槛、翼刃积蓄及王锁动作速度，卸载时还原
+--   2. 龙乳结晶     普通地面生成GM651，初始化后固定龙属性自动激活
 --   3. 控制免疫     王锁不受闪光、诱导弹及各类陷阱影响
 --   4. 王锁开局解放 doStartBegin后直接设为UNLEASH
+--   5. 护龙扇形补点 保留外圈8个；中间两条链半径一半各1个，起招头部圆心1个
 
 local lib = require("scripts.quest_lib")
 local print = lib.print
@@ -27,8 +28,10 @@ do
     -- 原版两项均约为1.1111；设为1.0后，玩家/NPC翼刃积蓄约为原版90%。
     local PL_GALIAN_RATE_KING = 1.0
     local NPC_GALIAN_RATE_KING = 1.0
+    local KING_MOTION_SPEED = 1.15
     local EM0160_00_0 = 27 -- EnemyDef.ID，运行时ID
     local param, original_unleash, original_acceleration, original_pl_galian, original_npc_galian
+    local legendary, original_motion_speed_hard
 
     lib.on_enemy_package(EM0160_00_0, function(id)
         -- 按任务约定 package 就绪时 StageResident 已就绪；原生判定读基类 Genus，不是 Species。
@@ -47,7 +50,20 @@ do
             original_acceleration, param:get_field("AutoElementChargeAccelerationThreshold"),
             original_pl_galian, param:get_field("PLGalianRate_King"),
             original_npc_galian, param:get_field("NPCGalianRate_King"))
+
+        -- 本任务只有王锁，直接调整当前生效的Hard倍率，不动King覆盖开关。
+        legendary = sdk.get_managed_singleton("app.EnemyManager"):call("getPackage(app.EnemyDef.ID)", id)
+            :get_field("_ParamPack"):get_field("_Legendary")
+        original_motion_speed_hard = legendary:get_field("MotionSpeedRate_Hard")
+        legendary:set_field("MotionSpeedRate_Hard", KING_MOTION_SPEED)
+        print("[king-speed] applied; MotionSpeedRate_Hard=%g -> %g",
+            original_motion_speed_hard, legendary:get_field("MotionSpeedRate_Hard"))
     end, function()
+        if legendary ~= nil then
+            legendary:set_field("MotionSpeedRate_Hard", original_motion_speed_hard)
+            print("[king-speed] restored; MotionSpeedRate_Hard=%g", original_motion_speed_hard)
+            legendary = nil
+        end
         if param == nil then return end
         param:set_field("UnleashModeChangeThreshold", original_unleash)
         param:set_field("AutoElementChargeAccelerationThreshold", original_acceleration)
@@ -61,6 +77,7 @@ do
     print("[king-param] registered; waiting=package-load; enemy_id=%d; target_unleash=%g target_acceleration=%g target_pl_galian=%g target_npc_galian=%g",
         EM0160_00_0, UNLEASH_MODE_CHANGE_THRESHOLD, AUTO_ELEMENT_CHARGE_ACCELERATION_THRESHOLD,
         PL_GALIAN_RATE_KING, NPC_GALIAN_RATE_KING)
+    print("[king-speed] registered; waiting=package-load; MotionSpeedRate_Hard=%g", KING_MOTION_SPEED)
 
     -- 参数恢复统一走 unloaded；任务结束时由 lib 检查驻留包并补发。
 end
@@ -93,6 +110,48 @@ sdk.hook(create_crystal,
     end)
 
 print("[crystal] registered; sensor_requirement=disabled; waiting=createEnergyCrystal; create=%s request=%s", tostring(create_crystal:get_function()), tostring(request_crystal:get_function()))
+
+-- 新结晶只在初始化结束时用龙属性激活一次，不轮询，不影响已经存在的结晶。
+-- 本任务结晶均由王锁创建；owner仅用于原生伤害归属，不另做怪物类型筛选。
+do
+    local gm_type = sdk.find_type_definition("app.Gm651")
+    local start = gm_type:get_method("doStartEnd()")
+    local damage = gm_type:get_method("damageEvent()")
+    local resolve_owner = sdk.find_type_definition("app.TargetAccessKeyUtil"):get_method("getEnemyManageInfo")
+    local DRAGON = sdk.find_type_definition("app.HitDef.ATTR"):get_field("DRAGON"):get_data(nil)
+
+    sdk.hook(start, function(args)
+        thread.get_hook_storage().new_crystal = sdk.to_managed_object(args[2])
+    end, function(retval)
+        local crystal = thread.get_hook_storage().new_crystal
+        local context = crystal:call("get_GimmickContext()")
+        if not context:call("get_IsMaster()") or crystal:get_field("_EnableExplosion") then return retval end
+
+        local owner = resolve_owner:call(nil, context:call("get_RequestSetOwnerKey()"), false)
+        if owner == nil or owner:call("get_Object()") == nil then
+            print("[crystal-auto] skipped; owner object unavailable")
+            return retval
+        end
+        local owner_object = owner:call("get_Object()")
+        local info = sdk.create_instance("app.cGimmickDamageInfo"):add_ref()
+        info:call(".ctor()")
+        info:set_field("_Attribute", DRAGON)
+        info:set_field("_AttackerObj", owner_object)
+        info:set_field("_ActualAttackerObj", owner_object)
+
+        -- damageEvent无HitInfo参数，直接写入其读取的ApplyDamageInfo，不恢复旧值。
+        -- 不清空积蓄列表，不扣结晶血量；原函数负责预兆、碰撞关闭、归属和发包。
+        local stock = crystal:get_field("_BreakMiniComponent"):get_field("_StockDamage")
+        stock:set_field("_ApplyDamageInfo", info)
+        damage:call(crystal)
+        print("[crystal-auto] activated=%s; attribute=DRAGON; attacker=%d; unique=%d",
+            tostring(crystal:get_field("_EnableExplosion")),
+            crystal:get_field("_Attacker"), context:call("get_UniqueIndex()"))
+        return retval
+    end)
+    print("[crystal-auto] registered; trigger=doStartEnd; attribute=DRAGON; master_only=true; start=%s",
+        tostring(start:get_function()))
+end
 
 -- ==================== 3. 闪光/诱导弹/陷阱免疫 ====================
 -- 原版按EmParamBadCondition2.EnemyBadConditionSetting中的预设GUID初始化条件对象。
@@ -176,6 +235,126 @@ do
             return retval
         end)
     print("[unleash] registered; waiting=doStartBegin; target_mode=UNLEASH; start=%s", tostring(start:get_function()))
+end
+
+-- ==================== 5. 护龙扇形内部结晶 ====================
+-- 已实测：PhotonImpact的Fixed23/44铺四路链，四个Fixed27各生成两个外圈结晶。
+-- 收集同次施放的四个链尾，按相对圆心的角度排序，选中间两条链的半径中点。
+-- 只向最后一个结晶组件的实例_PosList/_IsCreated追加3项，不改共享_CrystalInfos。
+-- 下一次原生update负责主控检查、创建/失败重试；继续复用本任务的龙属性激活与同步。
+do
+    local PHOTON_ACTION = "app.Em0160_00Action.cGuardianPhotonImpact"
+    local CRYSTAL_SHELL_HASH = 3718304653 -- 当前Em0160 ShellList Fixed27
+    local chain_setup = sdk.find_type_definition("app.mcShellEm0160_00ChainParent_Horizontal")
+        :get_method("onSetup()")
+    local crystal_update = sdk.find_type_definition("app.mcShellEm0100_51_CreateSomeEnergyCrystal")
+        :get_method("update(System.Single)")
+    local casts, pending = {}, {}
+    local cast_id = 0
+
+    local function vec(v)
+        return { x = v.x, y = v.y, z = v.z }
+    end
+
+    sdk.hook(chain_setup, function(args)
+        thread.get_hook_storage().photon_chain = sdk.to_managed_object(args[2])
+    end, function(retval)
+        local chain = thread.get_hook_storage().photon_chain
+        local chara = chain:get_field("_Chara")
+        if chara == nil or chara:call("getCurrentAction()"):get_type_definition():get_full_name() ~= PHOTON_ACTION then
+            return retval
+        end
+        local shell = chain:call("get_Shell()")
+        local setting = shell:call("get_Setting()")
+        local list = setting:get_field("_ShellList")
+        local index = list:call("findShellIndexFromShellName(System.UInt32)", setting:get_field("_NameHash"))
+        if list:call("getShellIDFromShellIndex(System.Int32)", index) ~= 23 then return retval end
+
+        -- Fixed23每次施放只有一个；Fixed44不重置，避免把同一扇形拆成两次。
+        local owner = shell:call("get_ShellOwner()")
+        local head = owner:call("get_Transform()"):call("getJointByName(System.String)", "Head")
+            :call("get_Position()")
+        cast_id = cast_id + 1
+        casts[owner:get_address()] = { id = cast_id, chara = chara, center = vec(head), ends = {} }
+        print("[photon-inner] begin; cast=%d; head=(%.3f,%.3f,%.3f)", cast_id, head.x, head.y, head.z)
+        return retval
+    end)
+
+    sdk.hook(crystal_update, function(args)
+        local component = sdk.to_managed_object(args[2])
+        if component:call("get_Shell()"):call("get_Setting()"):get_field("_NameHash") ~= CRYSTAL_SHELL_HASH then return end
+        local storage = thread.get_hook_storage()
+        storage.photon_component = component
+        storage.photon_first = not component:get_field("_IsPosSetuped")
+    end, function(retval)
+        local storage = thread.get_hook_storage()
+        local component = storage.photon_component
+        if component == nil then return retval end
+        local address = component:get_address()
+        local shell = component:call("get_Shell()")
+        local state = casts[shell:call("get_ShellOwner()"):get_address()]
+
+        if storage.photon_first then
+            pending[address] = nil -- 池化组件复用时，不继承上一次的日志状态。
+            -- 非主控端的原版update不会初始化_PosList，也就不会追加或重复创建。
+            if state == nil or state.done or not component:get_field("_IsPosSetuped") then return retval end
+            if state.chara:call("getCurrentAction()"):get_type_definition():get_full_name() ~= PHOTON_ACTION then return retval end
+            local p = shell:call("get_GameObject()"):call("get_Transform()"):call("get_Position()")
+            state.ends[#state.ends + 1] = vec(p)
+            if #state.ends < 4 then return retval end
+
+            local center = component:call("attachGround(via.vec3)",
+                Vector3f.new(state.center.x, state.center.y, state.center.z))
+            local axis_x, axis_z = 0, 0
+            for _, endpoint in ipairs(state.ends) do
+                axis_x = axis_x + endpoint.x - center.x
+                axis_z = axis_z + endpoint.z - center.z
+            end
+            -- 相对扇形中轴排序，避免世界角度跨越正负pi时选错两条内链。
+            for _, endpoint in ipairs(state.ends) do
+                local dx, dz = endpoint.x - center.x, endpoint.z - center.z
+                endpoint.angle = math.atan(dx * axis_z - dz * axis_x, dx * axis_x + dz * axis_z)
+            end
+            table.sort(state.ends, function(a, b) return a.angle < b.angle end)
+            local additions = {}
+            for i = 2, 3 do
+                local endpoint = state.ends[i]
+                additions[#additions + 1] = component:call("attachGround(via.vec3)", Vector3f.new(
+                    (center.x + endpoint.x) * 0.5,
+                    (center.y + endpoint.y) * 0.5,
+                    (center.z + endpoint.z) * 0.5))
+            end
+            additions[3] = center
+            local positions = component:get_field("_PosList")
+            local created = component:get_field("_IsCreated")
+            local first = positions:call("get_Count()")
+            for i, point in ipairs(additions) do
+                positions:call("Add(via.vec3)", point)
+                created:call("Add(System.Boolean)", false)
+                print("[photon-inner] queued; cast=%d; point=%d; pos=(%.3f,%.3f,%.3f)",
+                    state.id, i, point.x, point.y, point.z)
+            end
+            state.done = true
+            pending[address] = { cast = state.id, first = first, accepted = -1 }
+        end
+
+        local batch = pending[address]
+        if batch ~= nil then
+            local created = component:get_field("_IsCreated")
+            local a = created:call("get_Item(System.Int32)", batch.first)
+            local b = created:call("get_Item(System.Int32)", batch.first + 1)
+            local c = created:call("get_Item(System.Int32)", batch.first + 2)
+            local accepted = (a and 1 or 0) + (b and 1 or 0) + (c and 1 or 0)
+            if accepted ~= batch.accepted then
+                print("[photon-inner] result; cast=%d; inner_left=%s inner_right=%s center=%s; accepted=%d/3",
+                    batch.cast, tostring(a), tostring(b), tostring(c), accepted)
+                batch.accepted = accepted
+            end
+            if accepted == 3 then pending[address] = nil end
+        end
+        return retval
+    end)
+    print("[photon-inner] registered; action=cGuardianPhotonImpact; inner=2 radius_rate=0.5 center=1; outer=unchanged")
 end
 
 -- 在lib的参数恢复回调之后记录；hook由任务ScriptState销毁时统一摘除。
