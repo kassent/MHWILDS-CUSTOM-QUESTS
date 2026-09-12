@@ -13,6 +13,8 @@
 local lib = require("scripts.quest_lib")
 local print = lib.print
 
+local EM0160_00_0 = 27 -- EnemyDef.ID，运行时ID
+
 assert(quest.quest_id == 10097, "10097.lua must run in quest 10097")
 
 -- 生命周期只记录一次；registered是注册完成，applied/restored才表示实际修改/恢复。
@@ -28,7 +30,6 @@ do
     local PL_GALIAN_RATE_KING = 1.0
     local NPC_GALIAN_RATE_KING = 1.0
     local KING_MOTION_SPEED = 1.15
-    local EM0160_00_0 = 27 -- EnemyDef.ID，运行时ID
     local param, original_unleash, original_acceleration, original_pl_galian, original_npc_galian
     local legendary, original_motion_speed_hard
 
@@ -154,7 +155,6 @@ end
 -- GUID为零时查不到预设，条件不会成为有效条件；巨戟龙、白炽龙等原版免疫怪也采用此配置。
 -- 在敌人包初始化前清空Em0160对应字段，卸载时还原；不再逐帧请求NO_ACTIVATE。
 do
-    local EM0160_00_0 = 27 -- EnemyDef.ID，运行时ID
     local BOSS = 0          -- app.EnemyDef.CATEGORY.BOSS
     local disabled_fields = {
         -- King会优先读取FlashKingPriset；不动普通个体使用的FlashPriset。

@@ -8,13 +8,12 @@
 --   2. 动作速度     白炽龙/黑蚀龙/欧米茄动作提速(package 加载时改 Legendary 参数)
 --   3. 火海寿命     芥末炸弹火海出生即无限寿命
 --   4. 暴走锁定     欧米茄暴走不可被脚伤击破解除
---   5. 王锁血量门槛 解放/自动充能加速门槛设为100%，任务结束还原
+--   5. 王锁增强     参数、控制免疫、开局UNLEASH、跨地图结晶及愤怒时龙属性自动激活
 --   6. 预放置敌人   QUEST_ENEMY_SPAWNS 表驱动注入(双影蜘蛛联动召唤 + 掩体植物)
 --   7. 台词 NPC     补 spawn 欧米茄台词的两个说话 NPC
---   8. 龙乳结晶     普通地面也可生成GM651结晶，保留原生结晶效果
---   9. 大招配置     欧米茄中心/蓄力目标、爆炸朝向与缩放、小欧米茄运行时落点
---  10. 绕飞混合     doEnter post覆盖blend，基准取蓄力点指向中心的水平角
---  11. 生命周期     常驻怪物声明、对话装卸、增强参数还原及任务流程日志
+--   8. 大招配置     欧米茄中心/蓄力目标、爆炸朝向与缩放、小欧米茄运行时落点
+--   9. 绕飞混合     doEnter post覆盖blend，基准取蓄力点指向中心的水平角
+--  10. 生命周期     常驻怪物声明、对话装卸、增强参数还原及任务流程日志
 
 local lib = require("scripts.quest_lib")
 
@@ -121,14 +120,22 @@ end, function()
     print("restored rampage scar down rate -> %d/%d", b.orig, b.origHl)
 end)
 
--- ==================== 5. 王锁血量门槛配置 ====================
+-- ==================== 5. 王锁增强 ====================
+
+local EM0160_00_0 = 27 -- EnemyDef.ID，运行时ID
+
+-- ==================== 5.1 参数配置 ====================
 do
     -- 两项均为严格 HP% < 阈值：100表示掉血后生效，满血不满足。
     -- 只调整门槛，不直接改Mode，也不改自动充能量或计时周期。
     local UNLEASH_MODE_CHANGE_THRESHOLD = 100.0
     local AUTO_ELEMENT_CHARGE_ACCELERATION_THRESHOLD = 100.0
-    local EM0160_00_0 = 27 -- EnemyDef.ID，运行时ID
-    local param, original_unleash, original_acceleration
+    -- 原版两项均约为1.1111；设为1.0后，玩家/NPC翼刃积蓄约为原版90%。
+    local PL_GALIAN_RATE_KING = 1.0
+    local NPC_GALIAN_RATE_KING = 1.0
+    local KING_MOTION_SPEED = 1.15
+    local param, original_unleash, original_acceleration, original_pl_galian, original_npc_galian
+    local legendary, original_motion_speed_hard
 
     lib.on_enemy_package(EM0160_00_0, function(id)
         -- 按任务约定 package 就绪时 StageResident 已就绪；原生判定读基类 Genus，不是 Species。
@@ -136,22 +143,206 @@ do
         param = resident:get_field("_Unique"):get_field("_GenusInfo")
         original_unleash = param:get_field("UnleashModeChangeThreshold")
         original_acceleration = param:get_field("AutoElementChargeAccelerationThreshold")
+        original_pl_galian = param:get_field("PLGalianRate_King")
+        original_npc_galian = param:get_field("NPCGalianRate_King")
         param:set_field("UnleashModeChangeThreshold", UNLEASH_MODE_CHANGE_THRESHOLD)
         param:set_field("AutoElementChargeAccelerationThreshold", AUTO_ELEMENT_CHARGE_ACCELERATION_THRESHOLD)
-        print("[thresholds] package loaded; enemy_id=%d; UnleashModeChangeThreshold=%g -> %g; AutoElementChargeAccelerationThreshold=%g -> %g",
+        param:set_field("PLGalianRate_King", PL_GALIAN_RATE_KING)
+        param:set_field("NPCGalianRate_King", NPC_GALIAN_RATE_KING)
+        print("[king-param] applied; enemy_id=%d; UnleashModeChangeThreshold=%g -> %g; AutoElementChargeAccelerationThreshold=%g -> %g; PLGalianRate_King=%g -> %g; NPCGalianRate_King=%g -> %g",
             id, original_unleash, param:get_field("UnleashModeChangeThreshold"),
-            original_acceleration, param:get_field("AutoElementChargeAccelerationThreshold"))
+            original_acceleration, param:get_field("AutoElementChargeAccelerationThreshold"),
+            original_pl_galian, param:get_field("PLGalianRate_King"),
+            original_npc_galian, param:get_field("NPCGalianRate_King"))
+
+        -- 只调整Em0160包当前生效的Hard倍率，不动King覆盖开关。
+        legendary = sdk.get_managed_singleton("app.EnemyManager"):call("getPackage(app.EnemyDef.ID)", id)
+            :get_field("_ParamPack"):get_field("_Legendary")
+        original_motion_speed_hard = legendary:get_field("MotionSpeedRate_Hard")
+        legendary:set_field("MotionSpeedRate_Hard", KING_MOTION_SPEED)
+        print("[king-speed] applied; MotionSpeedRate_Hard=%g -> %g",
+            original_motion_speed_hard, legendary:get_field("MotionSpeedRate_Hard"))
     end, function()
+        if legendary ~= nil then
+            legendary:set_field("MotionSpeedRate_Hard", original_motion_speed_hard)
+            print("[king-speed] restored; MotionSpeedRate_Hard=%g", original_motion_speed_hard)
+            legendary = nil
+        end
         if param == nil then return end
         param:set_field("UnleashModeChangeThreshold", original_unleash)
         param:set_field("AutoElementChargeAccelerationThreshold", original_acceleration)
-        print("[thresholds] restored; unleash=%g acceleration=%g",
-            param:get_field("UnleashModeChangeThreshold"), param:get_field("AutoElementChargeAccelerationThreshold"))
+        param:set_field("PLGalianRate_King", original_pl_galian)
+        param:set_field("NPCGalianRate_King", original_npc_galian)
+        print("[king-param] restored; unleash=%g acceleration=%g pl_galian=%g npc_galian=%g",
+            param:get_field("UnleashModeChangeThreshold"), param:get_field("AutoElementChargeAccelerationThreshold"),
+            param:get_field("PLGalianRate_King"), param:get_field("NPCGalianRate_King"))
         param = nil
     end)
-    print("[thresholds] package callbacks registered; enemy_id=%d", EM0160_00_0)
+    print("[king-param] registered; waiting=package-load; enemy_id=%d; target_unleash=%g target_acceleration=%g target_pl_galian=%g target_npc_galian=%g",
+        EM0160_00_0, UNLEASH_MODE_CHANGE_THRESHOLD, AUTO_ELEMENT_CHARGE_ACCELERATION_THRESHOLD,
+        PL_GALIAN_RATE_KING, NPC_GALIAN_RATE_KING)
+    print("[king-speed] registered; waiting=package-load; MotionSpeedRate_Hard=%g", KING_MOTION_SPEED)
 
     -- 参数恢复统一走 unloaded；任务结束时由 lib 检查驻留包并补发。
+end
+
+-- ==================== 5.2 闪光/诱导弹/陷阱免疫 ====================
+-- 原版按EmParamBadCondition2.EnemyBadConditionSetting中的预设GUID初始化条件对象。
+-- GUID为零时查不到预设，条件不会成为有效条件；巨戟龙、白炽龙等原版免疫怪也采用此配置。
+-- 在敌人包初始化前清空Em0160对应字段，卸载时还原；不再逐帧请求NO_ACTIVATE。
+do
+    local BOSS = 0          -- app.EnemyDef.CATEGORY.BOSS
+    local disabled_fields = {
+        -- King会优先读取FlashKingPriset；不动普通个体使用的FlashPriset。
+        "FlashKingPriset",
+        "EmLeadPreset",
+        "TrapFallPriset",
+        "TrapParalysePriset",
+        "TrapIvyPriset",
+        "TrapParalyseAnimalPriset",
+        "TrapParalyseOtomoPriset",
+        "TrapBoundNPCPriset",
+    }
+    local bad_condition_setting
+    local original_guids = {}
+    local zero_guid = ValueType.new(sdk.find_type_definition("System.Guid"))
+
+    -- MMDK/EMV Engine使用的通用ValueType字段写法：动态取字段偏移，
+    -- 并且只拷贝get_valuetype_size()字节，避免System.Guid的32/16字节尺寸差。
+    local function write_valuetype(parent_obj, field_name, value)
+        local offset = parent_obj:get_type_definition():get_field(field_name):get_offset_from_base()
+        for i = 0, value.type:get_valuetype_size() - 1 do
+            parent_obj:write_byte(offset + i, value:read_byte(i))
+        end
+    end
+
+    lib.on_enemy_package(EM0160_00_0, function(id)
+        local enemy_setting = sdk.get_managed_singleton("app.EnemyManager"):call("get_Setting()")
+        local bad_condition2 = enemy_setting:call("get_BadCondition2()")
+        bad_condition_setting = bad_condition2:call(
+            "getBadConditionPriset(app.EnemyDef.ID, app.EnemyDef.CATEGORY)", id, BOSS)
+        assert(bad_condition_setting ~= nil, "Em0160 bad-condition setting not found")
+
+        for _, field_name in ipairs(disabled_fields) do
+            local wrapper = bad_condition_setting:get_field(field_name)
+            assert(wrapper ~= nil, field_name .. " wrapper not found")
+            original_guids[field_name] = wrapper:get_field("Value")
+            write_valuetype(wrapper, "Value", zero_guid)
+        end
+        print("[control-immunity] applied; enemy_id=%d; disabled_presets=%s",
+            id, table.concat(disabled_fields, ","))
+    end, function()
+        if bad_condition_setting == nil then return end
+        for _, field_name in ipairs(disabled_fields) do
+            local original = original_guids[field_name]
+            if original ~= nil then
+                local wrapper = bad_condition_setting:get_field(field_name)
+                write_valuetype(wrapper, "Value", original)
+            end
+        end
+        print("[control-immunity] restored; presets=%s", table.concat(disabled_fields, ","))
+        bad_condition_setting = nil
+        original_guids = {}
+    end)
+    print("[control-immunity] registered; waiting=package-load; enemy_id=%d; preset_count=%d; flash=true em_lead=true traps=true", EM0160_00_0, #disabled_fields)
+end
+
+-- ==================== 5.3 开局解放 ====================
+-- 原生初始化完成后直接写入UNLEASH；同时保留第5节的血量门槛配置。
+do
+    -- 仅针对本任务王锁；在原生初始化完成后直接设置实际形态，不等血量或护龙吼。
+    -- UNLEASH=1 已核对运行时枚举；后续 doUpdateBegin 按此状态启用解放动作过滤器。
+    -- 只在 doStartBegin post 写入，不每帧锁定，也不调用会恢复伤口的 unleash()。
+    -- hook 由任务 ScriptState 托管，任务结束自动摘除。
+    local start = sdk.find_type_definition("app.cEm0160Extend"):get_method("doStartBegin()")
+    sdk.hook(start,
+        function(args)
+            thread.get_hook_storage().extend = sdk.to_managed_object(args[2])
+        end,
+        function(retval)
+            local extend = thread.get_hook_storage().extend
+            local basic = extend:call("get_Context()"):call("get_Em()"):get_field("Basic")
+            if basic:get_field("EmID") ~= EM0160_00_0 or basic:get_field("LegendaryID") ~= 2 then return retval end
+            local mode = extend:get_field("_Mode")
+            extend:set_field("_Mode", 1) -- app.cEm0160Extend.MODE.UNLEASH
+            print("[unleash] applied; trigger=doStartBegin; mode=%d -> %d (UNLEASH)", mode, extend:get_field("_Mode"))
+            return retval
+        end)
+    print("[unleash] registered; waiting=doStartBegin; target_mode=UNLEASH; start=%s", tostring(start:get_function()))
+end
+
+-- ==================== 5.4 龙乳结晶 ====================
+do
+
+local create_crystal = sdk.find_type_definition("app.cEnemyDepletionCondition"):get_method("createEnergyCrystal")
+local request_crystal = sdk.find_type_definition("app.cLimeStoneManager"):get_method("requestSetLimeStone")
+local GM651 = sdk.find_type_definition("app.GimmickDef.ID"):get_field("GM651_000_00"):get_data(nil)
+local INVALID_ITEM = sdk.find_type_definition("app.ItemDef.ID"):get_field("INVALID"):get_data(nil)
+
+sdk.hook(create_crystal,
+    function(args)
+        -- args[1]=vmctx, args[2]=app.cEnemyDepletionCondition。
+        -- 三个值类型参数在 ABI 中以地址传入；只在当前 pre 回调中使用。
+        local position = sdk.to_valuetype(args[3], "via.vec3")
+        local rotation = sdk.to_valuetype(args[4], "via.Quaternion")
+        local owner_key = sdk.to_valuetype(args[5], "app.TARGET_ACCESS_KEY")
+        local option = (sdk.to_int64(args[6]) & 0xFF) ~= 0
+        local callback = sdk.to_managed_object(args[7]) -- System.Action<via.GameObject>
+        local manager = sdk.get_managed_singleton("app.GimmickManager"):call("get_LimeStoneManager()")
+
+        local result = request_crystal:call(manager, GM651, position, rotation, owner_key, callback, -1, option, true, false, 0, INVALID_ITEM)
+        -- 保留请求失败时的上游重试机会；true 表示请求接受，不是异步实例化完成。
+        thread.get_hook_storage().crystal_requested = result ~= nil
+        return sdk.PreHookResult.SKIP_ORIGINAL
+    end,
+    function(retval)
+        return sdk.to_ptr(thread.get_hook_storage().crystal_requested and 1 or 0)
+    end)
+
+print("[crystal] registered; sensor_requirement=disabled; waiting=createEnergyCrystal; create=%s request=%s", tostring(create_crystal:get_function()), tostring(request_crystal:get_function()))
+
+-- 新结晶初始化结束时检查创建者是否愤怒：愤怒才用龙属性自动激活。
+-- 非愤怒保留普通结晶，可正常受击激活；不轮询，不追溯处理已有结晶。
+-- 多怪任务：自动激活仅限Em0160历战王创建的结晶，其他创建者保持原生行为。
+do
+    local gm_type = sdk.find_type_definition("app.Gm651")
+    local start = gm_type:get_method("doStartEnd()")
+    local damage = gm_type:get_method("damageEvent()")
+    local resolve_owner = sdk.find_type_definition("app.TargetAccessKeyUtil"):get_method("getEnemyManageInfo")
+    local DRAGON = sdk.find_type_definition("app.HitDef.ATTR"):get_field("DRAGON"):get_data(nil)
+
+    sdk.hook(start, function(args)
+        thread.get_hook_storage().new_crystal = sdk.to_managed_object(args[2])
+    end, function(retval)
+        local crystal = thread.get_hook_storage().new_crystal
+        local context = crystal:call("get_GimmickContext()")
+        if not context:call("get_IsMaster()") or crystal:get_field("_EnableExplosion") then return retval end
+
+        local owner = resolve_owner:call(nil, context:call("get_RequestSetOwnerKey()"), false)
+        local owner_object = owner and owner:call("get_Object()")
+        if owner_object == nil then return retval end
+        local enemy_context = owner:call("get_Context()"):get_field("_Em")
+        local basic = enemy_context:get_field("Basic")
+        if basic:get_field("EmID") ~= EM0160_00_0 or basic:get_field("LegendaryID") ~= 2 then return retval end
+        local angry = enemy_context:call("get_IsAngry()")
+        if not angry then return retval end
+        local info = sdk.create_instance("app.cGimmickDamageInfo"):add_ref()
+        info:call(".ctor()")
+        info:set_field("_Attribute", DRAGON)
+        info:set_field("_AttackerObj", owner_object)
+        info:set_field("_ActualAttackerObj", owner_object)
+
+        -- damageEvent无HitInfo参数，直接写入其读取的ApplyDamageInfo，不恢复旧值。
+        -- 不清空积蓄列表，不扣结晶血量；原函数负责预兆、碰撞关闭、归属和发包。
+        local stock = crystal:get_field("_BreakMiniComponent"):get_field("_StockDamage")
+        stock:set_field("_ApplyDamageInfo", info)
+        damage:call(crystal)
+        return retval
+    end)
+    print("[crystal-auto] registered; trigger=doStartEnd; angry_only=true; attribute=DRAGON; master_only=true; start=%s",
+        tostring(start:get_function()))
+end
+
 end
 
 -- ==================== 6. 预放置敌人 ====================
@@ -251,46 +442,9 @@ sdk.hook(sdk.find_type_definition("app.ContextManager"):get_method("createContex
     end
 end)
 
--- ==================== 8. 普通地面龙乳结晶 ====================
-do
-    -- 让原本受地面条件限制的招式也能请求生成龙乳结晶（GM651）。
-    -- 此处只调整生成条件，不改结晶自身的命中、拘束或其他行为参数。
-    -- 依据：createEnergyCrystal 原版先查询 SENSOR_GET，再要求 SensorParamGm / GM650。
-    -- 这里直接执行后续 requestSetLimeStone；不依赖查询命中数，也不读取错误类型字段。
-    -- 保留上游贴地、敌人主控检查，以及原始位置、方向、ownerKey、option、创建回调。
-    -- hook 由任务独立 ScriptState 托管，任务结束自动摘除；不要放入 autorun。
-
-    local create_crystal = sdk.find_type_definition("app.cEnemyDepletionCondition"):get_method("createEnergyCrystal")
-    local request_crystal = sdk.find_type_definition("app.cLimeStoneManager"):get_method("requestSetLimeStone")
-    local GM651 = sdk.find_type_definition("app.GimmickDef.ID"):get_field("GM651_000_00"):get_data(nil)
-    local INVALID_ITEM = sdk.find_type_definition("app.ItemDef.ID"):get_field("INVALID"):get_data(nil)
-
-    sdk.hook(create_crystal,
-        function(args)
-            -- args[1]=vmctx, args[2]=app.cEnemyDepletionCondition。
-            -- 三个值类型参数在 ABI 中以地址传入；只在当前 pre 回调中使用。
-            local position = sdk.to_valuetype(args[3], "via.vec3")
-            local rotation = sdk.to_valuetype(args[4], "via.Quaternion")
-            local owner_key = sdk.to_valuetype(args[5], "app.TARGET_ACCESS_KEY")
-            local option = (sdk.to_int64(args[6]) & 0xFF) ~= 0
-            local callback = sdk.to_managed_object(args[7]) -- System.Action<via.GameObject>
-            local manager = sdk.get_managed_singleton("app.GimmickManager"):call("get_LimeStoneManager()")
-
-            local result = request_crystal:call(manager, GM651, position, rotation, owner_key, callback, -1, option, true, false, 0, INVALID_ITEM)
-            -- 保留请求失败时的上游重试机会；true 表示请求接受，不是异步实例化完成。
-            thread.get_hook_storage().crystal_requested = result ~= nil
-            return sdk.PreHookResult.SKIP_ORIGINAL
-        end,
-        function(retval)
-            return sdk.to_ptr(thread.get_hook_storage().crystal_requested and 1 or 0)
-        end)
-
-    print("hook registered; create=%s request=%s", tostring(create_crystal:get_function()), tostring(request_crystal:get_function()))
-end
-
 -- 欧米茄大招：同步10098当前配置，局部作用域不影响本任务其他功能。
 do
--- ==================== 9. 大招配置 ====================
+-- ==================== 8. 大招配置 ====================
 -- 起飞/无罩激光与爆炸共用中心; CHARGE_POS用于原生绕飞目标，不直接设置怪物Transform。
 -- 原生 loadArgmentData 在非 ST402 会将 StartPos 清为世界原点, 因此必须 post 写回。
 -- Nullable<via.vec3> 修改后写回整个字段; 此方式已经临时 ShootingInfo 对象往返验证。
@@ -301,7 +455,7 @@ local BURST_SCALE = 1.5 -- 整体缩放: 原版半径42/端点Z=±30 -> 半径63
 local BURST_YAW = math.atan(ATTACK_CENTER.x - CHARGE_POS.x, ATTACK_CENTER.z - CHARGE_POS.z)
 local BURST_ROTATION = Quaternion.new(math.cos(BURST_YAW / 2), 0, math.sin(BURST_YAW / 2), 0)
 
--- 9.1 爆炸出生参数: 仅Creator 47 / Shell 26; 不改激光、伤害或EffectScale。
+-- 8.1 爆炸出生参数: 仅Creator 47 / Shell 26; 不改激光、伤害或EffectScale。
 sdk.hook(sdk.find_type_definition("app.cAppShellShooter"):get_method("loadArgmentData(ace.user_data.ShellCreatorInfoDataBase.ShellCreatorInfoArgumentBase, app.cShellShootingInfo, ace.user_data.ShellCreatorInfoDataBase.ShellCreatorInfoBase, app.cAppShellShooter.overWriteOffset)"),
     function(args)
         local arg = sdk.to_managed_object(args[3])
@@ -339,7 +493,7 @@ sdk.hook(sdk.find_type_definition("app.cAppShellShooter"):get_method("loadArgmen
 
 local VEC3_TYPE = sdk.find_type_definition("via.vec3")
 
--- 9.2 跨场景getter修正: 非ST402原生返回固定中心或相对蓄力坐标。
+-- 8.2 跨场景getter修正: 非ST402原生返回固定中心或相对蓄力坐标。
 -- post直接用配置常量覆写世界坐标，不读取ParamUnique或缓存位置。
 -- 起飞/召唤区域与无罩激光读取中心；有防护罩时仍走原生防护罩分支。
 sdk.hook(sdk.find_type_definition("app.cEm0166_00Extend"):get_method("getSpAtkCenterPos()"),
@@ -363,7 +517,7 @@ sdk.hook(sdk.find_type_definition("app.cEm0166_00Extend"):get_method("getSpAtkCh
     end)
 
 
--- 9.3 小欧米茄运行时落点：不修改共享参数或召唤数组。
+-- 8.3 小欧米茄运行时落点：不修改共享参数或召唤数组。
 -- 由任务脚本生命周期限定作用域；仅修正大招DIRECT召唤，保留随机偏移与高度。
 -- 隐藏vec3返回缓冲：args[3]=this，args[4]=原点，args[5]=候选点，已CLI核对。
 sdk.hook(sdk.find_type_definition("app.cEm0166_00Extend"):get_method("checkSaftySummonPos(via.vec3, via.vec3)"),
@@ -384,7 +538,7 @@ sdk.hook(sdk.find_type_definition("app.cEm0166_00Extend"):get_method("checkSafty
         sdk.set_native_field(args[5], VEC3_TYPE, "z", shifted_z)
     end)
 
--- ==================== 10. 绕飞动画混合基准（试验） ====================
+-- ==================== 9. 绕飞动画混合基准（试验） ====================
 -- 原生blend使用106.533996度基准；本实现保存进入朝向，在doEnter post再次写入新blend。
 -- 这是动画混合基准，不保证最终朝向等于该值，也可能影响绕飞落点。
 -- 使用配置蓄力点指向中心的水平角，与爆炸长轴一致；弧度转角度并归一化。
@@ -426,7 +580,7 @@ sdk.hook(sdk.find_type_definition("app.Em0166_00Action.cSpAtkRound"):get_method(
     end)
 end
 
--- ==================== 11. 生命周期 ====================
+-- ==================== 10. 生命周期 ====================
 -- 敌人参数恢复由 lib 的 unloaded 通知统一处理；此处保留任务其他生命周期业务。
 quest.on_load(function()
     -- 声明本任务场景需要的 EnemyDef.ID_Fixed: 宿主 hook setStageResidentDataDicts 时
