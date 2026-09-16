@@ -121,7 +121,7 @@
         },
         "_QuestAttribute": 0,
         "_QuestLife": 3,
-        "_QuestLv": 9,
+        "_QuestLv": 10,
         "_QuestMsg": {
             "_ClearConditionMsg": {
                 "_IsAuto": true,
@@ -166,6 +166,18 @@
                 "_EmTargetID": 10,
                 "_LegendaryID": "NONE",
                 "_RoleID": "ROLE_COLLAB_01"
+            },
+            {
+                "_ConditionalMoveData": {
+                    "_DestArray": [],
+                    "_IsUse": false,
+                    "_RevertOnCompleted": false,
+                    "_StartAfterFirstCondition": false
+                },
+                "_EmID": -1363370496,
+                "_EmTargetID": 11,
+                "_LegendaryID": "NONE",
+                "_RoleID": "ROLE_COLLAB_01"
             }
         ],
         "_SubBossInfoArray=": null,
@@ -176,7 +188,7 @@
         "_TimeLimit": 50,
         "_Version": 7
     },
-    "_IsRecommended": false,
+    "_IsRecommended": true,
     "_MessageAssetList": [
         {
             "Language": 4,
