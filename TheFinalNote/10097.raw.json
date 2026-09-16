@@ -163,7 +163,7 @@
         "_TimeLimit": 50,
         "_Version": 7
     },
-    "_IsRecommended": false,
+    "_IsRecommended": true,
     "_MessageAssetList": [
         {
             "Language": 4,
