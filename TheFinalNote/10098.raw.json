@@ -17,19 +17,19 @@
                 "_AreaNo": 1,
                 "_DifficultyAdjustRange": 0,
                 "_DifficultyRankId": {
-                    "Name": "★10-5（アルシュベルド）",
-                    "Value": "6d893ac4-5f81-4850-b1ac-a2c23845cb15"
+                    "Name": "★8-5（零式オメガ）",
+                    "Value": "ccaab685-ce7a-4c66-9027-21700b9185a5"
                 },
-                "_EmID": 746996864,
+                "_EmID": 21849,
                 "_EventTargetID": "INVALID",
                 "_FixedSize": 100,
                 "_GroupID": 0,
                 "_InitPos": "(-2.297,0.426,73.488)",
                 "_IsUseRandomSize": false,
                 "_LayoutKeepID": -1,
-                "_LegendaryID": "KING",
+                "_LegendaryID": "NORMAL",
                 "_OptionTag": {
-                    "Value": 0
+                    "Value": 1
                 },
                 "_RandomSizeTblId": {
                     "Name": "",
@@ -45,8 +45,8 @@
             }
         ],
         "_SubBossLayoutID": {
-            "_ID": "3cb83b22-edd5-4c04-925e-ec3d8a087e66",
-            "_Resource": "assets:/GameDesign/Stage/st403/Layout/Loaded/Enemy/SubBoss/st403_SubBoss_Ms650006.pog.json"
+            "_ID": "00000000-0000-0000-0000-000000000000",
+            "_Resource": null
         },
         "_ZakoLayoutID": {
             "_ID": "00000000-0000-0000-0000-000000000000",
@@ -68,10 +68,10 @@
         "_ArenaFenceReuseableTime": 120,
         "_ArenaFenceStatus": "OPEN",
         "_ArenaPillarStatus": "USE",
-        "_BattleBGM": 0,
+        "_BattleBGM": 4,
         "_BossRushParams": [],
         "_BossRushParams=": null,
-        "_ClearBGM": 0,
+        "_ClearBGM": 5,
         "_ClearCondition": {
             "_TargetInfoArray": [
                 {
@@ -82,17 +82,17 @@
                         "_StartAfterFirstCondition": false
                     },
                     "_EmTargetID": 101,
-                    "_LegendaryID": "KING",
+                    "_LegendaryID": "NORMAL",
                     "_RoleID": "NORMAL",
                     "_ShowTargetGuide": true,
-                    "_TargetIDValue": 746996864,
+                    "_TargetIDValue": 21849,
                     "_TargetValue": 1
                 }
             ],
-            "_TargetType": 1
+            "_TargetType": 2
         },
         "_EnableGuestNpc": false,
-        "_ExOverrideID": 0,
+        "_ExOverrideID": 17,
         "_HRPoint": 3650,
         "_IconType": {
             "_Name": "通常アイコン:ターゲットに基づいてアイコンを出す",
@@ -103,8 +103,8 @@
         "_IsOverrideArenaPillarParam": false,
         "_IsSettingSupply": false,
         "_MissionId": {
-            "_Name": "一刃当关",
-            "_Value": 10097
+            "_Name": "游星浩劫",
+            "_Value": 10098
         },
         "_OrderCondition": {
             "_MaxPlayerNum": 4,
@@ -121,14 +121,14 @@
         },
         "_QuestAttribute": 0,
         "_QuestLife": 3,
-        "_QuestLv": 10,
+        "_QuestLv": 9,
         "_QuestMsg": {
             "_ClearConditionMsg": {
                 "_IsAuto": true,
                 "_MsgID": "00000000-0000-0000-0000-000000000000"
             },
-            "_ClientNameMsg": "10097000-0000-4000-8000-000000000101",
-            "_DetailMsg": "10097000-0000-4000-8000-000000000102",
+            "_ClientNameMsg": "10098000-0000-4000-8000-000000000101",
+            "_DetailMsg": "10098000-0000-4000-8000-000000000102",
             "_FailConditionMsg": {
                 "_IsAuto": true,
                 "_MsgIDs": [
@@ -136,7 +136,7 @@
                     "00000000-0000-0000-0000-000000000000"
                 ]
             },
-            "_FailConditionMsg_Other": "10097000-0000-4000-8000-000000000103",
+            "_FailConditionMsg_Other": "10098000-0000-4000-8000-000000000103",
             "_OrderConditionMsg": {
                 "_IsAuto": true,
                 "_MsgIDs": [
@@ -144,17 +144,30 @@
                     "00000000-0000-0000-0000-000000000000"
                 ]
             },
-            "_OrderConditionMsg_Other": "10097000-0000-4000-8000-000000000104",
-            "_OrderConditionMsg_StProgress": "10097000-0000-4000-8000-000000000105",
-            "_TitleMsg": "10097000-0000-4000-8000-000000000100"
+            "_OrderConditionMsg_Other": "10098000-0000-4000-8000-000000000104",
+            "_OrderConditionMsg_StProgress": "10098000-0000-4000-8000-000000000105",
+            "_TitleMsg": "10098000-0000-4000-8000-000000000100"
         },
-        "_QuestType": 0,
+        "_QuestType": 1,
         "_RemMoney": 47160,
         "_Stage": {
             "_Name": "st403_ラスボス戦闘",
             "_Value": 905584064
         },
-        "_SubBossInfoArray": [],
+        "_SubBossInfoArray": [
+            {
+                "_ConditionalMoveData": {
+                    "_DestArray": [],
+                    "_IsUse": false,
+                    "_RevertOnCompleted": false,
+                    "_StartAfterFirstCondition": false
+                },
+                "_EmID": -1363370496,
+                "_EmTargetID": 10,
+                "_LegendaryID": "NONE",
+                "_RoleID": "ROLE_COLLAB_01"
+            }
+        ],
         "_SubBossInfoArray=": null,
         "_SupplyID": {
             "_Name": "無効値",
@@ -169,35 +182,35 @@
             "Language": 4,
             "MessageData": [
                 {
-                    "Name": "Mission10097_000",
+                    "Name": "Mission10098_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_001",
+                    "Name": "Mission10098_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_100",
-                    "Text": "One Blade Holds the Pass"
+                    "Name": "Mission10098_100",
+                    "Text": "Planetary Cataclysm"
                 },
                 {
-                    "Name": "Mission10097_101",
+                    "Name": "Mission10098_101",
                     "Text": "Erik (Astrum Unit)"
                 },
                 {
-                    "Name": "Mission10097_102",
-                    "Text": "Eine Krone aus Eis, eine Klinge aus Ketten.\nEin <EMID EM0160_00_0> von überragender Macht\nwartet in <REF RefEnvironment_0001_0003> auf Herausforderer.\nDies ist die Schlacht auf dem Weg zum Gipfel.\nMöge das Glück alle Kämpfer begleiten!"
+                    "Name": "Mission10098_102",
+                    "Text": "A mechanical weapon from a distant star—\nZero-type Planetary Omega descends upon the holy precinct.\nOnly the strongest hunters can stop this cataclysm."
                 },
                 {
-                    "Name": "Mission10097_122",
+                    "Name": "Mission10098_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_123",
+                    "Name": "Mission10098_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_132",
+                    "Name": "Mission10098_132",
                     "Text": ""
                 }
             ]
@@ -206,35 +219,35 @@
             "Language": 5,
             "MessageData": [
                 {
-                    "Name": "Mission10097_000",
+                    "Name": "Mission10098_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_001",
+                    "Name": "Mission10098_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_100",
-                    "Text": "One Blade Holds the Pass"
+                    "Name": "Mission10098_100",
+                    "Text": "Planetary Cataclysm"
                 },
                 {
-                    "Name": "Mission10097_101",
+                    "Name": "Mission10098_101",
                     "Text": "Erik (Astrum Unit)"
                 },
                 {
-                    "Name": "Mission10097_102",
-                    "Text": "Corona de hielo eterno, filo de cadenas.\nUn <EMID EM0160_00_0> de poder incomparable\naguarda a sus retadores en <REF RefEnvironment_0001_0003>.\nEsta es la batalla que lleva a la cumbre.\n¡Que la fortuna acompañe a quienes luchan!"
+                    "Name": "Mission10098_102",
+                    "Text": "A mechanical weapon from a distant star—\nZero-type Planetary Omega descends upon the holy precinct.\nOnly the strongest hunters can stop this cataclysm."
                 },
                 {
-                    "Name": "Mission10097_122",
+                    "Name": "Mission10098_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_123",
+                    "Name": "Mission10098_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_132",
+                    "Name": "Mission10098_132",
                     "Text": ""
                 }
             ]
@@ -243,35 +256,35 @@
             "Language": 13,
             "MessageData": [
                 {
-                    "Name": "Mission10097_000",
+                    "Name": "Mission10098_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_001",
+                    "Name": "Mission10098_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_100",
-                    "Text": "一刃当关"
+                    "Name": "Mission10098_100",
+                    "Text": "游星浩劫"
                 },
                 {
-                    "Name": "Mission10097_101",
+                    "Name": "Mission10098_101",
                     "Text": "星之队　艾瑞克"
                 },
                 {
-                    "Name": "Mission10097_102",
-                    "Text": "极寒为冠，锁链为刃。\n远超同类的强大<EMID EM0160_00_0>，于<REF RefEnvironment_0001_0003>静候挑战者。\n这是通往巅峰的一战。\n愿武运眷顾众生！"
+                    "Name": "Mission10098_102",
+                    "Text": "来自遥远星海的机械兵器——零式游星欧米茄降临龙灯圣域。\n集结最强猎人，阻止这场浩劫。"
                 },
                 {
-                    "Name": "Mission10097_122",
+                    "Name": "Mission10098_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_123",
+                    "Name": "Mission10098_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_132",
+                    "Name": "Mission10098_132",
                     "Text": ""
                 }
             ]
@@ -280,35 +293,35 @@
             "Language": 6,
             "MessageData": [
                 {
-                    "Name": "Mission10097_000",
+                    "Name": "Mission10098_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_001",
+                    "Name": "Mission10098_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_100",
-                    "Text": "One Blade Holds the Pass"
+                    "Name": "Mission10098_100",
+                    "Text": "Planetary Cataclysm"
                 },
                 {
-                    "Name": "Mission10097_101",
+                    "Name": "Mission10098_101",
                     "Text": "Erik (Astrum Unit)"
                 },
                 {
-                    "Name": "Mission10097_102",
-                    "Text": "Венец лютого холода, клинок из цепей.\nНесравненный по силе <EMID EM0160_00_0>\nждёт своих соперников в <REF RefEnvironment_0001_0003>.\nЭта битва ведёт к самой вершине.\nПусть удача сопутствует всем, кто сражается!"
+                    "Name": "Mission10098_102",
+                    "Text": "A mechanical weapon from a distant star—\nZero-type Planetary Omega descends upon the holy precinct.\nOnly the strongest hunters can stop this cataclysm."
                 },
                 {
-                    "Name": "Mission10097_122",
+                    "Name": "Mission10098_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_123",
+                    "Name": "Mission10098_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_132",
+                    "Name": "Mission10098_132",
                     "Text": ""
                 }
             ]
@@ -317,35 +330,35 @@
             "Language": 7,
             "MessageData": [
                 {
-                    "Name": "Mission10097_000",
+                    "Name": "Mission10098_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_001",
+                    "Name": "Mission10098_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_100",
-                    "Text": "One Blade Holds the Pass"
+                    "Name": "Mission10098_100",
+                    "Text": "Planetary Cataclysm"
                 },
                 {
-                    "Name": "Mission10097_101",
+                    "Name": "Mission10098_101",
                     "Text": "Erik (Astrum Unit)"
                 },
                 {
-                    "Name": "Mission10097_102",
-                    "Text": "Korona z lodu, ostrze z łańcuchów.\n<EMID EM0160_00_0> o niesamowitej mocy\nczeka na śmiałków w <REF RefEnvironment_0001_0003>.\nTo starcie prowadzi na sam szczyt.\nNiech fortuna sprzyja walczącym!"
+                    "Name": "Mission10098_102",
+                    "Text": "A mechanical weapon from a distant star—\nZero-type Planetary Omega descends upon the holy precinct.\nOnly the strongest hunters can stop this cataclysm."
                 },
                 {
-                    "Name": "Mission10097_122",
+                    "Name": "Mission10098_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_123",
+                    "Name": "Mission10098_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_132",
+                    "Name": "Mission10098_132",
                     "Text": ""
                 }
             ]
@@ -354,35 +367,35 @@
             "Language": 11,
             "MessageData": [
                 {
-                    "Name": "Mission10097_000",
+                    "Name": "Mission10098_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_001",
+                    "Name": "Mission10098_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_100",
-                    "Text": "일인당관"
+                    "Name": "Mission10098_100",
+                    "Text": "유성의 대재앙"
                 },
                 {
-                    "Name": "Mission10097_101",
+                    "Name": "Mission10098_101",
                     "Text": "별 부대　에릭"
                 },
                 {
-                    "Name": "Mission10097_102",
-                    "Text": "혹한을 왕관 삼고, 사슬을 칼날 삼으니.\n동족을 훨씬 뛰어넘는 강대한 <EMID EM0160_00_0>가\n<REF RefEnvironment_0001_0003>에서 도전자를 기다린다.\n정점에 이르는 한 판.\n무운이 만물과 함께하기를!"
+                    "Name": "Mission10098_102",
+                    "Text": "머나먼 성해에서 온 기계병기,\n제로식 유성 오메가가 성역에 강림.\n최강의 헌터를 모아 이 재앙을 막아라."
                 },
                 {
-                    "Name": "Mission10097_122",
+                    "Name": "Mission10098_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_123",
+                    "Name": "Mission10098_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_132",
+                    "Name": "Mission10098_132",
                     "Text": ""
                 }
             ]
@@ -391,35 +404,35 @@
             "Language": 3,
             "MessageData": [
                 {
-                    "Name": "Mission10097_000",
+                    "Name": "Mission10098_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_001",
+                    "Name": "Mission10098_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_100",
-                    "Text": "One Blade Holds the Pass"
+                    "Name": "Mission10098_100",
+                    "Text": "Planetary Cataclysm"
                 },
                 {
-                    "Name": "Mission10097_101",
+                    "Name": "Mission10098_101",
                     "Text": "Erik (Astrum Unit)"
                 },
                 {
-                    "Name": "Mission10097_102",
-                    "Text": "Una corona di gelo eterno, una lama di catene.\nUn <EMID EM0160_00_0> di potenza straordinaria\nattende i suoi sfidanti in <REF RefEnvironment_0001_0003>.\nQuesta è la battaglia che conduce alla vetta.\nChe la fortuna assista tutti i combattenti!"
+                    "Name": "Mission10098_102",
+                    "Text": "A mechanical weapon from a distant star—\nZero-type Planetary Omega descends upon the holy precinct.\nOnly the strongest hunters can stop this cataclysm."
                 },
                 {
-                    "Name": "Mission10097_122",
+                    "Name": "Mission10098_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_123",
+                    "Name": "Mission10098_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_132",
+                    "Name": "Mission10098_132",
                     "Text": ""
                 }
             ]
@@ -428,35 +441,35 @@
             "Language": 10,
             "MessageData": [
                 {
-                    "Name": "Mission10097_000",
+                    "Name": "Mission10098_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_001",
+                    "Name": "Mission10098_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_100",
-                    "Text": "One Blade Holds the Pass"
+                    "Name": "Mission10098_100",
+                    "Text": "Planetary Cataclysm"
                 },
                 {
-                    "Name": "Mission10097_101",
+                    "Name": "Mission10098_101",
                     "Text": "Erik (Astrum Unit)"
                 },
                 {
-                    "Name": "Mission10097_102",
-                    "Text": "Coroa de gelo profundo, lâmina de correntes.\nUm <EMID EM0160_00_0> de poder incomparável\naguarda desafiantes em <REF RefEnvironment_0001_0003>.\nEsta é a batalha que leva ao cume.\nQue a sorte favoreça todos os que lutam!"
+                    "Name": "Mission10098_102",
+                    "Text": "A mechanical weapon from a distant star—\nZero-type Planetary Omega descends upon the holy precinct.\nOnly the strongest hunters can stop this cataclysm."
                 },
                 {
-                    "Name": "Mission10097_122",
+                    "Name": "Mission10098_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_123",
+                    "Name": "Mission10098_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_132",
+                    "Name": "Mission10098_132",
                     "Text": ""
                 }
             ]
@@ -465,35 +478,35 @@
             "Language": 12,
             "MessageData": [
                 {
-                    "Name": "Mission10097_000",
+                    "Name": "Mission10098_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_001",
+                    "Name": "Mission10098_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_100",
-                    "Text": "一刃當關"
+                    "Name": "Mission10098_100",
+                    "Text": "遊星浩劫"
                 },
                 {
-                    "Name": "Mission10097_101",
+                    "Name": "Mission10098_101",
                     "Text": "星辰隊　艾瑞克"
                 },
                 {
-                    "Name": "Mission10097_102",
-                    "Text": "極寒為冠，鎖鏈為刃。\n遠超同類的強大<EMID EM0160_00_0>，於<REF RefEnvironment_0001_0003>靜候挑戰者。\n這是通往巔峰的一戰。\n願武運眷顧眾生！"
+                    "Name": "Mission10098_102",
+                    "Text": "來自遙遠星海的機械兵器——零式遊星歐米茄降臨龍燈聖域。\n集結最強獵人，阻止這場浩劫。"
                 },
                 {
-                    "Name": "Mission10097_122",
+                    "Name": "Mission10098_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_123",
+                    "Name": "Mission10098_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_132",
+                    "Name": "Mission10098_132",
                     "Text": ""
                 }
             ]
@@ -502,35 +515,35 @@
             "Language": 21,
             "MessageData": [
                 {
-                    "Name": "Mission10097_000",
+                    "Name": "Mission10098_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_001",
+                    "Name": "Mission10098_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_100",
-                    "Text": "One Blade Holds the Pass"
+                    "Name": "Mission10098_100",
+                    "Text": "Planetary Cataclysm"
                 },
                 {
-                    "Name": "Mission10097_101",
+                    "Name": "Mission10098_101",
                     "Text": "Erik (Astrum Unit)"
                 },
                 {
-                    "Name": "Mission10097_102",
-                    "Text": "تاج من صقيعٍ قارس، ونصلٌ من سلاسل.\n<EMID EM0160_00_0> بقوةٍ تفوق نظيره\nينتظر من يتحداه في <REF RefEnvironment_0001_0003>.\nهذه هي المعركة التي تقود إلى القمة.\nلتكن الحظوة مع كل من يقاتل!"
+                    "Name": "Mission10098_102",
+                    "Text": "A mechanical weapon from a distant star—\nZero-type Planetary Omega descends upon the holy precinct.\nOnly the strongest hunters can stop this cataclysm."
                 },
                 {
-                    "Name": "Mission10097_122",
+                    "Name": "Mission10098_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_123",
+                    "Name": "Mission10098_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_132",
+                    "Name": "Mission10098_132",
                     "Text": ""
                 }
             ]
@@ -539,35 +552,35 @@
             "Language": 32,
             "MessageData": [
                 {
-                    "Name": "Mission10097_000",
+                    "Name": "Mission10098_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_001",
+                    "Name": "Mission10098_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_100",
-                    "Text": "One Blade Holds the Pass"
+                    "Name": "Mission10098_100",
+                    "Text": "Planetary Cataclysm"
                 },
                 {
-                    "Name": "Mission10097_101",
+                    "Name": "Mission10098_101",
                     "Text": "Erik (Astrum Unit)"
                 },
                 {
-                    "Name": "Mission10097_102",
-                    "Text": "Corona de hielo eterno, filo de cadenas.\nUn <EMID EM0160_00_0> de poder incomparable\naguarda a sus retadores en <REF RefEnvironment_0001_0003>.\nEsta es la batalla que lleva a la cumbre.\n¡Que la fortuna acompañe a quienes luchan!"
+                    "Name": "Mission10098_102",
+                    "Text": "A mechanical weapon from a distant star—\nZero-type Planetary Omega descends upon the holy precinct.\nOnly the strongest hunters can stop this cataclysm."
                 },
                 {
-                    "Name": "Mission10097_122",
+                    "Name": "Mission10098_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_123",
+                    "Name": "Mission10098_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_132",
+                    "Name": "Mission10098_132",
                     "Text": ""
                 }
             ]
@@ -576,35 +589,35 @@
             "Language": 0,
             "MessageData": [
                 {
-                    "Name": "Mission10097_000",
+                    "Name": "Mission10098_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_001",
+                    "Name": "Mission10098_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_100",
-                    "Text": "一刃当関"
+                    "Name": "Mission10098_100",
+                    "Text": "遊星の浩劫"
                 },
                 {
-                    "Name": "Mission10097_101",
+                    "Name": "Mission10098_101",
                     "Text": "星の隊　エリック"
                 },
                 {
-                    "Name": "Mission10097_102",
-                    "Text": "極寒を冠とし、鎖を刃とす。\n同族を遥かに超えし強大な<EMID EM0160_00_0>が、\n<REF RefEnvironment_0001_0003>にて挑戦者を待つ。\n頂きへと至る一戦。\n武運が万物にあらんことを！"
+                    "Name": "Mission10098_102",
+                    "Text": "遥かなる星海より来たりし機械兵器、\n零式遊星オメガが龍灯聖域に降臨。最強のハンターを集め、\nこの浩劫を食い止めよ。"
                 },
                 {
-                    "Name": "Mission10097_122",
+                    "Name": "Mission10098_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_123",
+                    "Name": "Mission10098_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_132",
+                    "Name": "Mission10098_132",
                     "Text": ""
                 }
             ]
@@ -613,35 +626,35 @@
             "Language": 2,
             "MessageData": [
                 {
-                    "Name": "Mission10097_000",
+                    "Name": "Mission10098_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_001",
+                    "Name": "Mission10098_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_100",
-                    "Text": "One Blade Holds the Pass"
+                    "Name": "Mission10098_100",
+                    "Text": "Planetary Cataclysm"
                 },
                 {
-                    "Name": "Mission10097_101",
+                    "Name": "Mission10098_101",
                     "Text": "Erik (Astrum Unit)"
                 },
                 {
-                    "Name": "Mission10097_102",
-                    "Text": "Une couronne de froid polaire, une lame de chaînes.\nUn <EMID EM0160_00_0> d'une puissance inégalée\nattend ses challengers en <REF RefEnvironment_0001_0003>.\nVoici le combat qui mène au sommet.\nQue la fortune accompagne tous les combattants !"
+                    "Name": "Mission10098_102",
+                    "Text": "A mechanical weapon from a distant star—\nZero-type Planetary Omega descends upon the holy precinct.\nOnly the strongest hunters can stop this cataclysm."
                 },
                 {
-                    "Name": "Mission10097_122",
+                    "Name": "Mission10098_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_123",
+                    "Name": "Mission10098_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_132",
+                    "Name": "Mission10098_132",
                     "Text": ""
                 }
             ]
@@ -650,35 +663,35 @@
             "Language": 26,
             "MessageData": [
                 {
-                    "Name": "Mission10097_000",
+                    "Name": "Mission10098_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_001",
+                    "Name": "Mission10098_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_100",
-                    "Text": "One Blade Holds the Pass"
+                    "Name": "Mission10098_100",
+                    "Text": "Planetary Cataclysm"
                 },
                 {
-                    "Name": "Mission10097_101",
+                    "Name": "Mission10098_101",
                     "Text": "Erik (Astrum Unit)"
                 },
                 {
-                    "Name": "Mission10097_102",
-                    "Text": "A crown of bitter cold, a blade of binding chain.\nA <EMID EM0160_00_0> of surpassing power\nawaits its challengers in <REF RefEnvironment_0001_0003>.\nThis battle leads to the very summit.\nMay fortune favor all who fight!"
+                    "Name": "Mission10098_102",
+                    "Text": "A mechanical weapon from a distant star—\nZero-type Planetary Omega descends upon the holy precinct.\nOnly the strongest hunters can stop this cataclysm."
                 },
                 {
-                    "Name": "Mission10097_122",
+                    "Name": "Mission10098_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_123",
+                    "Name": "Mission10098_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_132",
+                    "Name": "Mission10098_132",
                     "Text": ""
                 }
             ]
@@ -687,35 +700,35 @@
             "Language": 1,
             "MessageData": [
                 {
-                    "Name": "Mission10097_000",
+                    "Name": "Mission10098_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_001",
+                    "Name": "Mission10098_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_100",
-                    "Text": "One Blade Holds the Pass"
+                    "Name": "Mission10098_100",
+                    "Text": "Planetary Cataclysm"
                 },
                 {
-                    "Name": "Mission10097_101",
+                    "Name": "Mission10098_101",
                     "Text": "Erik (Astrum Unit)"
                 },
                 {
-                    "Name": "Mission10097_102",
-                    "Text": "A crown of bitter cold, a blade of binding chain.\nA <EMID EM0160_00_0> of surpassing power\nawaits its challengers in <REF RefEnvironment_0001_0003>.\nThis battle leads to the very summit.\nMay fortune favor all who fight!"
+                    "Name": "Mission10098_102",
+                    "Text": "A mechanical weapon from a distant star—\nZero-type Planetary Omega descends upon the holy precinct.\nOnly the strongest hunters can stop this cataclysm."
                 },
                 {
-                    "Name": "Mission10097_122",
+                    "Name": "Mission10098_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_123",
+                    "Name": "Mission10098_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10097_132",
+                    "Name": "Mission10098_132",
                     "Text": ""
                 }
             ]
