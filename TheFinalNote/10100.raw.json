@@ -1,0 +1,794 @@
+{
+    "_ArenaDataList": null,
+    "_BossZakoDataList": {
+        "_AnimalLayoutID": {
+            "_ID": "00000000-0000-0000-0000-000000000000",
+            "_Resource": null
+        },
+        "_FieldID": {
+            "_Name": "st405_ゴグマジオス戦闘",
+            "_Value": 13836
+        },
+        "_MainTargetDataList": [
+            {
+                "_AdvancedSettings": {
+                    "_IsDeepSleepCreate": false
+                },
+                "_AreaNo": 2,
+                "_DifficultyAdjustRange": 0,
+                "_DifficultyRankId": {
+                    "Name": "★10-5（ゴグマジオス）",
+                    "Value": "a80891b3-54b8-4910-bce7-cac155784c2a"
+                },
+                "_EmID": 13052,
+                "_EventTargetID": "INVALID",
+                "_FixedSize": 100,
+                "_GroupID": 0,
+                "_InitPos": "(1109.2224,42.026993,-337.09744)",
+                "_IsUseRandomSize": false,
+                "_LayoutKeepID": -1,
+                "_LegendaryID": "NONE",
+                "_OptionTag": {
+                    "Value": 0
+                },
+                "_RandomSizeTblId": {
+                    "Name": "",
+                    "Value": "00000000-0000-0000-0000-000000000000"
+                },
+                "_RoleID": "NORMAL",
+                "_RouteID": {
+                    "Name": "エリア1～2移動用",
+                    "_Value": "134012c4-3ca3-408a-bb30-d0b3f1ff51ef"
+                },
+                "_SetAreaNo": 255,
+                "_StoryTargetID": 101
+            }
+        ],
+        "_SubBossLayoutID": {
+            "_ID": "c825baf4-31f9-4d3d-9ead-86e6c17b5708",
+            "_Resource": "assets:/GameDesign/Stage/st405/Layout/Loaded/Enemy/SubBoss/st405_SubBoss_Ms640011.pog.json"
+        },
+        "_ZakoLayoutID": {
+            "_ID": "00000000-0000-0000-0000-000000000000",
+            "_Resource": null
+        },
+        "_ZakoLayoutTag": {
+            "_FieldID": {
+                "_Name": "st405_ゴグマジオス戦闘",
+                "_Value": 13836
+            },
+            "_IsIntentionallyBlank": false,
+            "_Value": 0
+        }
+    },
+    "_DataList": {
+        "_AddPoint": 1380,
+        "_ArenaFenceCloseTime": 60,
+        "_ArenaFenceInitWaitTime": 60,
+        "_ArenaFenceReuseableTime": 120,
+        "_ArenaFenceStatus": "OPEN",
+        "_ArenaPillarStatus": "USE",
+        "_BattleBGM": 0,
+        "_BossRushParams": [],
+        "_BossRushParams=": null,
+        "_ClearBGM": 1,
+        "_ClearCondition": {
+            "_TargetInfoArray": [
+                {
+                    "_ConditionalMoveData": {
+                        "_DestArray": [],
+                        "_IsUse": false,
+                        "_RevertOnCompleted": false,
+                        "_StartAfterFirstCondition": false
+                    },
+                    "_EmTargetID": 101,
+                    "_LegendaryID": "NONE",
+                    "_RoleID": "NORMAL",
+                    "_ShowTargetGuide": true,
+                    "_TargetIDValue": 13052,
+                    "_TargetValue": 1
+                }
+            ],
+            "_TargetType": 2
+        },
+        "_EnableGuestNpc": false,
+        "_ExOverrideID": 0,
+        "_HRPoint": 4000,
+        "_IconType": {
+            "_Name": "通常アイコン:ターゲットに基づいてアイコンを出す",
+            "_Value": 1927315328
+        },
+        "_Index": 0,
+        "_IsOverrideArenaFenceParam": false,
+        "_IsOverrideArenaPillarParam": false,
+        "_IsSettingSupply": true,
+        "_MissionId": {
+            "_Name": "巨戟龙·终局（十星满血第三阶段）",
+            "_Value": 10100
+        },
+        "_OrderCondition": {
+            "_MaxPlayerNum": 4,
+            "_OrderHR": 100,
+            "_OrderMR": 0,
+            "_PremiseMission": {
+                "_Name": "TU3_EXミッションFFコラボ2「暴走オメガ」 : MISSION_730020",
+                "_Value": 7044
+            }
+        },
+        "_PartnerNpc": {
+            "_Name": "無効値",
+            "_Value": 4
+        },
+        "_QuestAttribute": 0,
+        "_QuestLife": 3,
+        "_QuestLv": 10,
+        "_QuestMsg": {
+            "_ClearConditionMsg": {
+                "_IsAuto": true,
+                "_MsgID": "00000000-0000-0000-0000-000000000000"
+            },
+            "_ClientNameMsg": "b637bbd7-eb7d-4af0-aa2e-2afc37468db2",
+            "_DetailMsg": "4b84c788-4bb9-4375-ae7a-6f8fbdde11ca",
+            "_FailConditionMsg": {
+                "_IsAuto": true,
+                "_MsgIDs": [
+                    "00000000-0000-0000-0000-000000000000",
+                    "00000000-0000-0000-0000-000000000000"
+                ]
+            },
+            "_FailConditionMsg_Other": "b6820337-364e-48c2-9ddc-f4361f5702c1",
+            "_OrderConditionMsg": {
+                "_IsAuto": true,
+                "_MsgIDs": [
+                    "00000000-0000-0000-0000-000000000000",
+                    "00000000-0000-0000-0000-000000000000"
+                ]
+            },
+            "_OrderConditionMsg_Other": "df9f9b23-1a9e-46f3-9ee7-db15ef08d9d5",
+            "_OrderConditionMsg_StProgress": "f4f1cfc1-56c2-4a81-8c3e-717bd88d2288",
+            "_TitleMsg": "38233673-2cb9-48e8-bce1-4883cb831e44"
+        },
+        "_QuestType": 1,
+        "_RemMoney": 60120,
+        "_Stage": {
+            "_Name": "st405_ゴグマジオス戦闘",
+            "_Value": 13836
+        },
+        "_SubBossInfoArray": [],
+        "_SubBossInfoArray=": null,
+        "_SupplyID": {
+            "_Name": "SUPPLY_0014 : TU4EX進行用",
+            "_Value": 27989
+        },
+        "_TimeLimit": 50,
+        "_Version": 7
+    },
+    "_IsRecommended": false,
+    "_MessageAssetList": [
+        {
+            "Language": 4,
+            "MessageData": [
+                {
+                    "Name": "Mission10100_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_100",
+                    "Text": "Gogmazios: The Final Act"
+                },
+                {
+                    "Name": "Mission10100_101",
+                    "Text": "The Guild"
+                },
+                {
+                    "Name": "Mission10100_102",
+                    "Text": "Face Gogmazios in the final arena from the start.\r\nPhase three begins with full ten-star health.\r\nThe camp passage is open. Head for the final battle!"
+                },
+                {
+                    "Name": "Mission10100_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 7,
+            "MessageData": [
+                {
+                    "Name": "Mission10100_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_100",
+                    "Text": "Gogmazios: The Final Act"
+                },
+                {
+                    "Name": "Mission10100_101",
+                    "Text": "The Guild"
+                },
+                {
+                    "Name": "Mission10100_102",
+                    "Text": "Face Gogmazios in the final arena from the start.\r\nPhase three begins with full ten-star health.\r\nThe camp passage is open. Head for the final battle!"
+                },
+                {
+                    "Name": "Mission10100_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 21,
+            "MessageData": [
+                {
+                    "Name": "Mission10100_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_100",
+                    "Text": "Gogmazios: The Final Act"
+                },
+                {
+                    "Name": "Mission10100_101",
+                    "Text": "The Guild"
+                },
+                {
+                    "Name": "Mission10100_102",
+                    "Text": "Face Gogmazios in the final arena from the start.\r\nPhase three begins with full ten-star health.\r\nThe camp passage is open. Head for the final battle!"
+                },
+                {
+                    "Name": "Mission10100_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 2,
+            "MessageData": [
+                {
+                    "Name": "Mission10100_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_100",
+                    "Text": "Gogmazios: The Final Act"
+                },
+                {
+                    "Name": "Mission10100_101",
+                    "Text": "The Guild"
+                },
+                {
+                    "Name": "Mission10100_102",
+                    "Text": "Face Gogmazios in the final arena from the start.\r\nPhase three begins with full ten-star health.\r\nThe camp passage is open. Head for the final battle!"
+                },
+                {
+                    "Name": "Mission10100_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 3,
+            "MessageData": [
+                {
+                    "Name": "Mission10100_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_100",
+                    "Text": "Gogmazios: The Final Act"
+                },
+                {
+                    "Name": "Mission10100_101",
+                    "Text": "The Guild"
+                },
+                {
+                    "Name": "Mission10100_102",
+                    "Text": "Face Gogmazios in the final arena from the start.\r\nPhase three begins with full ten-star health.\r\nThe camp passage is open. Head for the final battle!"
+                },
+                {
+                    "Name": "Mission10100_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 5,
+            "MessageData": [
+                {
+                    "Name": "Mission10100_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_100",
+                    "Text": "Gogmazios: The Final Act"
+                },
+                {
+                    "Name": "Mission10100_101",
+                    "Text": "The Guild"
+                },
+                {
+                    "Name": "Mission10100_102",
+                    "Text": "Face Gogmazios in the final arena from the start.\r\nPhase three begins with full ten-star health.\r\nThe camp passage is open. Head for the final battle!"
+                },
+                {
+                    "Name": "Mission10100_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 11,
+            "MessageData": [
+                {
+                    "Name": "Mission10100_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_100",
+                    "Text": "Gogmazios: The Final Act"
+                },
+                {
+                    "Name": "Mission10100_101",
+                    "Text": "The Guild"
+                },
+                {
+                    "Name": "Mission10100_102",
+                    "Text": "Face Gogmazios in the final arena from the start.\r\nPhase three begins with full ten-star health.\r\nThe camp passage is open. Head for the final battle!"
+                },
+                {
+                    "Name": "Mission10100_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 32,
+            "MessageData": [
+                {
+                    "Name": "Mission10100_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_100",
+                    "Text": "Gogmazios: The Final Act"
+                },
+                {
+                    "Name": "Mission10100_101",
+                    "Text": "The Guild"
+                },
+                {
+                    "Name": "Mission10100_102",
+                    "Text": "Face Gogmazios in the final arena from the start.\r\nPhase three begins with full ten-star health.\r\nThe camp passage is open. Head for the final battle!"
+                },
+                {
+                    "Name": "Mission10100_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 26,
+            "MessageData": [
+                {
+                    "Name": "Mission10100_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_100",
+                    "Text": "Gogmazios: The Final Act"
+                },
+                {
+                    "Name": "Mission10100_101",
+                    "Text": "The Guild"
+                },
+                {
+                    "Name": "Mission10100_102",
+                    "Text": "Face Gogmazios in the final arena from the start.\r\nPhase three begins with full ten-star health.\r\nThe camp passage is open. Head for the final battle!"
+                },
+                {
+                    "Name": "Mission10100_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 10,
+            "MessageData": [
+                {
+                    "Name": "Mission10100_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_100",
+                    "Text": "Gogmazios: The Final Act"
+                },
+                {
+                    "Name": "Mission10100_101",
+                    "Text": "The Guild"
+                },
+                {
+                    "Name": "Mission10100_102",
+                    "Text": "Face Gogmazios in the final arena from the start.\r\nPhase three begins with full ten-star health.\r\nThe camp passage is open. Head for the final battle!"
+                },
+                {
+                    "Name": "Mission10100_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 12,
+            "MessageData": [
+                {
+                    "Name": "Mission10100_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_100",
+                    "Text": "巨戟龍・終局"
+                },
+                {
+                    "Name": "Mission10100_101",
+                    "Text": "公會"
+                },
+                {
+                    "Name": "Mission10100_102",
+                    "Text": "巨戟龍已在最終戰場展開攻勢。\r\n本任務從第三階段直接開始，\r\n保留十星個體的完整血量。\r\n營地通道開放，請前往高台迎戰！"
+                },
+                {
+                    "Name": "Mission10100_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 13,
+            "MessageData": [
+                {
+                    "Name": "Mission10100_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_100",
+                    "Text": "巨戟龙·终局"
+                },
+                {
+                    "Name": "Mission10100_101",
+                    "Text": "公会"
+                },
+                {
+                    "Name": "Mission10100_102",
+                    "Text": "巨戟龙已在最终战场展开攻势。\r\n本任务从第三阶段直接开始，\r\n保留十星个体的完整血量。\r\n营地通道开放，请前往高台迎战！"
+                },
+                {
+                    "Name": "Mission10100_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 6,
+            "MessageData": [
+                {
+                    "Name": "Mission10100_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_100",
+                    "Text": "Gogmazios: The Final Act"
+                },
+                {
+                    "Name": "Mission10100_101",
+                    "Text": "The Guild"
+                },
+                {
+                    "Name": "Mission10100_102",
+                    "Text": "Face Gogmazios in the final arena from the start.\r\nPhase three begins with full ten-star health.\r\nThe camp passage is open. Head for the final battle!"
+                },
+                {
+                    "Name": "Mission10100_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 0,
+            "MessageData": [
+                {
+                    "Name": "Mission10100_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_100",
+                    "Text": "ゴグマジオス・終局"
+                },
+                {
+                    "Name": "Mission10100_101",
+                    "Text": "ギルド"
+                },
+                {
+                    "Name": "Mission10100_102",
+                    "Text": "最終エリアでゴグマジオスを討伐せよ。\r\n第三段階から開始。体力は★10個体の満タン。\r\nキャンプの通路を通り、最終決戦へ！"
+                },
+                {
+                    "Name": "Mission10100_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_132",
+                    "Text": ""
+                }
+            ]
+        },
+        {
+            "Language": 1,
+            "MessageData": [
+                {
+                    "Name": "Mission10100_000",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_001",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_100",
+                    "Text": "Gogmazios: The Final Act"
+                },
+                {
+                    "Name": "Mission10100_101",
+                    "Text": "The Guild"
+                },
+                {
+                    "Name": "Mission10100_102",
+                    "Text": "Face Gogmazios in the final arena from the start.\r\nPhase three begins with full ten-star health.\r\nThe camp passage is open. Head for the final battle!"
+                },
+                {
+                    "Name": "Mission10100_122",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_123",
+                    "Text": ""
+                },
+                {
+                    "Name": "Mission10100_132",
+                    "Text": ""
+                }
+            ]
+        }
+    ],
+    "_StreamQuestData": {
+        "_EmSetData": {
+            "_EmSet_AnimalTag": {
+                "_FieldID": {
+                    "_Name": "st405_ゴグマジオス戦闘",
+                    "_Value": 13836
+                },
+                "_Value": 1
+            },
+            "_EmSet_BossZako": null,
+            "_Stage": {
+                "_Name": "st405_ゴグマジオス戦闘",
+                "_Value": 13836
+            }
+        },
+        "_IsFixWorldTime": false,
+        "_IsFixWorldTimeQuest": true,
+        "_IsSetWorldTime": false,
+        "_IsSetWorldTimeQuest": true,
+        "_IsStopTimeTiming": false,
+        "_IsStopTimeTimingQuest": false,
+        "_MissionTypeSerial": {
+            "_Name": "配信イベントクエスト",
+            "_Value": 1025928384
+        },
+        "_SetEnvironmentDataList": [
+            {
+                "_EnvTimeRate": 0,
+                "_EnvType": {
+                    "_Name": "荒廃期",
+                    "_Value": 1961958400
+                },
+                "_ForcastDatas": [],
+                "_IsFixEnv": false,
+                "_IsTransitionEnv": false,
+                "_StageType": {
+                    "_Name": "st405_ゴグマジオス戦闘",
+                    "_Value": 13836
+                },
+                "_StopTiming_EnvType": {
+                    "_Name": "無効値",
+                    "_Value": 2110947200
+                }
+            }
+        ],
+        "_SetLGuideMsgData": {
+            "IsSubOrder": false,
+            "SetMsgID": "00000000-0000-0000-0000-000000000000",
+            "gaugeSpritNum": 0,
+            "isCanSkip": false,
+            "isGauge": false
+        },
+        "_SetMoonData": {
+            "_IsSetMoon": false,
+            "_MoonOptionsVariationIndex": 0,
+            "_MoonSetting": {
+                "_Name": "無効値",
+                "_Value": -770399616
+            },
+            "_MoonTextureVariationIndex": 0
+        },
+        "_StopTimeTimingHour": 0,
+        "_StopTimeTimingHourQuest": 0,
+        "_StopTimeTimingMinute": 0,
+        "_StopTimeTimingMinuteQuest": 0,
+        "_WorldTimeHour": 0,
+        "_WorldTimeHourQuest": 12,
+        "_WorldTimeMinute": 0,
+        "_WorldTimeMinuteQuest": 0
+    }
+}
