@@ -8,7 +8,7 @@
 -- 具体参数修改和其他业务 hook 仍由任务脚本负责。
 -- 提供:
 --   敌人包事件   on_enemy_package(enemy_id, on_loaded, on_unloaded)，回调可为 nil
---   通用工具     parse_guid / get_mission_id_from_fixed / get_enemy_display_name
+--   通用工具     parse_guid / write_valuetype / get_mission_id_from_fixed / get_enemy_display_name
 --   任务日志     print(fmt, ...) —— 自动添加当前任务前缀，写入log.info
 --                is_late_join / resolve_em_id / calc_route_guid_hash / get_npc_runtime_id
 --   枚举         ROLE_ID / LEGENDARY_ID / ENEMY_LAYOUT_TYPE / CREATE_OPTION_BIT
@@ -102,6 +102,16 @@ end
 
 function lib.parse_guid(s)
     return sdk.find_type_definition("System.Guid"):get_method("Parse(System.String)"):call(nil, s)
+end
+
+-- 托管对象内嵌值类型字段：只复制payload，避免Guid的get_size=32/实际值16造成越界。
+-- 旧REFramework可能把抽象基类字段偏移算成0；禁止写入托管对象头。
+function lib.write_valuetype(parent_obj, field_name, value)
+    local offset = parent_obj:get_type_definition():get_field(field_name):get_offset_from_base()
+    assert(offset >= 0x10, "REFramework value-type field offset mismatch; update REFramework")
+    for i = 0, value.type:get_valuetype_size() - 1 do
+        parent_obj:write_byte(offset + i, value:read_byte(i))
+    end
 end
 
 -- fixed id(如 26820) → 运行时 MissionIDList.ID, 解析失败返回 nil
