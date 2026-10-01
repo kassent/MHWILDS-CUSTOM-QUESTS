@@ -41,7 +41,40 @@
                     "_Value": "134012c4-3ca3-408a-bb30-d0b3f1ff51ef"
                 },
                 "_SetAreaNo": 255,
-                "_StoryTargetID": 101
+                "_StoryTargetID": 0
+            },
+            {
+                "_AdvancedSettings": {
+                    "_IsDeepSleepCreate": false
+                },
+                "_AreaNo": 2,
+                "_DifficultyAdjustRange": 0,
+                "_DifficultyRankId": {
+                    "Name": "★10-5（ジンダハド・ゾシア）",
+                    "Value": "64938e94-d384-4567-8ed5-af922379600d"
+                },
+                "_EmID": 1553456768,
+                "_EventTargetID": "INVALID",
+                "_FixedSize": 100,
+                "_GroupID": 0,
+                "_InitPos": "(1109.2224,42.026993,-337.09744)",
+                "_IsUseRandomSize": false,
+                "_LayoutKeepID": -1,
+                "_LegendaryID": "KING",
+                "_OptionTag": {
+                    "Value": 4
+                },
+                "_RandomSizeTblId": {
+                    "Name": "",
+                    "Value": "00000000-0000-0000-0000-000000000000"
+                },
+                "_RoleID": "NORMAL",
+                "_RouteID": {
+                    "Name": "ST405单区定点，无原场景路线",
+                    "_Value": "00000000-0000-0000-0000-000000000000"
+                },
+                "_SetAreaNo": 255,
+                "_StoryTargetID": 1
             }
         ],
         "_SubBossLayoutID": {
@@ -69,7 +102,18 @@
         "_ArenaFenceStatus": "OPEN",
         "_ArenaPillarStatus": "USE",
         "_BattleBGM": 0,
-        "_BossRushParams": [],
+        "_BossRushParams": [
+            {
+                "_ConditionValue_1": -1,
+                "_ConditionValue_2": -1,
+                "_PopType": 0
+            },
+            {
+                "_ConditionValue_1": 1,
+                "_ConditionValue_2": -1,
+                "_PopType": 1
+            }
+        ],
         "_BossRushParams=": null,
         "_ClearBGM": 1,
         "_ClearCondition": {
@@ -81,11 +125,25 @@
                         "_RevertOnCompleted": false,
                         "_StartAfterFirstCondition": false
                     },
-                    "_EmTargetID": 101,
-                    "_LegendaryID": "NONE",
+                    "_EmTargetID": 0,
+                    "_LegendaryID": "KING",
                     "_RoleID": "NORMAL",
                     "_ShowTargetGuide": true,
                     "_TargetIDValue": 13052,
+                    "_TargetValue": 1
+                },
+                {
+                    "_ConditionalMoveData": {
+                        "_DestArray": [],
+                        "_IsUse": false,
+                        "_RevertOnCompleted": false,
+                        "_StartAfterFirstCondition": false
+                    },
+                    "_EmTargetID": 1,
+                    "_LegendaryID": "KING",
+                    "_RoleID": "NORMAL",
+                    "_ShowTargetGuide": true,
+                    "_TargetIDValue": 1553456768,
                     "_TargetValue": 1
                 }
             ],
@@ -103,8 +161,8 @@
         "_IsOverrideArenaPillarParam": false,
         "_IsSettingSupply": true,
         "_MissionId": {
-            "_Name": "战祸的终音",
-            "_Value": 10100
+            "_Name": "冰与火之歌",
+            "_Value": 10101
         },
         "_OrderCondition": {
             "_MaxPlayerNum": 4,
@@ -120,15 +178,15 @@
             "_Value": 4
         },
         "_QuestAttribute": 0,
-        "_QuestLife": 3,
+        "_QuestLife": 5,
         "_QuestLv": 10,
         "_QuestMsg": {
             "_ClearConditionMsg": {
                 "_IsAuto": true,
                 "_MsgID": "00000000-0000-0000-0000-000000000000"
             },
-            "_ClientNameMsg": "b637bbd7-eb7d-4af0-aa2e-2afc37468db2",
-            "_DetailMsg": "4b84c788-4bb9-4375-ae7a-6f8fbdde11ca",
+            "_ClientNameMsg": "03027aa0-9028-43c4-9256-c788c5238a58",
+            "_DetailMsg": "756e7b18-2b0e-416f-afe4-52b4753a8b1f",
             "_FailConditionMsg": {
                 "_IsAuto": true,
                 "_MsgIDs": [
@@ -136,7 +194,7 @@
                     "00000000-0000-0000-0000-000000000000"
                 ]
             },
-            "_FailConditionMsg_Other": "b6820337-364e-48c2-9ddc-f4361f5702c1",
+            "_FailConditionMsg_Other": "2f2b40c5-7a6f-43a6-9367-984a0f1088cc",
             "_OrderConditionMsg": {
                 "_IsAuto": true,
                 "_MsgIDs": [
@@ -144,12 +202,12 @@
                     "00000000-0000-0000-0000-000000000000"
                 ]
             },
-            "_OrderConditionMsg_Other": "df9f9b23-1a9e-46f3-9ee7-db15ef08d9d5",
-            "_OrderConditionMsg_StProgress": "f4f1cfc1-56c2-4a81-8c3e-717bd88d2288",
-            "_TitleMsg": "38233673-2cb9-48e8-bce1-4883cb831e44"
+            "_OrderConditionMsg_Other": "4942c7d1-43b5-4b7e-bcf4-b181d4ea8b32",
+            "_OrderConditionMsg_StProgress": "8368a9fa-bbb4-458d-8680-e394870dffbe",
+            "_TitleMsg": "85f6ea94-08f8-4e66-b096-c64a11702b93"
         },
-        "_QuestType": 1,
-        "_RemMoney": 60120,
+        "_QuestType": 6,
+        "_RemMoney": 120240,
         "_Stage": {
             "_Name": "st405_ゴグマジオス戦闘",
             "_Value": 13836
@@ -169,35 +227,35 @@
             "Language": 4,
             "MessageData": [
                 {
-                    "Name": "Mission10100_000",
+                    "Name": "Mission10101_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_001",
+                    "Name": "Mission10101_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_100",
-                    "Text": "Der letzte Klang des Krieges"
+                    "Name": "Mission10101_100",
+                    "Text": "Das Lied von Eis und Feuer"
                 },
                 {
-                    "Name": "Mission10100_101",
+                    "Name": "Mission10101_101",
                     "Text": "Hikari (Astrum-Trupp)"
                 },
                 {
-                    "Name": "Mission10100_102",
-                    "Text": "Teer brodelt. Trümmer verglühen zu Asche.\r\nDas Brüllen des Drachen hallt unablässig wider.\r\nDie Kriegsgeißel vergangener Zeiten erwacht\r\nund wirft erneut ihren Schatten über dieses Land.\r\nJäger, lass einen letzten Donnerhall\r\ndiesem Unheil ein Ende setzen."
+                    "Name": "Mission10101_102",
+                    "Text": "Hört! Ein Schatten schreitet in Glut; Sterne werden Asche.\r\nNoch glimmt die Glut; der Frostkönig trägt die Schneekrone.\r\nKein Eis schützt euch; die Kälte singt den Toten zu—\r\nAuf, Jäger! Singt mit Stahl; der Morgen wahre euren Namen."
                 },
                 {
-                    "Name": "Mission10100_122",
+                    "Name": "Mission10101_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_123",
+                    "Name": "Mission10101_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_132",
+                    "Name": "Mission10101_132",
                     "Text": ""
                 }
             ]
@@ -206,35 +264,35 @@
             "Language": 7,
             "MessageData": [
                 {
-                    "Name": "Mission10100_000",
+                    "Name": "Mission10101_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_001",
+                    "Name": "Mission10101_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_100",
-                    "Text": "Ostatnia nuta wojny"
+                    "Name": "Mission10101_100",
+                    "Text": "Pieśń lodu i ognia"
                 },
                 {
-                    "Name": "Mission10100_101",
+                    "Name": "Mission10101_101",
                     "Text": "Hikari (Oddział Astrum)"
                 },
                 {
-                    "Name": "Mission10100_102",
-                    "Text": "Smoła wrze. Zgliszcza obracają się w popiół.\r\nRyk smoka wciąż rozbrzmiewa bez końca.\r\nUśpiona klęska dawnych wojen budzi się na nowo\r\ni znów rzuca cień na tę ziemię.\r\nŁowco, niech ostatni huk\r\npołoży kres tej katastrofie."
+                    "Name": "Mission10101_102",
+                    "Text": "Słuchaj! Cień kroczy w ogniu; gwiazdy gasną w popiele.\r\nŻar jeszcze żyje; król mrozu wkłada koronę ze śniegu.\r\nLód nie da osłony; chłód śpiewa pieśń poległym —\r\nPowstań, łowco! Śpiewaj stalą; niech świt pamięta twe imię."
                 },
                 {
-                    "Name": "Mission10100_122",
+                    "Name": "Mission10101_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_123",
+                    "Name": "Mission10101_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_132",
+                    "Name": "Mission10101_132",
                     "Text": ""
                 }
             ]
@@ -243,35 +301,35 @@
             "Language": 21,
             "MessageData": [
                 {
-                    "Name": "Mission10100_000",
+                    "Name": "Mission10101_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_001",
+                    "Name": "Mission10101_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_100",
-                    "Text": "النغمة الأخيرة للحرب"
+                    "Name": "Mission10101_100",
+                    "Text": "أغنية الجليد والنار"
                 },
                 {
-                    "Name": "Mission10100_101",
+                    "Name": "Mission10101_101",
                     "Text": "هيكاري (وحدة أستروم)"
                 },
                 {
-                    "Name": "Mission10100_102",
-                    "Text": "يغلي القطران، ويتحول الحطام إلى رماد.\r\nولا يزال زئير التنين يتردد بلا انقطاع.\r\nتستيقظ كارثة الحروب القديمة من سباتها،\r\nلتلقي بظلالها على هذه الأرض من جديد.\r\nأيها الصياد، اجعل دويًا أخيرًا\r\nيضع حدًا لهذه الكارثة."
+                    "Name": "Mission10101_102",
+                    "Text": "اسمع! ظل يمشي في اللهب، والنجوم تصير رماداً.\r\nلم تبرد الجمرات؛ وملك الصقيع يلبس تاج الثلج.\r\nلا درع من جليد؛ والبرد ينشد لمن سقطوا —\r\nانهض أيها الصياد! غن بسيفك، وليحفظ الفجر اسمك."
                 },
                 {
-                    "Name": "Mission10100_122",
+                    "Name": "Mission10101_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_123",
+                    "Name": "Mission10101_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_132",
+                    "Name": "Mission10101_132",
                     "Text": ""
                 }
             ]
@@ -280,35 +338,35 @@
             "Language": 2,
             "MessageData": [
                 {
-                    "Name": "Mission10100_000",
+                    "Name": "Mission10101_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_001",
+                    "Name": "Mission10101_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_100",
-                    "Text": "L'ultime note de la guerre"
+                    "Name": "Mission10101_100",
+                    "Text": "Le Chant de la glace et du feu"
                 },
                 {
-                    "Name": "Mission10100_101",
+                    "Name": "Mission10101_101",
                     "Text": "Hikari (Unité Astrum)"
                 },
                 {
-                    "Name": "Mission10100_102",
-                    "Text": "Le goudron bouillonne. Les débris se changent en cendres.\r\nLe rugissement du dragon résonne sans fin.\r\nLe fléau des guerres anciennes s'éveille de son sommeil\r\net projette de nouveau son ombre sur cette terre.\r\nChasseur, qu'un dernier coup de tonnerre\r\nmette un point final à cette calamité."
+                    "Name": "Mission10101_102",
+                    "Text": "Écoutez ! L'ombre marche en feu ; les astres sont cendres.\r\nLa braise vit encore ; le roi du givre se couronne de neige.\r\nNul rempart de glace ; le froid chante pour les morts —\r\nDebout, chasseur ! Que l'acier chante ton nom à l'aurore."
                 },
                 {
-                    "Name": "Mission10100_122",
+                    "Name": "Mission10101_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_123",
+                    "Name": "Mission10101_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_132",
+                    "Name": "Mission10101_132",
                     "Text": ""
                 }
             ]
@@ -317,35 +375,35 @@
             "Language": 3,
             "MessageData": [
                 {
-                    "Name": "Mission10100_000",
+                    "Name": "Mission10101_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_001",
+                    "Name": "Mission10101_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_100",
-                    "Text": "L'ultima nota della guerra"
+                    "Name": "Mission10101_100",
+                    "Text": "Un canto di ghiaccio e fuoco"
                 },
                 {
-                    "Name": "Mission10100_101",
+                    "Name": "Mission10101_101",
                     "Text": "Hikari (Unità Astrum)"
                 },
                 {
-                    "Name": "Mission10100_102",
-                    "Text": "Il catrame ribolle. I rottami bruciano fino alla cenere.\r\nIl ruggito del drago riecheggia senza tregua.\r\nLa sciagura di un'antica guerra si desta dal sonno\r\ne torna a gettare la sua ombra su questa terra.\r\nCacciatore, con un ultimo fragore,\r\nmetti fine a questa calamità."
+                    "Name": "Mission10101_102",
+                    "Text": "Udite! Un'ombra avanza nel fuoco; le stelle sono cenere.\r\nLa brace vive; il re del gelo indossa la corona di neve.\r\nNessuno scudo di ghiaccio; il freddo canta per i caduti—\r\nSorgi, cacciatore! Canta col ferro; l'alba ricordi il tuo nome."
                 },
                 {
-                    "Name": "Mission10100_122",
+                    "Name": "Mission10101_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_123",
+                    "Name": "Mission10101_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_132",
+                    "Name": "Mission10101_132",
                     "Text": ""
                 }
             ]
@@ -354,35 +412,35 @@
             "Language": 5,
             "MessageData": [
                 {
-                    "Name": "Mission10100_000",
+                    "Name": "Mission10101_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_001",
+                    "Name": "Mission10101_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_100",
-                    "Text": "La última nota de la guerra"
+                    "Name": "Mission10101_100",
+                    "Text": "Canción de hielo y fuego"
                 },
                 {
-                    "Name": "Mission10100_101",
+                    "Name": "Mission10101_101",
                     "Text": "Hikari (Unidad Astrum)"
                 },
                 {
-                    "Name": "Mission10100_102",
-                    "Text": "El alquitrán hierve. Los restos se vuelven ceniza.\r\nEl rugido del dragón sigue resonando sin descanso.\r\nLa calamidad de una guerra ancestral despierta\r\npara envolver de nuevo esta tierra en sombras.\r\nCazador, que un último estruendo\r\nponga fin a este desastre."
+                    "Name": "Mission10101_102",
+                    "Text": "¡Oíd! Una sombra anda en llamas; las estrellas son ceniza.\r\nAún vive la brasa; el rey de la escarcha se corona de nieve.\r\nSin escudo de hielo, el frío canta por los caídos—\r\n¡Alzaos, cazadores! Cantad con acero; que el alba os recuerde."
                 },
                 {
-                    "Name": "Mission10100_122",
+                    "Name": "Mission10101_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_123",
+                    "Name": "Mission10101_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_132",
+                    "Name": "Mission10101_132",
                     "Text": ""
                 }
             ]
@@ -391,35 +449,35 @@
             "Language": 11,
             "MessageData": [
                 {
-                    "Name": "Mission10100_000",
+                    "Name": "Mission10101_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_001",
+                    "Name": "Mission10101_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_100",
-                    "Text": "전란의 마지막 선율"
+                    "Name": "Mission10101_100",
+                    "Text": "얼음과 불의 노래"
                 },
                 {
-                    "Name": "Mission10100_101",
+                    "Name": "Mission10101_101",
                     "Text": "별 부대　히카리"
                 },
                 {
-                    "Name": "Mission10100_102",
-                    "Text": "타르가 끓고 잔해가 재로 변해도,\r\n거룡의 포효는 끊임없이 울려 퍼진다.\r\n과거에 잠든 전란이 깨어나\r\n다시 이 땅에 그림자를 드리운다.\r\n헌터여, 마지막 굉음으로\r\n이 재앙에 마침표를 찍어 다오."
+                    "Name": "Mission10101_102",
+                    "Text": "들으라! 검은 그림자가 불길을 밟고 별은 재가 된다.\r\n불씨 식기 전에 서리 왕이 눈의 왕관을 쓴다.\r\n얼음 방패 없는 땅, 한파는 쓰러진 이를 노래한다—\r\n일어나라, 사냥꾼! 칼로 노래해 새벽에 이름을 새겨라."
                 },
                 {
-                    "Name": "Mission10100_122",
+                    "Name": "Mission10101_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_123",
+                    "Name": "Mission10101_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_132",
+                    "Name": "Mission10101_132",
                     "Text": ""
                 }
             ]
@@ -428,35 +486,35 @@
             "Language": 32,
             "MessageData": [
                 {
-                    "Name": "Mission10100_000",
+                    "Name": "Mission10101_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_001",
+                    "Name": "Mission10101_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_100",
-                    "Text": "La última nota de la guerra"
+                    "Name": "Mission10101_100",
+                    "Text": "Canción de hielo y fuego"
                 },
                 {
-                    "Name": "Mission10100_101",
+                    "Name": "Mission10101_101",
                     "Text": "Hikari (Unidad Astrum)"
                 },
                 {
-                    "Name": "Mission10100_102",
-                    "Text": "La brea hierve. Los restos se convierten en cenizas.\r\nEl rugido del dragón aún resuena sin descanso.\r\nLa calamidad de una guerra antigua despierta\r\ny vuelve a cubrir esta tierra con su sombra.\r\nCazador, que un último estruendo\r\nponga fin a esta catástrofe."
+                    "Name": "Mission10101_102",
+                    "Text": "¡Oigan! Una sombra anda en llamas; las estrellas son ceniza.\r\nAún vive la brasa; el rey de la escarcha se corona de nieve.\r\nSin escudo de hielo, el frío canta por los caídos—\r\n¡Arriba, cazadores! Canten con acero; que el alba los recuerde."
                 },
                 {
-                    "Name": "Mission10100_122",
+                    "Name": "Mission10101_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_123",
+                    "Name": "Mission10101_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_132",
+                    "Name": "Mission10101_132",
                     "Text": ""
                 }
             ]
@@ -465,35 +523,35 @@
             "Language": 26,
             "MessageData": [
                 {
-                    "Name": "Mission10100_000",
+                    "Name": "Mission10101_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_001",
+                    "Name": "Mission10101_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_100",
-                    "Text": "เสียงสุดท้ายแห่งสงคราม"
+                    "Name": "Mission10101_100",
+                    "Text": "บทเพลงแห่งน้ำแข็งและไฟ"
                 },
                 {
-                    "Name": "Mission10100_101",
+                    "Name": "Mission10101_101",
                     "Text": "ฮิคาริ (หน่วยแอสตรัม)"
                 },
                 {
-                    "Name": "Mission10100_102",
-                    "Text": "น้ำมันดินเดือด ซากมอดเป็นเถ้า\r\nเสียงคำรามมังกรยังก้องกังวาน\r\nภัยสงครามที่หลับใหลในอดีต\r\nกลับมาทอดเงาเหนือแผ่นดิน\r\nนักล่า จงใช้กัมปนาทสุดท้าย\r\nปิดฉากหายนะครั้งนี้"
+                    "Name": "Mission10101_102",
+                    "Text": "จงฟัง! เงาดำย่ำเปลวไฟ\r\nดวงดาวดับลงในเถ้าถ่าน\r\nถ่านยังคุ ราชาเหมันต์สวมมงกุฎ\r\nมงกุฎแห่งหิมะ\r\nไร้โล่น้ำแข็ง ความหนาวขับขาน\r\nบทเพลงแด่ผู้วายชนม์\r\nลุกขึ้น นักล่า! ร้องด้วยคมดาบ\r\nให้รุ่งอรุณจดจำนามของเจ้า"
                 },
                 {
-                    "Name": "Mission10100_122",
+                    "Name": "Mission10101_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_123",
+                    "Name": "Mission10101_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_132",
+                    "Name": "Mission10101_132",
                     "Text": ""
                 }
             ]
@@ -502,35 +560,35 @@
             "Language": 10,
             "MessageData": [
                 {
-                    "Name": "Mission10100_000",
+                    "Name": "Mission10101_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_001",
+                    "Name": "Mission10101_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_100",
-                    "Text": "A última nota da guerra"
+                    "Name": "Mission10101_100",
+                    "Text": "Uma Canção de Gelo e Fogo"
                 },
                 {
-                    "Name": "Mission10100_101",
+                    "Name": "Mission10101_101",
                     "Text": "Hikari (Unidade Astrum)"
                 },
                 {
-                    "Name": "Mission10100_102",
-                    "Text": "O alcatrão ferve. Os destroços viram cinzas.\r\nO rugido do dragão ainda ecoa sem cessar.\r\nO flagelo de uma guerra antiga desperta do sono\r\ne volta a lançar sua sombra sobre esta terra.\r\nCaçador, que um último estrondo\r\nponha fim a esta calamidade."
+                    "Name": "Mission10101_102",
+                    "Text": "Ouçam! Uma sombra anda em chamas; as estrelas viram cinzas.\r\nA brasa ainda vive; o rei da geada veste a coroa de neve.\r\nSem escudo de gelo, o frio canta pelos que tombaram—\r\nErgam-se, caçadores! Cantem com aço; que a aurora os recorde."
                 },
                 {
-                    "Name": "Mission10100_122",
+                    "Name": "Mission10101_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_123",
+                    "Name": "Mission10101_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_132",
+                    "Name": "Mission10101_132",
                     "Text": ""
                 }
             ]
@@ -539,35 +597,35 @@
             "Language": 12,
             "MessageData": [
                 {
-                    "Name": "Mission10100_000",
+                    "Name": "Mission10101_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_001",
+                    "Name": "Mission10101_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_100",
-                    "Text": "戰禍的終音"
+                    "Name": "Mission10101_100",
+                    "Text": "冰與火之歌"
                 },
                 {
-                    "Name": "Mission10100_101",
+                    "Name": "Mission10101_101",
                     "Text": "星辰隊　光"
                 },
                 {
-                    "Name": "Mission10100_102",
-                    "Text": "焦油翻湧，殘骸燃盡，巨龍的咆哮仍迴盪不休。\r\n沉眠於往昔的戰禍，再次將陰影投向這片大地。\r\n獵人，請以最後一聲轟鳴，為這場災厄畫下句點。"
+                    "Name": "Mission10101_102",
+                    "Text": "聽啊，末影踏火而來，群星在灰燼中失了光；\r\n餘燼未冷，冰主已披雪加冕，要萬籟為它殉葬。\r\n此地無冰為盾，寒潮為倒下的勇者低唱——\r\n來啊，獵人！以刀劍續寫此歌，讓黎明記住你的迴響。"
                 },
                 {
-                    "Name": "Mission10100_122",
+                    "Name": "Mission10101_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_123",
+                    "Name": "Mission10101_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_132",
+                    "Name": "Mission10101_132",
                     "Text": ""
                 }
             ]
@@ -576,35 +634,35 @@
             "Language": 13,
             "MessageData": [
                 {
-                    "Name": "Mission10100_000",
+                    "Name": "Mission10101_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_001",
+                    "Name": "Mission10101_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_100",
-                    "Text": "战祸的终音"
+                    "Name": "Mission10101_100",
+                    "Text": "冰与火之歌"
                 },
                 {
-                    "Name": "Mission10100_101",
+                    "Name": "Mission10101_101",
                     "Text": "星之队　光"
                 },
                 {
-                    "Name": "Mission10100_102",
-                    "Text": "焦油翻涌，残骸燃尽，巨龙的咆哮仍回荡不休。\r\n沉眠于往昔的战祸，再次将阴影投向这片大地。\r\n猎人，请以最后一声轰鸣，为这场灾厄画下句点。"
+                    "Name": "Mission10101_102",
+                    "Text": "听啊，末影踏火而来，群星在灰烬中失了光；\r\n余烬未冷，冰主已披雪加冕，要万籁为它殉葬。\r\n此地无冰为盾，寒潮为倒下的勇者低唱——\r\n来啊，猎人！以刀剑续写此歌，让黎明记住你的回响。"
                 },
                 {
-                    "Name": "Mission10100_122",
+                    "Name": "Mission10101_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_123",
+                    "Name": "Mission10101_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_132",
+                    "Name": "Mission10101_132",
                     "Text": ""
                 }
             ]
@@ -613,35 +671,35 @@
             "Language": 6,
             "MessageData": [
                 {
-                    "Name": "Mission10100_000",
+                    "Name": "Mission10101_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_001",
+                    "Name": "Mission10101_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_100",
-                    "Text": "Последняя нота войны"
+                    "Name": "Mission10101_100",
+                    "Text": "Песнь льда и пламени"
                 },
                 {
-                    "Name": "Mission10100_101",
+                    "Name": "Mission10101_101",
                     "Text": "Хикари (отряд «Аструм»)"
                 },
                 {
-                    "Name": "Mission10100_102",
-                    "Text": "Смола кипит. Обломки догорают до пепла.\r\nРёв дракона всё ещё гремит без конца.\r\nБедствие древних войн пробуждается ото сна\r\nи вновь бросает тень на эту землю.\r\nОхотник, пусть последний раскат грома\r\nпоставит точку в этой катастрофе."
+                    "Name": "Mission10101_102",
+                    "Text": "Слушай! Тень шагает в огне; звёзды обращаются в пепел.\r\nЖар ещё жив; король мороза надевает снежную корону.\r\nЛёд не станет щитом; стужа поёт о павших —\r\nВстань, охотник! Пой сталью; пусть рассвет запомнит твоё имя."
                 },
                 {
-                    "Name": "Mission10100_122",
+                    "Name": "Mission10101_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_123",
+                    "Name": "Mission10101_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_132",
+                    "Name": "Mission10101_132",
                     "Text": ""
                 }
             ]
@@ -650,35 +708,35 @@
             "Language": 0,
             "MessageData": [
                 {
-                    "Name": "Mission10100_000",
+                    "Name": "Mission10101_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_001",
+                    "Name": "Mission10101_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_100",
-                    "Text": "戦禍の終曲"
+                    "Name": "Mission10101_100",
+                    "Text": "氷と炎の歌"
                 },
                 {
-                    "Name": "Mission10100_101",
+                    "Name": "Mission10101_101",
                     "Text": "星の隊　光"
                 },
                 {
-                    "Name": "Mission10100_102",
-                    "Text": "タールが煮え立ち、残骸は灰と化す。\r\n巨龍の咆哮だけが、なお響き続ける。\r\nかつて眠りについた戦禍が、\r\n再びこの大地を影で覆おうとしている。\r\nハンターよ、最後の轟音をもって、\r\nこの災厄に終止符を打ってくれ。"
+                    "Name": "Mission10101_102",
+                    "Text": "聞け、黒き影は炎を踏み、星々は灰に沈む。\r\n残り火冷めぬ間に、霜の王は雪の冠を戴く。\r\n氷の盾なき地で、寒波は倒れた者へ歌う――\r\n立て、狩人よ！刃で歌を継ぎ、暁に名を刻め。"
                 },
                 {
-                    "Name": "Mission10100_122",
+                    "Name": "Mission10101_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_123",
+                    "Name": "Mission10101_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_132",
+                    "Name": "Mission10101_132",
                     "Text": ""
                 }
             ]
@@ -687,35 +745,35 @@
             "Language": 1,
             "MessageData": [
                 {
-                    "Name": "Mission10100_000",
+                    "Name": "Mission10101_000",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_001",
+                    "Name": "Mission10101_001",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_100",
-                    "Text": "War's Final Note"
+                    "Name": "Mission10101_100",
+                    "Text": "A Song of Ice and Fire"
                 },
                 {
-                    "Name": "Mission10100_101",
+                    "Name": "Mission10101_101",
                     "Text": "Hikari (Astrum Unit)"
                 },
                 {
-                    "Name": "Mission10100_102",
-                    "Text": "Tar churns. Wreckage burns to ash.\r\nThe dragon's roar echoes without end.\r\nAn ancient scourge awakens from its long slumber,\r\ncasting its shadow over the land once more.\r\nHunter, let one final thunderous blast\r\nbring this calamity to its end."
+                    "Name": "Mission10101_102",
+                    "Text": "Hear! A shadow walks in flame; the stars fall into ash.\r\nThe embers glow; the frost king dons his crown of snow.\r\nNo ice shall shield you; cold sings for the fallen—\r\nRise, hunter! Sing with steel; let dawn recall your name."
                 },
                 {
-                    "Name": "Mission10100_122",
+                    "Name": "Mission10101_122",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_123",
+                    "Name": "Mission10101_123",
                     "Text": ""
                 },
                 {
-                    "Name": "Mission10100_132",
+                    "Name": "Mission10101_132",
                     "Text": ""
                 }
             ]

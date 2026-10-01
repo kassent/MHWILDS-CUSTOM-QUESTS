@@ -1,15 +1,18 @@
--- 10100：战祸的终音；迁移当前10101的巨戟逻辑，不含冻峰及环境锁定。
--- 满血FINAL开局；Health=18（默认单人180000）、PartsVital=16，原生多人表。
--- 普通/Hard动作倍率1.2；怒气倍率1/0.75/0.75/0.5/0.5/1/1/1/1/1。
--- 四足/六足60秒、飞行80秒；DPS窗口150秒，Strong成功15%/优秀30%（首轮和后续）。
--- FinalHelthRate=101；Start只请求弃炮，阶段、怒气和龙热初始化交给原生。
--- 禁四名EXTRA；巨戟与玩家战斗时禁回营，脱战交回可回营状态。
--- 炮位、电缆、十档推动及迟加入协议与10101一致；共享参数卸载还原。
+-- 10101：冰与火之歌；巨戟16万/DPS120秒，冻峰适配块见末尾。
+-- 10101：十星巨戟龙，满血最终阶段开局。仅由 PermanentEventQuest 任务宿主加载。
+-- 巨戟难度行 Health=16（默认单人160000）、PartsVital=16，引用原生多人表；任务结束恢复共享资源。
+-- 与10099一致：包加载时将 Legendary 的普通/Hard 动作倍率设为1.2，卸载还原。
+-- 四足/六足60秒、飞行80秒；DPS窗口120秒，Strong首轮及后续SUCCESS15%/GREAT30%（单人名义200/400 DPS）。
+-- FinalHelthRate=101：原生 Area 2 阶段保险切到 FINAL 时保持满血。
+-- Start 仅请求弃炮；阶段切换、怒气和龙热初始化交给原生流程。
+-- TU5 静态依据：updatePhaseInsurance 147CD69A0；forceChangePhase 147CD6B10。
+-- 四名 EXTRA 猎人由 createExtraPartner_Ex02Mission 创建；23800 的原生豁免不随复制继承。
 
 local lib = require("scripts.quest_lib")
 local print = lib.print
 
 local EM0078 = 12
+local EM0162 = 30 -- EnemyDef.ID；require_enemies 则使用 ID_Fixed。
 local QUEST_DIFFICULTY_GUID = "a80891b3-54b8-4910-bce7-cac155784c2a"
 local MULTIPLAYER_TABLE_GUID = "148912cc-e71c-4088-a195-7db49568ebcd"
 
@@ -36,7 +39,7 @@ quest.on_load(function()
     quest_difficulty:set_field("_Health", 18)
     quest_difficulty:set_field("_PartsVital", 16)
     lib.write_valuetype(multiplayer_table_ref, "Value", target_multiplayer_table_guid)
-    print("[difficulty] Health %g -> 18; PartsVital %g -> 16; multi %s -> %s",
+    print("[difficulty] Health %g -> 16; PartsVital %g -> 16; multi %s -> %s",
         health_multiplier, parts_vital_multiplier, multiplayer_table_guid, MULTIPLAYER_TABLE_GUID)
 end)
 
@@ -60,18 +63,52 @@ end, function(retval)
     return retval
 end)
 
--- 巨戟与玩家战斗时禁止主动回营；脱战时不强制锁营。
+-- 巨戟或冻峰与玩家战斗时禁止主动回营；脱战、换怪间隙不强制锁营。
 -- get_IsCombatPl检查当前/待切换AI状态COMBAT；其他敌人和Manager判定保持原生。
 sdk.hook(sdk.find_type_definition("app.cEnemyBrowser"):get_method("isBlockedReturnCamp()"), function(args)
     local enemy_browser = sdk.to_managed_object(args[2])
     if not enemy_browser:call("get_IsContextValid()") then return end
     local enemy_id = enemy_browser:call("get_EmID()")
-    if enemy_id ~= EM0078 then return end
+    if enemy_id ~= EM0078 and enemy_id ~= EM0162 then return end
     thread.get_hook_storage().boss_combat_camp_blocked = enemy_browser:call("get_IsCombatPl()")
     return sdk.PreHookResult.SKIP_ORIGINAL
 end, function(retval)
     local blocked = thread.get_hook_storage().boss_combat_camp_blocked
     if blocked ~= nil then return sdk.to_ptr(blocked and 1 or 0) end
+    return retval
+end)
+
+-- 巨戟撤场/客户端迟加入后补齐ST405最终环境；不要求本机曾经历巨戟FINAL。
+-- 各端独立写本地阶段和原生global85/86；不伪造巨戟引用，不改网络或销毁流程。
+-- 场景初始化完成后才处理；任务退出由原生还原，宿主负责摘钩。
+local renderer_type = sdk.find_type_definition("via.render.Renderer")
+local get_environment_global_param = renderer_type:get_method("getUserGlobalParam(System.Int32)")
+local set_environment_global_param = renderer_type:get_method("setUserGlobalParam(System.Int32, System.Single)")
+
+sdk.hook(sdk.find_type_definition("app.cSt405Environment")
+    :get_method("update()"), function(args)
+    if sdk.get_managed_singleton("app.EnvironmentManager"):get_field("_CurrentStage") ~= 13 then return end
+    local stage_environment = sdk.to_managed_object(args[2])
+    if stage_environment:get_field("_Em0078") ~= nil then return end
+    local environment_transition = stage_environment:get_field("_TransitionRate")
+    if environment_transition == nil then return end -- init尚未完成，不写默认高度。
+
+    local transition_height = stage_environment:get_field("_TransitionPosY")
+    local final_height = transition_height:get_field("s") + transition_height:get_field("r")
+    if stage_environment:get_field("_Em0078Phase") ~= 3
+        or stage_environment:get_field("_Em0078PhaseBefore") ~= 3
+        or get_environment_global_param:call(nil, 85) ~= 3.0
+        or get_environment_global_param:call(nil, 86) ~= final_height then
+        local previous_phase = stage_environment:get_field("_Em0078Phase")
+        stage_environment:set_field("_Em0078Phase", 3)
+        stage_environment:set_field("_Em0078PhaseBefore", 3)
+        environment_transition:call("finish()")
+        set_environment_global_param:call(nil, 85, 3.0)
+        set_environment_global_param:call(nil, 86, final_height)
+        print("[environment] ST405 local phase %d -> FINAL; global85=3/global86=%g", previous_phase, final_height)
+    end
+    return sdk.PreHookResult.SKIP_ORIGINAL
+end, function(retval)
     return retval
 end)
 
@@ -141,7 +178,7 @@ lib.on_enemy_package(EM0078, function(enemy_id)
     for field_name in pairs(gogmazios_common_values) do original_common_values[field_name] = common_param:get_field(field_name) end
     gogmazios_common_param, original_gogmazios_common_values = common_param, original_common_values
     for field_name, value in pairs(gogmazios_common_values) do common_param:set_field(field_name, value) end
-    print("[common] FINAL=101; ground=60; fly=80; DPS=150; SUCCESS=15%%; GREAT=30%%")
+    print("[common] FINAL=101; ground=60; fly=80; DPS=120; SUCCESS=15%%; GREAT=30%%")
 end, function()
     if gogmazios_common_param == nil then return end
     for field_name, value in pairs(original_gogmazios_common_values) do gogmazios_common_param:set_field(field_name, value) end
@@ -196,7 +233,7 @@ sdk.hook(sdk.find_type_definition("app.cQuestPlaying"):get_method("enter"), nil,
     local gimmick_manager = sdk.get_managed_singleton("app.GimmickManager")
     local cannon = gimmick_manager:call("findGimmick_UniqueIndex(System.Int32)", FINAL_CANNON_UNIQUE_INDEX)
     if cannon == nil then
-        log.error("[quest 10100] Playing entered but cannon 3411969 was not found")
+        log.error("[quest 10101] Playing entered but cannon 3411969 was not found")
         return retval
     end
     -- 同步副本/中途加入保留原生状态，各客户端仍在 Start 初始化位置。
@@ -355,4 +392,204 @@ end, function(retval)
     return retval
 end)
 
-print("loaded: full-health FINAL; base HP=180000; motion-speed=1.2; native multiplayer table; ground=60/fly=80/DPS=150; forced EXTRA disabled")
+print("loaded: full-health FINAL; base HP=160000; motion-speed=1.2; native multiplayer table; ground=60/fly=80/DPS=120; forced EXTRA disabled")
+
+-- 10101 第二轮：ST405 单区历战王冻峰龙。仅由本任务宿主加载/摘钩。
+-- JSON OptionTag=4 让原生 doAwake 选 QUEST_PHASE4；不逐帧写阶段，不重置迟加入计时。
+-- TU5 静态依据：doAwake 14863A760；onDamageKeepHealth 14863E170；
+-- checkStartWallStick 148640A30；trySetColumnNodeList 148640380；Generic.onStart 149C13F30。
+-- hook 按类型/方法解析，不依赖静态地址；当前游戏 TDB 已只读核对。
+
+quest.require_enemies { 1553456768 }
+
+-- 与巨戟龙相同：冻峰普通/Hard动作倍率直接设为1.2，包卸载或任务退出恢复原值。
+-- HealthRate_King_Hard=1.223：7400*11.05*1.223≈100005单人HP；多人表保持原生。
+-- 不缩短核爆180秒主冷却和50秒准备计时，不改部位耐久。
+local dahaad_legendary_param, original_dahaad_motion_speed_rate, original_dahaad_hard_motion_speed_rate
+local original_dahaad_king_hard_health_rate
+lib.on_enemy_package(EM0162, function(enemy_id)
+    local enemy_package = sdk.get_managed_singleton("app.EnemyManager"):call("getPackage(app.EnemyDef.ID)", enemy_id)
+    local legendary_param = enemy_package:get_field("_ParamPack"):get_field("_Legendary")
+    dahaad_legendary_param = legendary_param
+    original_dahaad_motion_speed_rate = legendary_param:get_field("MotionSpeedRate")
+    original_dahaad_hard_motion_speed_rate = legendary_param:get_field("MotionSpeedRate_Hard")
+    original_dahaad_king_hard_health_rate = legendary_param:get_field("HealthRate_King_Hard")
+    legendary_param:set_field("MotionSpeedRate", 1.2)
+    legendary_param:set_field("MotionSpeedRate_Hard", 1.2)
+    legendary_param:set_field("HealthRate_King_Hard", 1.223)
+    print("[dahaad-health] King Hard rate %g -> 1.223; solo HP about 100005", original_dahaad_king_hard_health_rate)
+    print("[dahaad-motion-speed] normal %g -> 1.2; Hard %g -> 1.2",
+        original_dahaad_motion_speed_rate, original_dahaad_hard_motion_speed_rate)
+end, function()
+    if dahaad_legendary_param == nil then return end
+    dahaad_legendary_param:set_field("MotionSpeedRate", original_dahaad_motion_speed_rate)
+    dahaad_legendary_param:set_field("MotionSpeedRate_Hard", original_dahaad_hard_motion_speed_rate)
+    dahaad_legendary_param:set_field("HealthRate_King_Hard", original_dahaad_king_hard_health_rate)
+    print("[dahaad-health] restored King Hard rate=%g", original_dahaad_king_hard_health_rate)
+    print("[dahaad-motion-speed] restored normal=%g; Hard=%g",
+        original_dahaad_motion_speed_rate, original_dahaad_hard_motion_speed_rate)
+    dahaad_legendary_param = nil
+end)
+
+local dahaad_extend_type = sdk.find_type_definition("app.cEm0162_00Extend")
+
+-- 冻峰初始化完成后将场景碰撞半径设为5；高度不动，不改攻击/受击判定。
+-- 主核Part10耐久乘4，并提前解除首次核爆前的保底1；不触发核爆、不改冷却。
+-- 只写当前实例，不改共享资源，不加逐帧hook；实例撤场随原生销毁。
+local character_controller_type = sdk.find_type_definition("via.physics.CharacterController")
+sdk.hook(dahaad_extend_type:get_method("doStartBegin()"), function(args)
+    thread.get_hook_storage().dahaad_start_extend = sdk.to_managed_object(args[2])
+end, function(retval)
+    local hook_storage = thread.get_hook_storage()
+    local dahaad_extend = hook_storage.dahaad_start_extend
+    local character_controller = dahaad_extend:call("get_Character()"):call("get_CharaCtrl()")
+    sdk.call_native_func(character_controller, character_controller_type, "set_Radius(System.Single)", 5.0)
+
+    local main_core_damage_parts = dahaad_extend:call("get_Context()"):get_field("_Em")
+        :get_field("Parts"):get_field("_DmgParts"):get_element(10)
+    local main_core_vital_table = main_core_damage_parts:get_field("_NextMaxVitalTable")
+    -- 实例独立的Single[]；已核对数据从0x20起，每项4字节，避免get_element装箱。
+    for vital_index = 0, main_core_vital_table:get_size() - 1 do
+        local vital_value_offset = 0x20 + vital_index * 4
+        main_core_vital_table:write_float(vital_value_offset, main_core_vital_table:read_float(vital_value_offset) * 2)
+    end
+    -- 原生同步当前/默认/最大耐久，不改变耗尽次数或破坏次数。
+    main_core_damage_parts:call("resetVitalAndUpdatCurrentVital()")
+    dahaad_extend:call("set__IsIceNovaUsed(System.Boolean)", true)
+    hook_storage.dahaad_start_extend = nil
+    return retval
+end)
+
+-- 兜底奔跑到达距离放宽到20，避免贴边目标使大体型冻峰持续顶墙。
+-- 只改LOOP_INSURANCE的cDashNoY；原生动作退出自动恢复，不改共享源参数。
+sdk.hook(dahaad_extend_type:get_method("onEnterAction(ace.ACTION_ID)"), function(args)
+    local action_id = sdk.to_valuetype(args[3], "ace.ACTION_ID")
+    if action_id:call("get_Category()") ~= 0
+        or action_id:call("get_Index()") ~= 11 then return end -- cDashNoY
+
+    local dahaad_extend = sdk.to_managed_object(args[2])
+    local enemy_context = dahaad_extend:call("get_Context()"):get_field("_Em")
+    if enemy_context:get_field("BTable"):call("get_CurrentBTableID()") ~= 38 then return end
+
+    local dash_action = dahaad_extend:call("get_Character()")
+        :call("get_BaseActionController()")
+        :call("getAction(ace.ACTION_ID)", action_id)
+    dash_action:call("get_MoveFinishComp()")
+        :call("overrideArraivalDistance(System.Single)", 20.0)
+end, function(retval)
+    return retval
+end)
+
+-- 原生伤害回调在 AreaMoveKeepHealthRate<=0 时仍可能恢复旧血量。
+-- 必须绕过回调本体；只把门槛写成0会产生“单区不掉血”的反效果。
+sdk.hook(dahaad_extend_type:get_method("onDamageKeepHealth"), function()
+    return sdk.PreHookResult.SKIP_ORIGINAL
+end, function(retval)
+    return retval
+end)
+
+-- 禁用原墙距/冰机关站位检查；避免ST405核爆前反复调整站位。
+-- 两项均返回false；不恢复转区/攀墙hook，不改变核爆其余资格和计时。
+for _, method_name in ipairs({ "cCheckDestWall", "cCheckDestShutterGimmick" }) do
+    sdk.hook(sdk.find_type_definition("app.btable.Em0162_00BTableCommand." .. method_name)
+        :get_method("onExecute"), function()
+        return sdk.PreHookResult.SKIP_ORIGINAL
+    end, function()
+        return sdk.to_ptr(0)
+    end)
+end
+
+-- 核爆只额外要求HP<40%；不限制位置，不要求跑回出生点。
+-- 阶段、准备、目标、疲劳、破核和冷却全部由原生处理。
+local ICENOVA_HEALTH_RATE = 0.4
+
+sdk.hook(sdk.find_type_definition("app.Em0162_00_BTable_CommonAttack_Export")
+    :get_method("table_839b3fd9_b07a_4f04_8a44_d3fd4d68abe2"), function(args)
+    -- 已选动作继续执行，不在中途重新检查血量。
+    if not sdk.to_managed_object(args[4]):call("get_IsExportTableJump()") then return end
+    local health_manager = sdk.to_managed_object(args[3]):call("get_Context()")
+        :get_field("_Chara"):call("get_HealthManager()")
+    if health_manager:call("get_Health()") >= health_manager:call("get_MaxHealth()") * ICENOVA_HEALTH_RATE then
+        thread.get_hook_storage().dahaad_nova_health_blocked = true
+        return sdk.PreHookResult.SKIP_ORIGINAL
+    end
+end, function(retval)
+    if thread.get_hook_storage().dahaad_nova_health_blocked then return sdk.to_ptr(0) end
+    return retval
+end)
+
+-- 该接口只恢复既有GM607落冰母体；ST405无掩体，不走这条专门恢复链。
+sdk.hook(sdk.find_type_definition("app.GimmickManager")
+    :get_method("activateWallSheildForNoSheild(System.Int32)"), function()
+    return sdk.PreHookResult.SKIP_ORIGINAL
+end, function(retval)
+    return retval
+end)
+
+-- 王版核爆FixedID=46：包加载时将最终半径95改为125；主伤害和强杀副球同步扩张。
+-- 不改初始半径8、扩张时间0.4秒、寿命、伤害、冷气场或附加冰柱；不新增弹体hook。
+local ICENOVA_RADIUS = 125.0
+local ice_nova_radius_patch
+
+lib.on_enemy_package(EM0162, function(enemy_id)
+    local enemy_package = sdk.get_managed_singleton("app.EnemyManager")
+        :call("getPackage(app.EnemyDef.ID)", enemy_id)
+    local shell_list = enemy_package:get_field("_ParamPack")
+        :get_field("_ShellCreatorInfoData"):get_field("_ShellList")
+    local nova_index = shell_list:call("findShellIndexFromShellID(System.Int32)", 46)
+    assert(nova_index >= 0, "Dahaad KING IceNova (FixedID=46) missing from ShellList")
+    local nova_package = shell_list:call("getShellPackage(System.Int32)", nova_index)
+    local nova_params = nova_package:call("get_MainParam()"):call("get_ShellMiniParams()")
+    for param_index = 0, nova_params:call("get_Count()") - 1 do
+        local nova_param = nova_params:call("get_Item(System.Int32)", param_index)
+        if nova_param:get_type_definition():get_full_name() == "app.cShellMoveScale" then
+            local original_radius = nova_param:get_field("_EndScale")
+            ice_nova_radius_patch = { move_param = nova_param, original_radius = original_radius }
+            nova_param:set_field("_EndScale", ICENOVA_RADIUS)
+            print("[dahaad] nova radius %g -> %g", original_radius, ICENOVA_RADIUS)
+            break
+        end
+    end
+    assert(ice_nova_radius_patch ~= nil, "Dahaad KING IceNova cShellMoveScale missing")
+end, function()
+    if ice_nova_radius_patch == nil then return end
+    ice_nova_radius_patch.move_param:set_field("_EndScale", ice_nova_radius_patch.original_radius)
+    print("[dahaad] restored nova radius -> %g", ice_nova_radius_patch.original_radius)
+    ice_nova_radius_patch = nil
+end)
+
+-- 冰场pattern1/2携带原ST402固定坐标，撤销坐标覆盖，随原生shootShell位置创建。
+-- pattern3核爆附加冰场本身没有覆盖：不改其冰柱、范围、延迟、伤害或强杀副碰撞。
+-- 只改HasValue这一字节，保留Nullable剩余31字节；动态字段偏移+尺寸检查防越界。
+local original_create_pos_overrides = {}
+local absolute_space_pattern_type = sdk.find_type_definition("app.cEm0162_00Extend.cAbsoluteSpaceGenericPatternData")
+local overwrite_create_pos_field = absolute_space_pattern_type:get_field("OverwriteCreatePos")
+local overwrite_create_pos_offset = overwrite_create_pos_field:get_offset_from_base()
+assert(overwrite_create_pos_offset == 0x10 and overwrite_create_pos_field:get_type():get_valuetype_size() == 0x20,
+    "Dahaad Nullable<vec3> layout mismatch; check current TDB before modifying")
+
+lib.on_enemy_package(EM0162, function(enemy_id)
+    local enemy_stage_resident = sdk.get_managed_singleton("app.EnemyManager")
+        :call("getEnemyStageResident(app.EnemyDef.ID)", enemy_id)
+    local absolute_zero_generic_data = enemy_stage_resident:get_field("_Unique"):get_field("_SpeciesInfo")
+        :get_field("_AbsoluteZeroGenericData")
+    for pattern_index = 0, absolute_zero_generic_data:call("get_Length") - 1 do
+        local absolute_space_pattern_data = absolute_zero_generic_data:get_element(pattern_index)
+        if absolute_space_pattern_data:get_field("OverwriteCreatePos"):get_field("_HasValue") then
+            -- Nullable的payload首字节为_HasValue；live新建ValueType已核对字段/byte0一致。
+            original_create_pos_overrides[#original_create_pos_overrides + 1] = {
+                absolute_space_pattern_data = absolute_space_pattern_data, original_has_value = absolute_space_pattern_data:read_byte(overwrite_create_pos_offset),
+            }
+            absolute_space_pattern_data:write_byte(overwrite_create_pos_offset, 0)
+        end
+    end
+    print("[dahaad] cleared %d ST402 fixed-position overrides; nova damage unchanged", #original_create_pos_overrides)
+end, function()
+    for _, original_create_pos_override in ipairs(original_create_pos_overrides) do
+        original_create_pos_override.absolute_space_pattern_data:write_byte(overwrite_create_pos_offset, original_create_pos_override.original_has_value)
+    end
+    original_create_pos_overrides = {}
+    print("[dahaad] restored fixed-position overrides")
+end)
+
+print("[dahaad] round2: KING/phase4/ST405 area2; nova HP<40%%/blast radius125; no ice-cover")
